@@ -1,0 +1,42 @@
+*******************************************************
+Getting Started: Writing Your Own Channel Access Client
+*******************************************************
+
+Caproto can be used to implement both Channel Access clients and servers. To
+give a flavor for how the API works, we’ll demonstrate a small client.
+
+Channel Access Basics
+=====================
+
+A Channel Access client reads and writes values to *Channels* available from
+servers on its network. It locates these servers using UDP broadcasts. It
+communicates with an individual server via one or more TCP connections, which
+is calls *Virtual Circuits*.
+
+In this example, our client will talk to 
+`EPICS motorsim <github.com/danielballan/motorsim>`_, which provides a
+collection of simulated motors we can read and move. But this same code could
+talk to any Channel Access server, including one implemented in caproto itself.
+
+Registering with the Repeater
+-----------------------------
+
+To begin, we need a UDP socket.
+
+.. ipython:: python
+
+    import socket
+    udp_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
+    udp_sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+
+A new Channel Access client is required to register itself with a *Repeater*,
+an independent process that rebroadcasts all UDP traffic on a given host. To
+register, we must send a *request* to the Repeater and recive a *response*.
+At the lowest level, we simply need to send the right bytes over the network.
+This is effective, but no very readable:
+
+.. ipython:: python
+
+    bytes_to_send = b'\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+    udp_sock.sendto(bytes_to_send, ('', 5065))
+

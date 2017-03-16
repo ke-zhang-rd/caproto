@@ -1,3 +1,4 @@
+doc/_sources/basics.rst.txt
 doc/_sources/examples/curio_client.rst.txt
 doc/_sources/examples/curio_server.rst.txt
 doc/_sources/examples/index.rst.txt
@@ -40,6 +41,7 @@ doc/_static/underscore.js
 doc/_static/up-pressed.png
 doc/_static/up.png
 doc/_static/websupport.js
+doc/basics.html
 doc/examples/curio_client.html
 doc/examples/curio_server.html
 doc/examples/index.html
