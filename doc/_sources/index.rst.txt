@@ -83,11 +83,6 @@ license.
 And of course many resources from the EPICS developer community were
 indispensible. See :doc:`references`.
 
-
-.. ipython:: python
-
-    1 + 1
-
 .. toctree::
    :maxdepth: 2
 
