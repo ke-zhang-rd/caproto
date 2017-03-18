@@ -1,3 +1,7 @@
+./_images/command_triggered_channel_transitions_client.png
+./_images/command_triggered_channel_transitions_server.png
+./_images/command_triggered_circuit_transitions_client.png
+./_images/command_triggered_circuit_transitions_server.png
 ./_modules/caproto/_commands.html
 ./_modules/caproto/_hub.html
 ./_modules/caproto/_utils.html
@@ -14,6 +18,14 @@
 ./_sources/release-notes.rst.txt
 ./_static/ajax-loader.gif
 ./_static/basic.css
+./_static/command_triggered_channel_transitions_client
+./_static/command_triggered_channel_transitions_client.png
+./_static/command_triggered_channel_transitions_server
+./_static/command_triggered_channel_transitions_server.png
+./_static/command_triggered_circuit_transitions_client
+./_static/command_triggered_circuit_transitions_client.png
+./_static/command_triggered_circuit_transitions_server
+./_static/command_triggered_circuit_transitions_server.png
 ./_static/comment-bright.png
 ./_static/comment-close.png
 ./_static/comment.png
