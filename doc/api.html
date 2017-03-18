@@ -966,7 +966,7 @@ closing the Channel.</p>
 <span class="gp">   ...: </span>
 
 <span class="gp">In [8]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={SERVER: IDLE, CLIENT: SEND_VERSION_REQUEST}&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={CLIENT: SEND_VERSION_REQUEST, SERVER: IDLE}&gt;</span>
 </pre></div>
 </div>
 <p>When a <a class="reference internal" href="#caproto.VersionRequest" title="caproto.VersionRequest"><code class="xref py py-class docutils literal"><span class="pre">VersionRequest</span></code></a> is sent through the VirtualCircuit, both the
@@ -974,7 +974,7 @@ client and the server state update.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">));</span>
 
 <span class="gp">In [10]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={SERVER: SEND_VERSION_RESPONSE, CLIENT: AWAIT_VERSION_RESPONSE}&gt;</span>
+<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={CLIENT: AWAIT_VERSION_RESPONSE, SERVER: SEND_VERSION_RESPONSE}&gt;</span>
 </pre></div>
 </div>
 <p>And we can test the current state using constants like
