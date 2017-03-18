@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0+untagged.318.g2b1467d documentation</title>
+  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0+untagged.321.gc760eb6 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.318.g2b1467d documentation" href="#"/>
+    <link rel="top" title="caproto 0+untagged.321.gc760eb6 documentation" href="#"/>
         <link rel="next" title="Getting Started: Writing Your Own Channel Access Client" href="basics.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.318.g2b1467d
+                0+untagged.321.gc760eb6
               </div>
             
           
@@ -164,17 +164,24 @@
 <a class="reference external" href="http://www.aps.anl.gov/epics/">EPICS</a> Channel Access protocol in
 Python.</p>
 <p>This project is inspired by the broad effort in the Python community to write
-<a class="reference external" href="http://sans-io.readthedocs.io/">sans-I/O implementations of network protocols</a>.
-Caproto parses and validates incoming and outgoing bytes, keeping track
-the state of an EPICS Client, Server, Virtual Circuits, and Channels. But,
-crucially, it performs no I/O itself: handling sockets and transport is
-completely up the caller. Caproto is a toolkit for building programs that speak
-EPICS.</p>
+<a class="reference external" href="http://sans-io.readthedocs.io/">sans-I/O implementations of network protocols</a>. The EPICS (Experimental Physics and Industrial Control System) Channel Access
+protocol is used in laboratories and comparies
+<a class="reference external" href="https://en.wikipedia.org/wiki/EPICS#Facilities_using_EPICS">around the world</a>
+to implement distributed control systems for devices such as large telescopes,
+particle accelerators, and synchrotrons. Its
+<a class="reference external" href="http://www.aps.anl.gov/epics/docs/APS2014/01-Introduction-to-EPICS.pdf">roots</a>
+go back to a 1988 meeting funded by the Reagan-era Strategic Defense Initiative
+(&#8220;Star Wars&#8221;).</p>
+<p>Caproto encodes the Channel Access protocol. It parses and validates incoming
+and outgoing bytes, keeping track the state of an EPICS Client, Server, Virtual
+Circuits, and Channels. But, crucially, it performs no I/O itself: handling
+sockets and transport is completely up the caller. Caproto is a toolkit for
+building programs that speak EPICS.</p>
 <div class="section" id="why-do-this">
 <h2>Why do this?<a class="headerlink" href="#why-do-this" title="Permalink to this headline">¶</a></h2>
 <p>The aim is to provide a complete, reusable implementation of the Channel Access
-protocol in Python which can be wrapped in whichever network library you like
-best. It is not a replacement for
+protocol in Python which can be wrapped in whichever network library you want
+to use. It is not a replacement for
 <a class="reference external" href="https://github.com/pyepics/pyepics">pyepics</a>,
 <a class="reference external" href="http://controls.diamond.ac.uk/downloads/python/cothread/">cothread</a>, or
 <a class="reference external" href="https://pcaspy.readthedocs.io">pcaspy</a>. It&#8217;s a pure-Python implementation
@@ -227,10 +234,9 @@ bottlenecks we haven&#8217;t anticipated.</p>
 </div>
 <div class="section" id="acknowledgement">
 <h2>Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permalink to this headline">¶</a></h2>
-<p>The design of this library was inspired by
-<a class="reference external" href="https://h11.readthedocs.io/">h11</a>, to which caproto owes its core design
-principles and many of its clever tricks. h11 is distributed under an MIT
-license.</p>
+<p>The design of this library was modeled on <a class="reference external" href="https://h11.readthedocs.io/">h11</a>,
+to which caproto owes its core design principles and many of its clever tricks.
+h11 is distributed under an MIT license.</p>
 <p>And of course many resources from the EPICS developer community were
 indispensible. See <a class="reference internal" href="references.html"><span class="doc">References</span></a>.</p>
 <div class="toctree-wrapper compound">
@@ -307,7 +313,7 @@ indispensible. See <a class="reference internal" href="references.html"><span cl
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.318.g2b1467d',
+            VERSION:'0+untagged.321.gc760eb6',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
