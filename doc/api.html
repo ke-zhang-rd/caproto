@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.328.ge4cc8e9 documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.331.g2ac753a documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.328.ge4cc8e9 documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.331.g2ac753a documentation" href="index.html"/>
         <link rel="next" title="Examples" href="examples/index.html"/>
         <link rel="prev" title="Getting Started: Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.328.ge4cc8e9
+                0+untagged.331.g2ac753a
               </div>
             
           
@@ -914,11 +914,19 @@ closing the Channel.</p>
 <col width="50%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td><a class="reference external" href="_static/command_triggered_channel_transitions_client.png"><img alt="channel-client" src="_static/command_triggered_channel_transitions_client.png" style="width: 100%;" /></a></td>
-<td><a class="reference external" href="_static/command_triggered_channel_transitions_server.png"><img alt="channel-server" src="_static/command_triggered_channel_transitions_server.png" style="width: 100%;" /></a></td>
+<tr class="row-odd"><td><p class="first">Channel (Client)</p>
+<p class="last"><a class="reference external" href="_static/command_triggered_channel_transitions_client.png"><img alt="channel-client" src="_static/command_triggered_channel_transitions_client.png" style="width: 100%;" /></a></p>
+</td>
+<td><p class="first">Channel (Server)</p>
+<p class="last"><a class="reference external" href="_static/command_triggered_channel_transitions_server.png"><img alt="channel-server" src="_static/command_triggered_channel_transitions_server.png" style="width: 100%;" /></a></p>
+</td>
 </tr>
-<tr class="row-even"><td><a class="reference external" href="_static/command_triggered_circuit_transitions_client.png"><img alt="circuit-client" src="_static/command_triggered_circuit_transitions_client.png" style="width: 100%;" /></a></td>
-<td><a class="reference external" href="_static/command_triggered_circuit_transitions_server.png"><img alt="circuit-server" src="_static/command_triggered_circuit_transitions_server.png" style="width: 100%;" /></a></td>
+<tr class="row-even"><td><p class="first">Circuit (Client)</p>
+<p class="last"><a class="reference external" href="_static/command_triggered_circuit_transitions_client.png"><img alt="circuit-client" src="_static/command_triggered_circuit_transitions_client.png" style="width: 100%;" /></a></p>
+</td>
+<td><p class="first">Circuit (Server)</p>
+<p class="last"><a class="reference external" href="_static/command_triggered_circuit_transitions_server.png"><img alt="circuit-server" src="_static/command_triggered_circuit_transitions_server.png" style="width: 100%;" /></a></p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -966,7 +974,7 @@ closing the Channel.</p>
 <span class="gp">   ...: </span>
 
 <span class="gp">In [8]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={CLIENT: SEND_VERSION_REQUEST, SERVER: IDLE}&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={SERVER: IDLE, CLIENT: SEND_VERSION_REQUEST}&gt;</span>
 </pre></div>
 </div>
 <p>When a <a class="reference internal" href="#caproto.VersionRequest" title="caproto.VersionRequest"><code class="xref py py-class docutils literal"><span class="pre">VersionRequest</span></code></a> is sent through the VirtualCircuit, both the
@@ -974,7 +982,7 @@ client and the server state update.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">));</span>
 
 <span class="gp">In [10]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={CLIENT: AWAIT_VERSION_RESPONSE, SERVER: SEND_VERSION_RESPONSE}&gt;</span>
+<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={SERVER: SEND_VERSION_RESPONSE, CLIENT: AWAIT_VERSION_RESPONSE}&gt;</span>
 </pre></div>
 </div>
 <p>And we can test the current state using constants like
@@ -1818,7 +1826,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.328.ge4cc8e9',
+            VERSION:'0+untagged.331.g2ac753a',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
