@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Simple client that reads, subscribes, writes, and shuts down &mdash; caproto 0+untagged.343.gcdadfad documentation</title>
+  <title>Simple client that reads, subscribes, writes, and shuts down &mdash; caproto 0+untagged.346.gf1243c9 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="caproto 0+untagged.343.gcdadfad documentation" href="../index.html"/>
+    <link rel="top" title="caproto 0+untagged.346.gf1243c9 documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="index.html"/>
         <link rel="next" title="Simple server that responds to one ‘caget’ and shuts down" href="singleshot_server.html"/>
         <link rel="prev" title="Examples" href="index.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.343.gcdadfad
+                0+untagged.346.gf1243c9
               </div>
             
           
@@ -171,6 +171,7 @@
   <div class="section" id="simple-client-that-reads-subscribes-writes-and-shuts-down">
 <h1>Simple client that reads, subscribes, writes, and shuts down<a class="headerlink" href="#simple-client-that-reads-subscribes-writes-and-shuts-down" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">caproto</span> <span class="kn">as</span> <span class="nn">ca</span>
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">getpass</span>
@@ -207,7 +208,7 @@
 <span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="c1"># A broadcast socket</span>
     <span class="n">udp_sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_UDP</span><span class="p">)</span>
-    <span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_IP</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IP_MULTICAST_TTL</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     
     <span class="c1"># Register with the repeater.</span>
     <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">RepeaterRegisterRequest</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">))</span>
@@ -223,7 +224,8 @@
     <span class="c1"># one datagram.</span>
     <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span>
                            <span class="n">ca</span><span class="o">.</span><span class="n">SearchRequest</span><span class="p">(</span><span class="n">pv1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">))</span>
-    <span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">CA_SERVER_PORT</span><span class="p">))</span>
+    <span class="n">hosts</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EPICS_CA_ADDR_LIST&#39;</span><span class="p">]</span>
+    <span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">hosts</span><span class="p">,</span> <span class="n">CA_SERVER_PORT</span><span class="p">))</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;searching for </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">pv1</span><span class="p">)</span>
     <span class="c1"># Receive a VersionResponse and SearchResponse.</span>
     <span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
@@ -353,7 +355,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0+untagged.343.gcdadfad',
+            VERSION:'0+untagged.346.gf1243c9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
