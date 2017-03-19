@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.342.g011f0b6 documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.343.gcdadfad documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.342.g011f0b6 documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.343.gcdadfad documentation" href="index.html"/>
         <link rel="next" title="Examples" href="examples/index.html"/>
         <link rel="prev" title="Getting Started: Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.342.g011f0b6
+                0+untagged.343.gcdadfad
               </div>
             
           
@@ -197,7 +197,7 @@ instead of thinking in terms of bytes.</p>
 <span class="gp">In [2]: </span><span class="n">com</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>A Command has a useful repr:</p>
+<p>A Command has a useful <code class="docutils literal"><span class="pre">__repr__()</span></code>:</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">com</span>
 <span class="gh">Out[3]: </span><span class="go">VersionRequest(priority=0, version=13)</span>
 </pre></div>
@@ -1300,7 +1300,7 @@ one is allocated by the VirtualCircuit.
 (2) A VirtualCircuit processes a CreateChanRequest that refers to a cid
 that it has not yet seen. A ClientChannel will be automatically
 instantiated with the name and cid indicated that command and the address
-and priority of that VirtualCircuit. It can be access in the circuit&#8217;s
+and priority of that VirtualCircuit. It can be accessed in the circuit&#8217;s
 <code class="docutils literal"><span class="pre">channels</span></code> attribute.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1827,7 +1827,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.342.g011f0b6',
+            VERSION:'0+untagged.343.gcdadfad',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
