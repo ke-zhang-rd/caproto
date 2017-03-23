@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._hub &mdash; caproto 0+untagged.346.gf1243c9 documentation</title>
+  <title>caproto._hub &mdash; caproto 0+untagged.360.g4c0628e documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.346.gf1243c9 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.360.g4c0628e documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.346.gf1243c9
+                0+untagged.360.g4c0628e
               </div>
             
           
@@ -223,7 +223,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;caproto.VC&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">CircuitState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_channels_sid</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map sid to Channel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map sid to Channel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ioids</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map ioid to Channel</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">event_add_commands</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map subscriptionid to EventAdd command</span>
         <span class="c1"># There are only used by the convenience methods, to auto-generate ids.</span>
@@ -334,7 +334,7 @@
                 <span class="c1"># Identify the Channel based on its sid.</span>
                 <span class="n">sid</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">sid</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels_sid</span><span class="p">[</span><span class="n">sid</span><span class="p">]</span>
+                    <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">sid</span><span class="p">]</span>
                 <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                     <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;Unknown Channel sid </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">sid</span><span class="p">))</span>
@@ -355,7 +355,7 @@
                     <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
                     <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;Unrecognized subscriptionid </span><span class="si">{!r}</span><span class="s2">&quot;</span>
                               <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">))</span>
-                <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channels_sid</span><span class="p">[</span><span class="n">event_add</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span>
+                <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">event_add</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">CreateChanRequest</span><span class="p">):</span>
                 <span class="c1"># A Channel instance for this cid may already exist.</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -415,9 +415,9 @@
                 <span class="n">chan</span><span class="o">.</span><span class="n">access_rights</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">access_rights</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">CreateChanResponse</span><span class="p">):</span>
                 <span class="n">chan</span><span class="o">.</span><span class="n">sid</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">sid</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_channels_sid</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ClearChannelResponse</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_channels_sid</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">sid</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">sid</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="p">(</span><span class="n">ReadNotifyRequest</span><span class="p">,</span> <span class="n">WriteNotifyRequest</span><span class="p">)):</span>
                 <span class="c1"># Stash the ioid for later reference.</span>
@@ -610,13 +610,13 @@
                                      <span class="s2">&quot;other commands&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">SearchRequest</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">VersionRequest</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
-                <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;A broadcasted SearchResponse must be preceded by a &quot;</span>
                           <span class="s2">&quot;VersionResponse in the same datagram.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">]</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">name</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">SearchResponse</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">VersionResponse</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
-                <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+                <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;A broadcasted SearchResponse must be preceded by a &quot;</span>
                           <span class="s2">&quot;VersionResponse in the same datagram.&quot;</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span>
@@ -800,7 +800,7 @@
 <span class="sd">        HostNameRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">host_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">host_name</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
+            <span class="n">host_name</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()[:</span><span class="mi">40</span><span class="p">]</span>  <span class="c1"># Truncate for EPICS.</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">HostNameRequest</span><span class="p">(</span><span class="n">host_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
@@ -1101,7 +1101,7 @@
                                    <span class="n">subscriptionid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-<div class="viewcode-block" id="ServerChannel.unsubscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ServerChannel.unsubscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`EventCancelResponse`.</span>
 
@@ -1112,17 +1112,14 @@
 <span class="sd">            Requested Channel Access data type. Default is the channel&#39;s</span>
 <span class="sd">            native data type, which can be checked in the Channel&#39;s attribute</span>
 <span class="sd">            :attr:`native_data_type`.</span>
-<span class="sd">        data_count : integer, optional</span>
-<span class="sd">            Requested number of values. Default is the channel&#39;s native data</span>
-<span class="sd">            count, which can be checked in the Channel&#39;s attribute</span>
-<span class="sd">            :attr:`native_data_count`.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        EventCancelResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO How does CA actually work? It seems to break its spec.</span>
-        <span class="o">...</span></div></div>
+        <span class="n">data_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">command</span>  <span class="o">=</span> <span class="n">EventCancelResponse</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">command</span></div></div>
 
 
 <span class="k">def</span> <span class="nf">extract_address</span><span class="p">(</span><span class="n">search_response</span><span class="p">):</span>
@@ -1138,7 +1135,7 @@
         <span class="c1"># the UDP datagram.</span>
         <span class="n">address</span> <span class="o">=</span> <span class="n">search_response</span><span class="o">.</span><span class="n">sender_address</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">address</span> <span class="o">=</span> <span class="n">search_response</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">search_response</span><span class="o">.</span><span class="n">port</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="n">search_response</span><span class="o">.</span><span class="n">ip</span><span class="p">,</span> <span class="n">search_response</span><span class="o">.</span><span class="n">port</span>
     <span class="k">return</span> <span class="n">address</span>
 </pre></div>
 
@@ -1176,7 +1173,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.346.gf1243c9',
+            VERSION:'0+untagged.360.g4c0628e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

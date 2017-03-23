@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0+untagged.346.gf1243c9 documentation</title>
+  <title>caproto._commands &mdash; caproto 0+untagged.360.g4c0628e documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.346.gf1243c9 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.360.g4c0628e documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.346.gf1243c9
+                0+untagged.360.g4c0628e
               </div>
             
           
@@ -192,7 +192,7 @@
                        <span class="n">CreateChanResponseHeader</span><span class="p">,</span> <span class="n">EchoRequestHeader</span><span class="p">,</span>
                        <span class="n">EchoResponseHeader</span><span class="p">,</span> <span class="n">ErrorResponseHeader</span><span class="p">,</span>
                        <span class="n">EventAddRequestHeader</span><span class="p">,</span> <span class="n">EventAddResponseHeader</span><span class="p">,</span>
-                       <span class="n">EventCancelRequestHeader</span><span class="p">,</span>
+                       <span class="n">EventCancelRequestHeader</span><span class="p">,</span> <span class="n">EventCancelResponseHeader</span><span class="p">,</span>
                        <span class="n">EventsOffRequestHeader</span><span class="p">,</span> <span class="n">EventsOnRequestHeader</span><span class="p">,</span>
                        <span class="n">HostNameRequestHeader</span><span class="p">,</span> <span class="n">NotFoundResponseHeader</span><span class="p">,</span>
                        <span class="n">ReadNotifyRequestHeader</span><span class="p">,</span> <span class="n">ReadNotifyResponseHeader</span><span class="p">,</span>
@@ -328,23 +328,27 @@
     <span class="n">DIRECTION</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># REQUEST or RESPONSE; set at the end of this module</span>
     <span class="n">sender_address</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># set for the read_datagram function</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate_payload</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">validate_payload</span> <span class="ow">and</span> <span class="n">payload</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;header.payload_size </span><span class="si">{}</span><span class="s2"> &gt; 0 but &quot;</span>
-                                        <span class="s2">&quot;payload is None.&quot;</span>
-                                        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="n">validate_payload</span> <span class="ow">and</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;header.payload_size </span><span class="si">{}</span><span class="s2"> != len(payload) </span><span class="si">{}</span><span class="s2">&quot;</span>
-                                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">,</span>
-                                              <span class="nb">len</span><span class="p">(</span><span class="n">payload</span><span class="p">)))</span>
-        <span class="k">if</span> <span class="n">header</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;A </span><span class="si">{}</span><span class="s2"> must have a header with &quot;</span>
-                                   <span class="s2">&quot;header.command = </span><span class="si">{}</span><span class="s2">, not </span><span class="si">{}</span><span class="s2">.&quot;</span>
-                                   <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
-                                             <span class="n">header</span><span class="o">.</span><span class="n">command</span><span class="p">))</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span>
+        <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;header.payload_size </span><span class="si">{}</span><span class="s2"> &gt; 0 but &quot;</span>
+                                        <span class="s2">&quot;payload is None.&quot;</span>
+                                        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;header.payload_size </span><span class="si">{}</span><span class="s2"> != len(payload) </span><span class="si">{}</span><span class="s2">&quot;</span>
+                                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">,</span>
+                                              <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;A </span><span class="si">{}</span><span class="s2"> must have a header with &quot;</span>
+                                    <span class="s2">&quot;header.command == </span><span class="si">{}</span><span class="s2">, not </span><span class="si">{}</span><span class="s2">.&quot;</span>
+                                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">command</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
         <span class="n">header</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">val</span>
@@ -888,7 +892,18 @@
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
-    <span class="n">subscriptionid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
+    <span class="n">subscriptionid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># special case because of weird ID</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;A </span><span class="si">{}</span><span class="s2"> must have a header with &quot;</span>
+                                   <span class="s2">&quot;header.command == 1, not </span><span class="si">{}</span><span class="s2">.&quot;</span>
+                                   <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">command</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;A </span><span class="si">{}</span><span class="s2"> must have no payload.&quot;</span>
+                                   <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span></div>
+        <span class="c1"># do not call super()</span>
 
 
 <div class="viewcode-block" id="ReadRequest"><a class="viewcode-back" href="../../api.html#caproto.ReadRequest">[docs]</a><span class="k">class</span> <span class="nc">ReadRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1472,7 +1487,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.346.gf1243c9',
+            VERSION:'0+untagged.360.g4c0628e',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
