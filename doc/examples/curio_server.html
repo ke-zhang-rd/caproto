@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fairly complete server using curio for async I/O &mdash; caproto 0+untagged.360.g4c0628e documentation</title>
+  <title>Fairly complete server using curio for async I/O &mdash; caproto 0+untagged.412.gfa687f5 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="caproto 0+untagged.360.g4c0628e documentation" href="../index.html"/>
+    <link rel="top" title="caproto 0+untagged.412.gfa687f5 documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="index.html"/>
         <link rel="next" title="References" href="../references.html"/>
         <link rel="prev" title="Fairly complete client using curio for async I/O" href="curio_client.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.360.g4c0628e
+                0+untagged.412.gfa687f5
               </div>
             
           
@@ -170,25 +170,138 @@
             
   <div class="section" id="fairly-complete-server-using-curio-for-async-i-o">
 <h1>Fairly complete server using curio for async I/O<a class="headerlink" href="#fairly-complete-server-using-curio-for-async-i-o" title="Permalink to this headline">¶</a></h1>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">caproto</span> <span class="kn">as</span> <span class="nn">ca</span>
-<span class="kn">import</span> <span class="nn">curio</span>
-<span class="kn">from</span> <span class="nn">curio</span> <span class="kn">import</span> <span class="n">socket</span>
-<span class="kn">import</span> <span class="nn">time</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">getpass</span>
 
+<span class="kn">import</span> <span class="nn">curio</span>
+<span class="kn">from</span> <span class="nn">curio</span> <span class="kn">import</span> <span class="n">socket</span>
 
-<span class="n">SERVER_PORT</span> <span class="o">=</span> <span class="mi">5064</span>
+<span class="kn">import</span> <span class="nn">caproto</span> <span class="kn">as</span> <span class="nn">ca</span>
+<span class="kn">from</span> <span class="nn">caproto</span> <span class="kn">import</span> <span class="n">_dbr</span> <span class="k">as</span> <span class="n">dbr</span>
+<span class="kn">from</span> <span class="nn">caproto</span> <span class="kn">import</span> <span class="n">ChType</span>
+<span class="kn">from</span> <span class="nn">caproto</span> <span class="kn">import</span> <span class="p">(</span><span class="n">EPICS_CA1_PORT</span><span class="p">,</span> <span class="n">EPICS_CA2_PORT</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">DisconnectedCircuit</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="o">...</span>
 
 
+<span class="k">def</span> <span class="nf">find_next_tcp_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">starting_port</span><span class="o">=</span><span class="n">EPICS_CA2_PORT</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+    <span class="kn">import</span> <span class="nn">socket</span>
+
+    <span class="n">port</span> <span class="o">=</span> <span class="n">starting_port</span>
+
+    <span class="k">while</span> <span class="n">port</span> <span class="o">&lt;=</span> <span class="mi">65535</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+            <span class="n">port</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="k">return</span> <span class="n">port</span>
+
+
+<span class="k">def</span> <span class="nf">convert_to</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">from_dtype</span><span class="p">,</span> <span class="n">to_dtype</span><span class="p">,</span> <span class="n">db_entry</span><span class="p">):</span>
+    <span class="n">native_from</span> <span class="o">=</span> <span class="n">dbr</span><span class="o">.</span><span class="n">native_type</span><span class="p">(</span><span class="n">from_dtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">from_dtype</span> <span class="o">==</span> <span class="n">to_dtype</span> <span class="ow">and</span> <span class="n">native_from</span> <span class="o">!=</span> <span class="n">ChType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">values</span>
+
+    <span class="c1"># TODO metadata is expected to be of this type as well!</span>
+    <span class="n">native_to</span> <span class="o">=</span> <span class="n">dbr</span><span class="o">.</span><span class="n">native_type</span><span class="p">(</span><span class="n">to_dtype</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">from_dtype</span> <span class="ow">in</span> <span class="n">dbr</span><span class="o">.</span><span class="n">native_float_types</span> <span class="ow">and</span> <span class="n">native_to</span> <span class="ow">in</span>
+            <span class="n">dbr</span><span class="o">.</span><span class="n">native_int_types</span><span class="p">):</span>
+        <span class="c1"># TODO performance</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">from_dtype</span> <span class="o">==</span> <span class="n">ChType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">native_to</span> <span class="o">==</span> <span class="n">ChType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">db_entry</span><span class="o">.</span><span class="n">strs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">native_to</span> <span class="o">==</span> <span class="n">ChType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">native_from</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ChType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">ChType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">):</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">v</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="nb">bytes</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">v</span><span class="p">),</span> <span class="s1">&#39;latin-1&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">values</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">values</span>
+
+
+<span class="k">class</span> <span class="nc">DatabaseRecordBase</span><span class="p">:</span>
+    <span class="n">data_type</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DBR_LONG</span><span class="o">.</span><span class="n">DBR_ID</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timestamp</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">severity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">timestamp</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">timestamp</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timestamp</span> <span class="o">=</span> <span class="n">timestamp</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="n">status</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">severity</span> <span class="o">=</span> <span class="n">severity</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">check_access</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sender_address</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{} has full access to {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">sender_address</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="mi">3</span>  <span class="c1"># read-write</span>
+
+
+<span class="k">class</span> <span class="nc">DatabaseRecordEnum</span><span class="p">(</span><span class="n">DatabaseRecordBase</span><span class="p">):</span>
+    <span class="n">data_type</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DBR_ENUM</span><span class="o">.</span><span class="n">DBR_ID</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">strs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">strs</span> <span class="o">=</span> <span class="n">strs</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">no_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strs</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strs</span> <span class="k">else</span> <span class="mi">0</span>
+
+
+<span class="k">class</span> <span class="nc">DatabaseRecordNumeric</span><span class="p">(</span><span class="n">DatabaseRecordBase</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">upper_disp_limit</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">lower_disp_limit</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">upper_alarm_limit</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">upper_warning_limit</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">lower_warning_limit</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">lower_alarm_limit</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">upper_ctrl_limit</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+                 <span class="n">lower_ctrl_limit</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upper_disp_limit</span> <span class="o">=</span> <span class="n">upper_disp_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower_disp_limit</span> <span class="o">=</span> <span class="n">lower_disp_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upper_alarm_limit</span> <span class="o">=</span> <span class="n">upper_alarm_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upper_warning_limit</span> <span class="o">=</span> <span class="n">upper_warning_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower_warning_limit</span> <span class="o">=</span> <span class="n">lower_warning_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower_alarm_limit</span> <span class="o">=</span> <span class="n">lower_alarm_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upper_ctrl_limit</span> <span class="o">=</span> <span class="n">upper_ctrl_limit</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lower_ctrl_limit</span> <span class="o">=</span> <span class="n">lower_ctrl_limit</span>
+
+
+<span class="k">class</span> <span class="nc">DatabaseRecordInteger</span><span class="p">(</span><span class="n">DatabaseRecordNumeric</span><span class="p">):</span>
+    <span class="n">data_type</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DBR_LONG</span><span class="o">.</span><span class="n">DBR_ID</span>
+
+
+<span class="k">class</span> <span class="nc">DatabaseRecordDouble</span><span class="p">(</span><span class="n">DatabaseRecordNumeric</span><span class="p">):</span>
+    <span class="n">data_type</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">DBR_DOUBLE</span><span class="o">.</span><span class="n">DBR_ID</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">precision</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">precision</span> <span class="o">=</span> <span class="n">precision</span>
+
+
 <span class="k">class</span> <span class="nc">VirtualCircuit</span><span class="p">:</span>
     <span class="s2">&quot;Wraps a caproto.VirtualCircuit with a curio client.&quot;</span>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">=</span> <span class="n">circuit</span>  <span class="c1"># a caproto.VirtualCircuit</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
 
     <span class="n">async</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">commands</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -221,35 +334,57 @@
                 <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">recv</span><span class="p">()</span>
                 <span class="k">continue</span>
             <span class="k">break</span>
-        <span class="c1"># TODO Split this off into _process_command.</span>
-        <span class="c1"># Maybe also split sending into separate func?</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">CreateChanRequest</span><span class="p">):</span>
-            <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
-                <span class="n">ca</span><span class="o">.</span><span class="n">VersionResponse</span><span class="p">(</span><span class="mi">13</span><span class="p">),</span>
-                <span class="n">ca</span><span class="o">.</span><span class="n">AccessRightsResponse</span><span class="p">(</span><span class="n">cid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="n">access_rights</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
-                <span class="c1"># TODO Handle sid propertly</span>
-                <span class="n">ca</span><span class="o">.</span><span class="n">CreateChanResponse</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                                      <span class="n">cid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="n">sid</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ReadNotifyRequest</span><span class="p">):</span>
-            <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span>
-            <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="mf">3.14</span><span class="p">,),</span> <span class="n">ioid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">WriteNotifyRequest</span><span class="p">):</span>
-            <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span>
-            <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ioid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">EventAddRequest</span><span class="p">):</span>
-            <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span>
-            <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">subscribe</span><span class="p">((</span><span class="mf">3.14</span><span class="p">,),</span> <span class="n">command</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">EventCancelRequest</span><span class="p">):</span>
-            <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span>
-            <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ClearChannelRequest</span><span class="p">):</span>
-            <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span>
-            <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">clear</span><span class="p">())</span>
-        <span class="c1">#event = self.event</span>
-        <span class="c1">#self.event = None</span>
-        <span class="c1">#await event.set()</span>
-        <span class="c1">#return command</span>
+
+        <span class="k">for</span> <span class="n">response_command</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response_command</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+                <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">*</span><span class="n">response_command</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">response_command</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">command</span>
+
+    <span class="k">def</span> <span class="nf">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">get_db_entry</span><span class="p">():</span>
+            <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span>
+            <span class="n">db_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">pvdb</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="n">chan</span><span class="p">,</span> <span class="n">db_entry</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">CreateChanRequest</span><span class="p">):</span>
+            <span class="n">db_entry</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">pvdb</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)]</span>
+            <span class="n">access</span> <span class="o">=</span> <span class="n">db_entry</span><span class="o">.</span><span class="n">check_access</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">sender_address</span><span class="p">)</span>
+
+            <span class="k">yield</span> <span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">VersionResponse</span><span class="p">(</span><span class="mi">13</span><span class="p">),</span>
+                   <span class="n">ca</span><span class="o">.</span><span class="n">AccessRightsResponse</span><span class="p">(</span><span class="n">cid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span>
+                                           <span class="n">access_rights</span><span class="o">=</span><span class="n">access</span><span class="p">),</span>
+                   <span class="n">ca</span><span class="o">.</span><span class="n">CreateChanResponse</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">db_entry</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+                                         <span class="n">data_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">db_entry</span><span class="p">),</span>
+                                         <span class="n">cid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span>
+                                         <span class="n">sid</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_channel_id</span><span class="p">()),</span>
+                   <span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ReadNotifyRequest</span><span class="p">):</span>
+            <span class="n">chan</span><span class="p">,</span> <span class="n">db_entry</span> <span class="o">=</span> <span class="n">get_db_entry</span><span class="p">()</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">db_entry</span><span class="o">.</span><span class="n">value</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+                <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">values</span><span class="p">,</span> <span class="p">]</span>
+
+            <span class="n">values</span> <span class="o">=</span> <span class="n">convert_to</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">db_entry</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+                                <span class="n">db_entry</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">chan</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+                            <span class="n">ioid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">db_entry</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">WriteNotifyRequest</span><span class="p">):</span>
+            <span class="n">chan</span><span class="p">,</span> <span class="n">db_entry</span> <span class="o">=</span> <span class="n">get_db_entry</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="n">chan</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ioid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">EventAddRequest</span><span class="p">):</span>
+            <span class="n">chan</span><span class="p">,</span> <span class="n">db_entry</span> <span class="o">=</span> <span class="n">get_db_entry</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="n">chan</span><span class="o">.</span><span class="n">subscribe</span><span class="p">((</span><span class="mf">3.14</span><span class="p">,),</span> <span class="n">command</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">EventCancelRequest</span><span class="p">):</span>
+            <span class="n">chan</span><span class="p">,</span> <span class="n">db_entry</span> <span class="o">=</span> <span class="n">get_db_entry</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="n">chan</span><span class="o">.</span><span class="n">unsubscribe</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ClearChannelRequest</span><span class="p">):</span>
+            <span class="n">chan</span><span class="p">,</span> <span class="n">db_entry</span> <span class="o">=</span> <span class="n">get_db_entry</span><span class="p">()</span>
+            <span class="k">yield</span> <span class="n">chan</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
 
 <span class="k">class</span> <span class="nc">Context</span><span class="p">:</span>
@@ -259,19 +394,38 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pvdb</span> <span class="o">=</span> <span class="n">pvdb</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Broadcaster</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">SERVER</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
-    
+
     <span class="n">async</span> <span class="k">def</span> <span class="nf">udp_server</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
         <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># for BSD/Darwin</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
         <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="p">,</span> <span class="n">EPICS_CA1_PORT</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[server] udp bind failure!&#39;</span><span class="p">)</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[server] udp bound&#39;</span><span class="p">,</span> <span class="n">sock</span><span class="p">)</span>
         <span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
             <span class="n">responses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="n">bytes_received</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">await</span> <span class="n">sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[server] await recv&#39;</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">bytes_received</span><span class="p">,</span> <span class="n">addr</span> <span class="o">=</span> <span class="n">await</span> <span class="n">sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[server] await recv fail&#39;</span><span class="p">,</span> <span class="n">ex</span><span class="p">)</span>
+                <span class="k">raise</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;[server] await recv ok, addr&#39;</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
             <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
                 <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
+                <span class="k">print</span><span class="p">(</span><span class="s1">&#39;(server)&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">NEED_DATA</span><span class="p">):</span>
                     <span class="c1"># Respond, and then break to receive the next datagram.</span>
                     <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">*</span><span class="n">responses</span><span class="p">)</span>
@@ -281,16 +435,21 @@
                     <span class="n">res</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">VersionResponse</span><span class="p">(</span><span class="mi">13</span><span class="p">)</span>
                     <span class="n">responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
                 <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">SearchRequest</span><span class="p">):</span>
-                    <span class="n">known_pv</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvdb</span>
+                    <span class="n">known_pv</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvdb</span>
                     <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">known_pv</span><span class="p">)</span> <span class="ow">and</span> <span class="n">command</span><span class="o">.</span><span class="n">reply</span> <span class="o">==</span> <span class="n">ca</span><span class="o">.</span><span class="n">NO_REPLY</span><span class="p">:</span>
                         <span class="n">responses</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
                         <span class="k">break</span>  <span class="c1"># Do not send any repsonse to this datagram.</span>
-                    <span class="n">ip</span> <span class="o">=</span> <span class="n">_get_my_ip</span><span class="p">()</span>
-                    <span class="n">res</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">SearchResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="n">ip</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+
+                    <span class="c1"># we can get the IP but it&#39;s more reliable (AFAIK) to</span>
+                    <span class="c1"># let the client get the ip from the packet</span>
+                    <span class="c1"># ip = _get_my_ip()</span>
+                    <span class="n">res</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">SearchResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">,</span> <span class="bp">None</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
                     <span class="n">responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 
     <span class="n">async</span> <span class="k">def</span> <span class="nf">tcp_handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">,</span> <span class="n">addr</span><span class="p">):</span>
-        <span class="n">circuit</span> <span class="o">=</span> <span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">SERVER</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span> <span class="n">client</span><span class="p">)</span>
+        <span class="n">circuit</span> <span class="o">=</span> <span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">SERVER</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="bp">None</span><span class="p">),</span>
+                                 <span class="n">client</span><span class="p">,</span>
+                                 <span class="bp">self</span><span class="p">)</span>
         <span class="n">circuit</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
         <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -312,20 +471,52 @@
 
 
 <span class="k">def</span> <span class="nf">_get_my_ip</span><span class="p">():</span>
-    <span class="c1"># Reliably getting the IP is a surprisingly tricky problem solved by this</span>
-    <span class="c1"># crazy one-liner from http://stackoverflow.com/a/1267524/1221924</span>
-    <span class="c1"># This uses the synchronous socket API, not the curio one, which we should</span>
-    <span class="c1"># eventually fix.</span>
-    <span class="kn">import</span> <span class="nn">socket</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="p">([</span><span class="n">ip</span> <span class="k">for</span> <span class="n">ip</span> <span class="ow">in</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname_ex</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">())[</span><span class="mi">2</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">ip</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;127.&quot;</span><span class="p">)][:</span><span class="mi">1</span><span class="p">],</span> <span class="p">[[(</span><span class="n">s</span><span class="o">.</span><span class="n">connect</span><span class="p">((</span><span class="s1">&#39;8.8.8.8&#39;</span><span class="p">,</span> <span class="mi">53</span><span class="p">)),</span> <span class="n">s</span><span class="o">.</span><span class="n">getsockname</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">())</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="p">[</span><span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)]][</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]])</span> <span class="k">if</span> <span class="n">l</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="kn">import</span> <span class="nn">netifaces</span>
+    <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
         <span class="k">return</span> <span class="s1">&#39;127.0.0.1&#39;</span>
+
+    <span class="n">interfaces</span> <span class="o">=</span> <span class="p">[</span><span class="n">netifaces</span><span class="o">.</span><span class="n">ifaddresses</span><span class="p">(</span><span class="n">interface</span><span class="p">)</span>
+                  <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">netifaces</span><span class="o">.</span><span class="n">interfaces</span><span class="p">()</span>
+                  <span class="p">]</span>
+    <span class="n">ipv4s</span> <span class="o">=</span> <span class="p">[</span><span class="n">af_inet_info</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">]</span>
+             <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span>
+             <span class="k">if</span> <span class="n">netifaces</span><span class="o">.</span><span class="n">AF_INET</span> <span class="ow">in</span> <span class="n">interface</span>
+             <span class="k">for</span> <span class="n">af_inet_info</span> <span class="ow">in</span> <span class="n">interface</span><span class="p">[</span><span class="n">netifaces</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">]</span>
+             <span class="p">]</span>
+
+    <span class="k">print</span><span class="p">([</span><span class="n">af_inet_info</span>
+             <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="n">interfaces</span>
+             <span class="k">if</span> <span class="n">netifaces</span><span class="o">.</span><span class="n">AF_INET</span> <span class="ow">in</span> <span class="n">interface</span>
+             <span class="k">for</span> <span class="n">af_inet_info</span> <span class="ow">in</span> <span class="n">interface</span><span class="p">[</span><span class="n">netifaces</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">]</span>
+             <span class="p">])</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ipv4s</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s1">&#39;127.0.0.1&#39;</span>
+    <span class="k">return</span> <span class="n">ipv4s</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="n">pvdb</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pi&quot;</span><span class="p">]</span>
-    <span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">SERVER_PORT</span><span class="p">,</span> <span class="n">pvdb</span><span class="p">)</span>
+    <span class="n">pvdb</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pi&#39;</span><span class="p">:</span> <span class="n">DatabaseRecordDouble</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">3.14</span><span class="p">,</span>
+                                       <span class="n">lower_disp_limit</span><span class="o">=</span><span class="mf">3.13</span><span class="p">,</span>
+                                       <span class="n">upper_disp_limit</span><span class="o">=</span><span class="mf">3.15</span><span class="p">,</span>
+                                       <span class="n">lower_alarm_limit</span><span class="o">=</span><span class="mf">3.12</span><span class="p">,</span>
+                                       <span class="n">upper_alarm_limit</span><span class="o">=</span><span class="mf">3.16</span><span class="p">,</span>
+                                       <span class="n">lower_warning_limit</span><span class="o">=</span><span class="mf">3.11</span><span class="p">,</span>
+                                       <span class="n">upper_warning_limit</span><span class="o">=</span><span class="mf">3.17</span><span class="p">,</span>
+                                       <span class="n">lower_ctrl_limit</span><span class="o">=</span><span class="mf">3.10</span><span class="p">,</span>
+                                       <span class="n">upper_ctrl_limit</span><span class="o">=</span><span class="mf">3.18</span><span class="p">,</span>
+                                       <span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                                       <span class="n">units</span><span class="o">=</span><span class="s1">&#39;doodles&#39;</span><span class="p">,</span>
+                                       <span class="p">),</span>
+            <span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="n">DatabaseRecordEnum</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
+                                       <span class="n">strs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
+                                       <span class="p">),</span>
+            <span class="s1">&#39;int&#39;</span><span class="p">:</span> <span class="n">DatabaseRecordInteger</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                                         <span class="n">units</span><span class="o">=</span><span class="s1">&#39;doodles&#39;</span><span class="p">,</span>
+                                         <span class="p">),</span>
+            <span class="p">}</span>
+
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">find_next_tcp_port</span><span class="p">(),</span> <span class="n">pvdb</span><span class="p">)</span>
     <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">ctx</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
 </pre></div>
 </div>
@@ -375,7 +566,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0+untagged.360.g4c0628e',
+            VERSION:'0+untagged.412.gfa687f5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -385,7 +576,7 @@
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

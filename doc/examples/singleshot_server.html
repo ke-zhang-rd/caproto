@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Simple server that responds to one ‘caget’ and shuts down &mdash; caproto 0+untagged.360.g4c0628e documentation</title>
+  <title>Simple server that responds to one ‘caget’ and shuts down &mdash; caproto 0+untagged.412.gfa687f5 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="caproto 0+untagged.360.g4c0628e documentation" href="../index.html"/>
+    <link rel="top" title="caproto 0+untagged.412.gfa687f5 documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="index.html"/>
         <link rel="next" title="Fairly complete client using curio for async I/O" href="curio_client.html"/>
         <link rel="prev" title="Simple client that reads, subscribes, writes, and shuts down" href="synchronous_client.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.360.g4c0628e
+                0+untagged.412.gfa687f5
               </div>
             
           
@@ -190,6 +190,7 @@
 <span class="c1"># Create a UDP socket</span>
 <span class="n">udp_sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
 <span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">udp_sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="mi">5064</span><span class="p">))</span>
 
@@ -218,11 +219,15 @@
 
 <span class="n">sock3</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
+
 <span class="c1"># # Make a dict to hold our tcp sockets.</span>
 <span class="n">sockets</span> <span class="o">=</span> <span class="p">{}</span>
+
+
 <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
     <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
     <span class="n">connection</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">)</span>
+
 
 <span class="k">def</span> <span class="nf">recv</span><span class="p">(</span><span class="n">circuit</span><span class="p">):</span>
     <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
@@ -235,12 +240,13 @@
         <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">commands</span>
 
+
 <span class="c1"># First receive directly into the circuit.</span>
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;initial receipt&#39;</span><span class="p">)</span>
 <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">connection</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
 <span class="n">circuit</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">SERVER</span><span class="p">,</span>
-                         <span class="n">address</span><span class="o">=</span><span class="n">client_address</span><span class="p">,</span>
-                         <span class="n">priority</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+                            <span class="n">address</span><span class="o">=</span><span class="n">client_address</span><span class="p">,</span>
+                            <span class="n">priority</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
 <span class="n">circuit</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
 <span class="n">circuit</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">)</span>
 <span class="n">circuit</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
@@ -249,8 +255,9 @@
 <span class="n">circuit</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
 <span class="k">print</span><span class="p">(</span><span class="s1">&#39;normal operation&#39;</span><span class="p">)</span>
 <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">VersionResponse</span><span class="p">(</span><span class="mi">13</span><span class="p">),</span>
-                           <span class="n">ca</span><span class="o">.</span><span class="n">AccessRightsResponse</span><span class="p">(</span><span class="n">cid</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">access_rights</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
-                           <span class="n">ca</span><span class="o">.</span><span class="n">CreateChanResponse</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sid</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+                             <span class="n">ca</span><span class="o">.</span><span class="n">AccessRightsResponse</span><span class="p">(</span><span class="n">cid</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">access_rights</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+                             <span class="n">ca</span><span class="o">.</span><span class="n">CreateChanResponse</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                                                   <span class="n">data_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">sid</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 <span class="n">connection</span><span class="o">.</span><span class="n">sendall</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">)</span>
 <span class="n">recv</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
 <span class="n">circuit</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
@@ -306,7 +313,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0+untagged.360.g4c0628e',
+            VERSION:'0+untagged.412.gfa687f5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -316,7 +323,7 @@
       <script type="text/javascript" src="../_static/jquery.js"></script>
       <script type="text/javascript" src="../_static/underscore.js"></script>
       <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

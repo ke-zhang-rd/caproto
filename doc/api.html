@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.360.g4c0628e documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.412.gfa687f5 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.360.g4c0628e documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.412.gfa687f5 documentation" href="index.html"/>
         <link rel="next" title="Examples" href="examples/index.html"/>
         <link rel="prev" title="Getting Started: Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.360.g4c0628e
+                0+untagged.412.gfa687f5
               </div>
             
           
@@ -479,7 +479,7 @@ subscription on this Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.EventAddResponse">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventAddResponse</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>status_code</em>, <em>subscriptionid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventAddResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventAddResponse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventAddResponse</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>status_code</em>, <em>subscriptionid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventAddResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventAddResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Notify the client of a change in a Channel&#8217;s value.</p>
 <p>Fields:</p>
 <dl class="attribute">
@@ -578,13 +578,13 @@ subscription on this Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.ReadResponse">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ReadResponse</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ReadResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ReadResponse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ReadResponse</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ReadResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ReadResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deprecated by Channel Access: See <a class="reference internal" href="#caproto.ReadNotifyResponse" title="caproto.ReadNotifyResponse"><code class="xref py py-class docutils literal"><span class="pre">ReadNotifyResponse</span></code></a>.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="caproto.WriteRequest">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">WriteRequest</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#WriteRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.WriteRequest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">WriteRequest</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#WriteRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.WriteRequest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deprecated: See <a class="reference internal" href="#caproto.WriteNotifyRequest" title="caproto.WriteNotifyRequest"><code class="xref py py-class docutils literal"><span class="pre">WriteNotifyRequest</span></code></a>.</p>
 </dd></dl>
 
@@ -699,7 +699,7 @@ Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.ReadNotifyResponse">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ReadNotifyResponse</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>status</em>, <em>ioid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ReadNotifyResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ReadNotifyResponse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ReadNotifyResponse</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>status</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ReadNotifyResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ReadNotifyResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request a fresh reading of a Channel.</p>
 <p>Fields:</p>
 <dl class="attribute">
@@ -736,7 +736,7 @@ Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.WriteNotifyRequest">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">WriteNotifyRequest</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#WriteNotifyRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.WriteNotifyRequest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">WriteNotifyRequest</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#WriteNotifyRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.WriteNotifyRequest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a value to a Channel.</p>
 <p>Fields:</p>
 <dl class="attribute">
@@ -1621,7 +1621,7 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 
 <dl class="method">
 <dt id="caproto.ServerChannel.read">
-<code class="descname">read</code><span class="sig-paren">(</span><em>values</em>, <em>ioid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.read" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read</code><span class="sig-paren">(</span><em>values</em>, <em>ioid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=1</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadNotifyResponse" title="caproto.ReadNotifyResponse"><code class="xref py py-class docutils literal"><span class="pre">ReadNotifyResponse</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1644,6 +1644,10 @@ count, which can be checked in the Channel&#8217;s attribute
 <p><strong>status</strong> : integer, optional</p>
 <blockquote>
 <div><p>Default is 1 (success).</p>
+</div></blockquote>
+<p><strong>metadata :</strong></p>
+<blockquote>
+<div><p>Status and control metadata for the values</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1821,7 +1825,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.360.g4c0628e',
+            VERSION:'0+untagged.412.gfa687f5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1831,7 +1835,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
       <script type="text/javascript" src="_static/jquery.js"></script>
       <script type="text/javascript" src="_static/underscore.js"></script>
       <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 

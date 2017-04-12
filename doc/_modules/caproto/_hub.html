@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._hub &mdash; caproto 0+untagged.360.g4c0628e documentation</title>
+  <title>caproto._hub &mdash; caproto 0+untagged.412.gfa687f5 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.360.g4c0628e documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.412.gfa687f5 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.360.g4c0628e
+                0+untagged.412.gfa687f5
               </div>
             
           
@@ -193,6 +193,9 @@
 
 
 <span class="n">DEFAULT_PROTOCOL_VERSION</span> <span class="o">=</span> <span class="mi">13</span>
+
+<span class="c1"># official IANA ports</span>
+<span class="n">EPICS_CA1_PORT</span><span class="p">,</span> <span class="n">EPICS_CA2_PORT</span> <span class="o">=</span> <span class="mi">5064</span><span class="p">,</span> <span class="mi">5065</span>
 
 
 <div class="viewcode-block" id="VirtualCircuit"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit">[docs]</a><span class="k">class</span> <span class="nc">VirtualCircuit</span><span class="p">:</span>
@@ -800,7 +803,7 @@
 <span class="sd">        HostNameRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">host_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">host_name</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()[:</span><span class="mi">40</span><span class="p">]</span>  <span class="c1"># Truncate for EPICS.</span>
+            <span class="n">host_name</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()[:</span><span class="mi">39</span><span class="p">]</span>  <span class="c1"># Truncate for EPICS.</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">HostNameRequest</span><span class="p">(</span><span class="n">host_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
@@ -1017,7 +1020,8 @@
         <span class="n">command</span> <span class="o">=</span> <span class="n">ClearChannelResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-<div class="viewcode-block" id="ServerChannel.read"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="ServerChannel.read"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+             <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`ReadNotifyResponse`.</span>
 
@@ -1035,6 +1039,8 @@
 <span class="sd">            :attr:`native_data_count`.</span>
 <span class="sd">        status : integer, optional</span>
 <span class="sd">            Default is 1 (success).</span>
+<span class="sd">        metadata :</span>
+<span class="sd">            Status and control metadata for the values</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1042,7 +1048,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">ReadNotifyResponse</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
-                                     <span class="n">ioid</span><span class="p">)</span>
+                                     <span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="ServerChannel.write"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -1133,10 +1139,10 @@
         <span class="c1"># The CA spec tells us that this sentinel value means we</span>
         <span class="c1"># should fall back to using the address of the sender of</span>
         <span class="c1"># the UDP datagram.</span>
-        <span class="n">address</span> <span class="o">=</span> <span class="n">search_response</span><span class="o">.</span><span class="n">sender_address</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="n">search_response</span><span class="o">.</span><span class="n">sender_address</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">address</span> <span class="o">=</span> <span class="n">search_response</span><span class="o">.</span><span class="n">ip</span><span class="p">,</span> <span class="n">search_response</span><span class="o">.</span><span class="n">port</span>
-    <span class="k">return</span> <span class="n">address</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="n">search_response</span><span class="o">.</span><span class="n">ip</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">search_response</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -1173,7 +1179,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.360.g4c0628e',
+            VERSION:'0+untagged.412.gfa687f5',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -1183,7 +1189,7 @@
       <script type="text/javascript" src="../../_static/jquery.js"></script>
       <script type="text/javascript" src="../../_static/underscore.js"></script>
       <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
 
   
 
