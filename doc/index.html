@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0+untagged.420.ga321e5a documentation</title>
+  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0+untagged.422.g7e416f1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.420.ga321e5a documentation" href="#"/>
+    <link rel="top" title="caproto 0+untagged.422.g7e416f1 documentation" href="#"/>
         <link rel="next" title="Getting Started: Writing Your Own Channel Access Client" href="basics.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.420.ga321e5a
+                0+untagged.422.g7e416f1
               </div>
             
           
@@ -180,18 +180,17 @@ building programs that speak EPICS.</p>
 <div class="section" id="why-do-this">
 <h2>Why do this?<a class="headerlink" href="#why-do-this" title="Permalink to this headline">¶</a></h2>
 <p>The aim is to provide a complete, reusable implementation of the Channel Access
-protocol in Python which can be wrapped in whichever network library you want
-to use. It is not a replacement for
-<a class="reference external" href="https://github.com/pyepics/pyepics">pyepics</a>,
-<a class="reference external" href="http://controls.diamond.ac.uk/downloads/python/cothread/">cothread</a>, or
-<a class="reference external" href="https://pcaspy.readthedocs.io">pcaspy</a>. It&#8217;s a pure-Python implementation
-of <em>libca</em> that makes libraries like these easier to write in the
-future. See the <a class="reference external" href="http://sans-io.readthedocs.io/">sans-I/O documentation</a> for
-more on the why and how of this idea and for a list of related projects.</p>
-<p>This entire implementation is shorter than the
-<a class="reference external" href="http://www.aps.anl.gov/epics/base/R3-16/0-docs/CAproto/index.html">webpage documenting the Channel Access protocol documentation</a>.
-The codebase itself may serve as useful introduction to Channel Access
-concepts.</p>
+protocol in Python. Implementing the protocol in Python &#8212; instead of wrapping
+the standard C library, <code class="docutils literal"><span class="pre">libca</span></code> &#8212; separates message parsing, processing,
+and transport. This enables integration with any way of managing network calls
+in Python, including threads, processes, and various concurrency libraries. It
+gives the developer control over the timing of network calls, with better error
+handling and more control over performance trade-offs. See the
+<a class="reference external" href="http://sans-io.readthedocs.io/">sans-I/O documentation</a> for more on the
+rationale for this design pattern and a list of related projects.</p>
+<p>The codebase itself may serve as useful introduction to Channel Access
+concepts. It has all the advantages of a pure Python library: easy
+introspection, debug logging, and simple installation.</p>
 </div>
 <div class="section" id="vital-statistics">
 <h2>Vital Statistics<a class="headerlink" href="#vital-statistics" title="Permalink to this headline">¶</a></h2>
@@ -212,10 +211,6 @@ using Python and Jinja templates from the documentation itself to reduce
 the potential for bugs introduced by human transcription. Where we
 found errors in the documentation, we fixed them and submitted a patch
 upstream. (NOTE: This is a reminder to submit a patch.)</li>
-<li>It passes the server test spec
-<a class="reference external" href="https://github.com/mdavidsaver/catvs">catvs</a> (NOTE: As
-of this writing, this is not true! It&#8217;s here as a reminder to make it true
-before we publish this documentation.)</li>
 <li>The byte sizes of the DBR types compare exactly to those in pyepics.</li>
 </ul>
 </div>
@@ -318,7 +313,7 @@ indispensible. See <a class="reference internal" href="references.html"><span cl
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.420.ga321e5a',
+            VERSION:'0+untagged.422.g7e416f1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
