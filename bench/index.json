@@ -1,0 +1,158 @@
+{
+    "benchmarks": {
+        "benchmarks.TimeWaveform4000.time_caproto_curio": {
+            "code": "def time_caproto_curio(self):\n    async def curio_reading():\n        for i in range(self.ITERS):\n            reading = await self.chan1.read()\n\n    with curio.Kernel() as kernel:\n        kernel.run(curio_reading())\n",
+            "goal_time": 2.0,
+            "name": "benchmarks.TimeWaveform4000.time_caproto_curio",
+            "number": 0,
+            "param_names": [],
+            "params": [],
+            "pretty_name": "benchmarks.TimeWaveform4000.time_caproto_curio",
+            "repeat": 0,
+            "timeout": 60.0,
+            "type": "time",
+            "unit": "seconds"
+        },
+        "benchmarks.TimeWaveform4000.time_pyepics": {
+            "code": "def time_pyepics(self):\n    for i in range(self.ITERS):\n        values = self.pv.get(timeout=0.5, as_numpy=True)\n",
+            "goal_time": 2.0,
+            "name": "benchmarks.TimeWaveform4000.time_pyepics",
+            "number": 0,
+            "param_names": [],
+            "params": [],
+            "pretty_name": "benchmarks.TimeWaveform4000.time_pyepics",
+            "repeat": 0,
+            "timeout": 60.0,
+            "type": "time",
+            "unit": "seconds"
+        },
+        "benchmarks.TimeWaveformMillion.time_caproto_curio": {
+            "code": "def time_caproto_curio(self):\n    async def curio_reading():\n        for i in range(self.ITERS):\n            reading = await self.chan1.read()\n\n    with curio.Kernel() as kernel:\n        kernel.run(curio_reading())\n",
+            "goal_time": 2.0,
+            "name": "benchmarks.TimeWaveformMillion.time_caproto_curio",
+            "number": 0,
+            "param_names": [],
+            "params": [],
+            "pretty_name": "benchmarks.TimeWaveformMillion.time_caproto_curio",
+            "repeat": 0,
+            "timeout": 60.0,
+            "type": "time",
+            "unit": "seconds"
+        },
+        "benchmarks.TimeWaveformMillion.time_pyepics": {
+            "code": "def time_pyepics(self):\n    for i in range(self.ITERS):\n        values = self.pv.get(timeout=0.5, as_numpy=True)\n",
+            "goal_time": 2.0,
+            "name": "benchmarks.TimeWaveformMillion.time_pyepics",
+            "number": 0,
+            "param_names": [],
+            "params": [],
+            "pretty_name": "benchmarks.TimeWaveformMillion.time_pyepics",
+            "repeat": 0,
+            "timeout": 60.0,
+            "type": "time",
+            "unit": "seconds"
+        }
+    },
+    "graph_param_list": [
+        {
+            "arch": "x86_64",
+            "branch": "master",
+            "cpu": "Intel(R) Core(TM) i7-4650U CPU @ 1.70GHz",
+            "machine": "Daniels-MacBook-Air-2.local",
+            "numpy": "",
+            "os": "Darwin 14.0.0",
+            "pip+curio": "",
+            "pyepics": "",
+            "python": "3.6",
+            "ram": "8589934592"
+        },
+        {
+            "arch": "x86_64",
+            "branch": "master",
+            "cpu": "Intel(R) Core(TM) i7-4650U CPU @ 1.70GHz",
+            "machine": "Daniels-MacBook-Air-2.local",
+            "numpy": null,
+            "os": "Darwin 14.0.0",
+            "pip+curio": null,
+            "pyepics": null,
+            "python": "3.5",
+            "ram": "8589934592"
+        }
+    ],
+    "hash_length": 8,
+    "machines": {
+        "Daniels-MacBook-Air-2.local": {
+            "arch": "x86_64",
+            "cpu": "Intel(R) Core(TM) i7-4650U CPU @ 1.70GHz",
+            "machine": "Daniels-MacBook-Air-2.local",
+            "os": "Darwin 14.0.0",
+            "ram": "8589934592",
+            "version": 1
+        }
+    },
+    "pages": [
+        [
+            "",
+            "Grid view",
+            "Display as a agrid"
+        ],
+        [
+            "summarylist",
+            "List view",
+            "Display as a list"
+        ],
+        [
+            "regressions",
+            "Show regressions",
+            "Display information about recent regressions"
+        ]
+    ],
+    "params": {
+        "arch": [
+            "x86_64"
+        ],
+        "branch": [
+            "master"
+        ],
+        "cpu": [
+            "Intel(R) Core(TM) i7-4650U CPU @ 1.70GHz"
+        ],
+        "machine": [
+            "Daniels-MacBook-Air-2.local"
+        ],
+        "numpy": [
+            "",
+            null
+        ],
+        "os": [
+            "Darwin 14.0.0"
+        ],
+        "pip+curio": [
+            "",
+            null
+        ],
+        "pyepics": [
+            "",
+            null
+        ],
+        "python": [
+            "3.5",
+            "3.6"
+        ],
+        "ram": [
+            "8589934592"
+        ]
+    },
+    "project": "caproto",
+    "project_url": "https://danielballan.github.io/caproto/doc",
+    "revision_to_date": {
+        "573": 1492530051000,
+        "579": 1492556314000
+    },
+    "revision_to_hash": {
+        "573": "df1827898d68ee0c92bb8caf59d3039866924925",
+        "579": "a321e5a9cad8791183ff6ea944b7e7818a2b9e0d"
+    },
+    "show_commit_url": "#",
+    "tags": {}
+}
