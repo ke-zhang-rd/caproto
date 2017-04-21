@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._hub &mdash; caproto 0+untagged.447.g525d704 documentation</title>
+  <title>caproto._hub &mdash; caproto 0+untagged.457.gd31e5b9 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.447.g525d704 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.457.gd31e5b9 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.447.g525d704
+                0+untagged.457.gd31e5b9
               </div>
             
           
@@ -188,11 +188,13 @@
 <span class="kn">from</span> <span class="nn">._state</span> <span class="k">import</span> <span class="p">(</span><span class="n">ChannelState</span><span class="p">,</span> <span class="n">CircuitState</span><span class="p">,</span> <span class="n">get_exception</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">CaprotoKeyError</span><span class="p">,</span>
                      <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">LocalProtocolError</span><span class="p">,</span>
+                     <span class="n">CaprotoRuntimeError</span><span class="p">,</span>
                      <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">SubscriptionType</span><span class="p">,</span> <span class="p">)</span>
 
 
 <span class="n">DEFAULT_PROTOCOL_VERSION</span> <span class="o">=</span> <span class="mi">13</span>
+<span class="n">MAX_ID</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span> <span class="c1"># max value of various integer IDs</span>
 
 <span class="c1"># official IANA ports</span>
 <span class="n">EPICS_CA1_PORT</span><span class="p">,</span> <span class="n">EPICS_CA2_PORT</span> <span class="o">=</span> <span class="mi">5064</span><span class="p">,</span> <span class="mi">5065</span>
@@ -455,12 +457,14 @@
 <div class="viewcode-block" id="VirtualCircuit.new_channel_id"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.new_channel_id">[docs]</a>    <span class="k">def</span> <span class="nf">new_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Return a valid value for a cid or sid.&quot;</span>
         <span class="c1"># Return the next sequential unused id. Wrap back to 0 on overflow.</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_id_counter</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_channel_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">while</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_channel_id_counter</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">i</span></div>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MAX_ID</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_channel_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">return</span> <span class="n">i</span></div>
 
 <div class="viewcode-block" id="VirtualCircuit.new_subscriptionid"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.new_subscriptionid">[docs]</a>    <span class="k">def</span> <span class="nf">new_subscriptionid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -468,12 +472,14 @@
 <span class="sd">        It does not update any important state.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Return the next sequential unused id. Wrap back to 0 on overflow.</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sub_counter</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_sub_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">while</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_add_commands</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_sub_counter</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">i</span></div>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_add_commands</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MAX_ID</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_sub_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">return</span> <span class="n">i</span></div>
 
 <div class="viewcode-block" id="VirtualCircuit.new_ioid"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.new_ioid">[docs]</a>    <span class="k">def</span> <span class="nf">new_ioid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -481,12 +487,14 @@
 <span class="sd">        It does not update any important state.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Return the next sequential unused id. Wrap back to 0 on overflow.</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ioid_counter</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ioid_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">while</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_add_commands</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ioid_counter</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">i</span></div></div>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ioids</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MAX_ID</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ioid_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">return</span> <span class="n">i</span></div></div>
 
 
 <div class="viewcode-block" id="Broadcaster"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster">[docs]</a><span class="k">class</span> <span class="nc">Broadcaster</span><span class="p">:</span>
@@ -634,12 +642,14 @@
 
 <div class="viewcode-block" id="Broadcaster.new_search_id"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.new_search_id">[docs]</a>    <span class="k">def</span> <span class="nf">new_search_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Return the next sequential unused id. Wrap back to 0 on overflow.</span>
-        <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_search_id_counter</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_search_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">while</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="p">:</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_search_id_counter</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">i</span></div>
+            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MAX_ID</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_search_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="k">return</span> <span class="n">i</span></div>
 
 <div class="viewcode-block" id="Broadcaster.search"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1179,7 +1189,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.447.g525d704',
+            VERSION:'0+untagged.457.gd31e5b9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
