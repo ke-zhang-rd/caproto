@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0+untagged.484.gbeb6e49 documentation</title>
+  <title>caproto._commands &mdash; caproto 0+untagged.569.g1bc5fbc documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.484.gbeb6e49 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.569.g1bc5fbc documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.484.gbeb6e49
+                0+untagged.569.g1bc5fbc
               </div>
             
           
@@ -179,10 +179,14 @@
 <span class="c1"># (1) is typically done by the user. (2) is typically done by calling the</span>
 <span class="c1"># ``next_command`` method of a :class:`Broadcaster` or a</span>
 <span class="c1"># :class:`VirtualCircuit`.</span>
+<span class="kn">import</span> <span class="nn">array</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">ctypes</span>
+<span class="kn">import</span> <span class="nn">_ctypes</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">._headers</span> <span class="k">import</span> <span class="p">(</span><span class="n">MessageHeader</span><span class="p">,</span> <span class="n">ExtendedMessageHeader</span><span class="p">,</span>
                        <span class="n">AccessRightsResponseHeader</span><span class="p">,</span> <span class="n">ClearChannelRequestHeader</span><span class="p">,</span>
                        <span class="n">ClearChannelResponseHeader</span><span class="p">,</span> <span class="n">ClientNameRequestHeader</span><span class="p">,</span>
@@ -201,29 +205,40 @@
                        <span class="n">ServerDisconnResponseHeader</span><span class="p">,</span> <span class="n">VersionRequestHeader</span><span class="p">,</span>
                        <span class="n">VersionResponseHeader</span><span class="p">,</span> <span class="n">WriteNotifyRequestHeader</span><span class="p">,</span>
                        <span class="n">WriteNotifyResponseHeader</span><span class="p">,</span> <span class="n">WriteRequestHeader</span><span class="p">,</span>
-
                        <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">DBR_INT</span><span class="p">,</span> <span class="n">DBR_STRING</span><span class="p">,</span> <span class="n">DBR_TYPES</span><span class="p">,</span> <span class="n">DO_REPLY</span><span class="p">,</span> <span class="n">NO_REPLY</span><span class="p">,</span>
-                   <span class="n">ChannelType</span><span class="p">,</span> <span class="n">float_t</span><span class="p">,</span> <span class="n">short_t</span><span class="p">,</span> <span class="n">to_builtin</span><span class="p">,</span> <span class="n">ushort_t</span><span class="p">,</span>
-                   <span class="n">native_type</span><span class="p">,</span> <span class="n">timestamp_to_epics</span><span class="p">,</span> <span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">DBR_INT</span><span class="p">,</span> <span class="n">DBR_TYPES</span><span class="p">,</span> <span class="n">DO_REPLY</span><span class="p">,</span> <span class="n">NO_REPLY</span><span class="p">,</span> <span class="n">ChannelType</span><span class="p">,</span>
+                   <span class="n">float_t</span><span class="p">,</span> <span class="n">short_t</span><span class="p">,</span> <span class="n">ushort_t</span><span class="p">,</span> <span class="n">native_type</span><span class="p">,</span>
+                   <span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">,</span> <span class="n">USE_NUMPY</span><span class="p">,</span> <span class="n">array_type_code</span><span class="p">)</span>
 
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_dbr</span> <span class="k">as</span> <span class="n">dbr</span>
 <span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">REQUEST</span><span class="p">,</span> <span class="n">RESPONSE</span><span class="p">,</span>
-                     <span class="n">SERVER</span><span class="p">,</span> <span class="n">CaprotoTypeError</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">)</span>
+                     <span class="n">SERVER</span><span class="p">,</span> <span class="n">CaprotoTypeError</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">ensure_bytes</span><span class="p">)</span>
 
+<span class="c1"># numpy is only used if it is available</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="k">pass</span>
 
 <span class="n">_MessageHeaderSize</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">MessageHeader</span><span class="p">)</span>
 <span class="n">_ExtendedMessageHeaderSize</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">ExtendedMessageHeader</span><span class="p">)</span>
 
+<span class="n">_pad_buffer</span> <span class="o">=</span> <span class="p">{</span><span class="n">mod_sz</span><span class="p">:</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">8</span> <span class="o">-</span> <span class="n">mod_sz</span><span class="p">)</span>
+               <span class="k">for</span> <span class="n">mod_sz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">)}</span>
+<span class="n">_pad_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
 
-<span class="k">def</span> <span class="nf">ensure_bytes</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">s</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="c1"># be sure to include a null terminator</span>
-        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;expected str or bytes&quot;</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">ipv4_to_int32</span><span class="p">(</span><span class="n">ip</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Pack an IPv4 into a 32-bit integer (in network byte order)&#39;&#39;&#39;</span>
+    <span class="n">encoded_ip</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_pton</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">ip</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;!I&#39;</span><span class="p">,</span> <span class="n">encoded_ip</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">ipv4_from_int32</span><span class="p">(</span><span class="n">int_packed_ip</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&#39;&#39;&#39;Unpack an IPv4 from a 32-bit integer (in network byte order)&#39;&#39;&#39;</span>
+    <span class="n">encoded_ip</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;!I&#39;</span><span class="p">,</span> <span class="n">int_packed_ip</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_ntop</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">encoded_ip</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">from_buffer</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
@@ -236,12 +251,36 @@
                                     <span class="s2">&quot;characters.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">_len</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">_len</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">:</span>
             <span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">data_type</span><span class="p">]</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="n">md_payload</span> <span class="o">=</span> <span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">data_type</span><span class="p">]</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+        <span class="n">md_size</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">data_type</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">md_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+        <span class="n">md_size</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">data_payload</span> <span class="o">=</span> <span class="n">buffer</span><span class="p">[</span><span class="n">md_size</span><span class="p">:]</span>
+    <span class="k">return</span> <span class="n">md_payload</span><span class="p">,</span> <span class="n">data_payload</span>
+    <span class="c1"># TODO Handle padding</span>
 
 
 <span class="k">def</span> <span class="nf">padded_len</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
     <span class="s2">&quot;Length of a (byte)string rounded up to the nearest multiple of 8.&quot;</span>
     <span class="k">return</span> <span class="mi">8</span> <span class="o">*</span> <span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">pad_buffers</span><span class="p">(</span><span class="o">*</span><span class="n">buffers</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get a bytestring for padding a concatenated set of buffers</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    *buffers : supported buffer type</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    full_padded_length, pad_buffer</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">unpadded_size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bytelen</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="k">for</span> <span class="n">buf</span> <span class="ow">in</span> <span class="n">buffers</span><span class="p">)</span>
+    <span class="n">pad_buffer</span> <span class="o">=</span> <span class="n">_pad_buffer</span><span class="p">[</span><span class="n">unpadded_size</span> <span class="o">%</span> <span class="mi">8</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">unpadded_size</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">pad_buffer</span><span class="p">),</span> <span class="n">pad_buffer</span>
 
 
 <span class="k">def</span> <span class="nf">padded_string_payload</span><span class="p">(</span><span class="n">payload</span><span class="p">):</span>
@@ -250,76 +289,119 @@
     <span class="k">return</span> <span class="n">padded_size</span><span class="p">,</span> <span class="n">byte_payload</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">padded_size</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
 
 
-<span class="c1"># TODO re-arrange and tweak as desired</span>
-<span class="n">metadata_keywords</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="s1">&#39;strs&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">,</span>
-                     <span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">,</span>
-                     <span class="p">)</span>
+<span class="k">def</span> <span class="nf">bytelen</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Meaasure the byte length of an item.</span>
 
-
-<span class="k">def</span> <span class="nf">data_payload</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="n">ntype</span> <span class="o">=</span> <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
-    <span class="n">size</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">data_type</span><span class="p">])</span>
-
-    <span class="k">if</span> <span class="n">ntype</span> <span class="o">!=</span> <span class="n">data_type</span><span class="p">:</span>
-        <span class="n">size</span> <span class="o">+=</span> <span class="p">(</span><span class="n">data_count</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">ntype</span><span class="p">])</span>
-
-    <span class="k">if</span> <span class="n">data_count</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># TODO this needs some work</span>
-        <span class="k">assert</span> <span class="n">data_count</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
-        <span class="n">value_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="n">values</span><span class="p">))</span>
+<span class="sd">    Supports:</span>
+<span class="sd">    - ``array.array`` (from the builtin Python lib)</span>
+<span class="sd">    - ``ctypes`` objects</span>
+<span class="sd">    - an object that has an ``nbytes`` attribute (notably, numpy arrays and</span>
+<span class="sd">      ``memoryview``)</span>
+<span class="sd">    - ``bytes``</span>
+<span class="sd">    - ``bytearray``</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">Structure</span><span class="p">,</span> <span class="n">_ctypes</span><span class="o">.</span><span class="n">_SimpleCData</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="s1">&#39;nbytes&#39;</span><span class="p">):</span>
+        <span class="c1"># Duck-type as numpy array / memoryview.</span>
+        <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="n">nbytes</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="p">(</span><span class="nb">bytes</span><span class="p">,</span> <span class="nb">bytearray</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">value_payload</span> <span class="o">=</span> <span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">ntype</span><span class="p">](</span><span class="o">*</span><span class="n">values</span><span class="p">)</span>
+        <span class="c1"># We could just fall back on len() but I worry that someone will</span>
+        <span class="c1"># unwittingly use this on a type that has a __len__ that is not its</span>
+        <span class="c1"># bytelength and is not already caught above. Better to fail like this.</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not sure how to measure byte length of &quot;</span>
+                                  <span class="s2">&quot;object of type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
 
-    <span class="n">payload</span> <span class="o">=</span> <span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">data_type</span><span class="p">]()</span>
 
-    <span class="k">if</span> <span class="n">metadata</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">metadata_keywords</span><span class="p">:</span>
-            <span class="c1"># TODO note that some facilities use the nanosecond integer as</span>
-            <span class="c1"># a lossless event id and conversion to float is not a good thing</span>
-            <span class="c1"># ... should incorporate that into the logic here</span>
-            <span class="k">if</span> <span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span>
-                <span class="k">if</span> <span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">)</span> <span class="ow">and</span>
-                        <span class="nb">hasattr</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s1">&#39;secondsSinceEpoch&#39;</span><span class="p">)</span> <span class="ow">and</span>
-                        <span class="nb">hasattr</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="s1">&#39;nanoSeconds&#39;</span><span class="p">)):</span>
-                    <span class="n">sec</span><span class="p">,</span> <span class="n">ns</span> <span class="o">=</span> <span class="n">timestamp_to_epics</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
-                    <span class="n">payload</span><span class="o">.</span><span class="n">secondsSinceEpoch</span> <span class="o">=</span> <span class="n">sec</span>
-                    <span class="n">payload</span><span class="o">.</span><span class="n">nanoSeconds</span> <span class="o">=</span> <span class="n">ns</span>
-                    <span class="k">continue</span>
+<span class="k">def</span> <span class="nf">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pack bytes into a set of buffers for usage as a single payload</span>
 
-            <span class="k">elif</span> <span class="p">(</span><span class="n">attr</span> <span class="o">==</span> <span class="s1">&#39;strs&#39;</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">and</span>
-                    <span class="nb">hasattr</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">attr</span><span class="p">)):</span>
-                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">string</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">strs</span><span class="p">):</span>
-                    <span class="n">bytes_</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span>
-                    <span class="n">justified</span> <span class="o">=</span> <span class="n">bytes_</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
-                    <span class="n">payload</span><span class="o">.</span><span class="n">strs</span><span class="p">[</span><span class="n">i</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">justified</span>
-                <span class="n">payload</span><span class="o">.</span><span class="n">no_str</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">metadata</span><span class="o">.</span><span class="n">strs</span><span class="p">)</span>
-                <span class="k">continue</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : ``array.array``, ``numpy.ndarray``, any iterable, or bytes</span>
+<span class="sd">        If input is bytes or ``array.array``, we assume that the byte order of</span>
+<span class="sd">        the input is big-endian. (We have no means of checking.) If the input</span>
+<span class="sd">        is ``numpy.ndarray`` or any other iterable, we ensure big-endianness.</span>
+<span class="sd">    metadata : a DBR struct, any iterable, or bytes</span>
+<span class="sd">    data_type : integer</span>
+<span class="sd">    data_count : integer</span>
 
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">attr</span><span class="p">):</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    size, md_payload, data_payload[, pad_payload]</span>
+<span class="sd">        pad_payload will only be returned if needed</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ntype</span> <span class="o">=</span> <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
 
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="nb">setattr</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                    <span class="c1"># TODO server probably should not fail here</span>
-                    <span class="c1"># raise ValueError(&#39;Invalid metadata for {}={} ({})&#39;</span>
-                    <span class="c1">#                  &#39;&#39;.format(attr, value, ex))</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;set metadata fail&#39;</span><span class="p">,</span> <span class="n">attr</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-    <span class="n">payload</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value_payload</span><span class="o">.</span><span class="n">value</span>
+    <span class="c1"># Make the data payload.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+        <span class="c1"># Assume array is big-endian; we have no way of checking.</span>
+        <span class="n">data_payload</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="c1"># Assume bytes are big-endian; we have no way of checking.</span>
+        <span class="n">data_payload</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="k">elif</span> <span class="n">USE_NUMPY</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="c1"># Make big-endian.</span>
+        <span class="n">data_payload</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">newbyteorder</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span>
+            <span class="n">data_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_payload</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array_type_code</span><span class="p">(</span><span class="n">ntype</span><span class="p">),</span> <span class="n">data</span><span class="p">)</span>
+            <span class="c1"># Make big-endian.</span>
+            <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;little&#39;</span><span class="p">:</span>
+                <span class="n">data_payload</span><span class="o">.</span><span class="n">byteswap</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;data given as type we cannot handle - </span><span class="si">{}</span><span class="s2">&quot;</span>
+                               <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
 
-    <span class="n">payload</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="s1">&#39;DBR_ID&#39;</span><span class="p">):</span>
+        <span class="c1"># This is already a DBR.</span>
+        <span class="n">md_payload</span> <span class="o">=</span> <span class="n">metadata</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="n">md_payload</span> <span class="o">=</span> <span class="n">metadata</span>
+    <span class="k">elif</span> <span class="n">metadata</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">md_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">):</span>
+        <span class="c1"># This is a tuple of values to be encoded into a DBR.</span>
+        <span class="n">justified_md</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">metadata</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">40</span><span class="p">:</span>  <span class="c1"># 39?</span>
+                    <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;The protocol limits strings to &quot;</span>
+                                            <span class="s2">&quot;40 characters.&quot;</span><span class="p">)</span>
+                <span class="n">val</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">justified_md</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="n">md_payload</span> <span class="o">=</span> <span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">data_type</span><span class="p">](</span><span class="o">*</span><span class="n">justified_md</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;metadata given as type we cannot handle - </span><span class="si">{}</span><span class="s2">&quot;</span>
+                               <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">metadata</span><span class="p">)))</span>
 
-    <span class="c1"># Payloads must be zeropadded to have a size that is a multiple of 8.</span>
-    <span class="k">if</span> <span class="n">size</span> <span class="o">%</span> <span class="mi">8</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="p">((</span><span class="n">size</span> <span class="o">+</span> <span class="mi">7</span><span class="p">)</span> <span class="o">//</span> <span class="mi">8</span><span class="p">)</span>
-        <span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">size</span><span class="p">,</span> <span class="n">payload</span>
+    <span class="n">size</span><span class="p">,</span> <span class="n">pad_payload</span> <span class="o">=</span> <span class="n">pad_buffers</span><span class="p">(</span><span class="n">md_payload</span><span class="p">,</span> <span class="n">data_payload</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">pad_payload</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">size</span><span class="p">,</span> <span class="n">md_payload</span><span class="p">,</span> <span class="n">data_payload</span><span class="p">,</span> <span class="n">pad_payload</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">size</span><span class="p">,</span> <span class="n">md_payload</span><span class="p">,</span> <span class="n">data_payload</span>
+
+
+<span class="k">def</span> <span class="nf">extract_data</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">):</span>
+    <span class="s2">&quot;Return a scalar or big-endian array (numpy.ndarray or array.array).&quot;</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">dbr</span><span class="o">.</span><span class="n">native_to_builtin</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">),</span> <span class="n">data_count</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">[:</span><span class="n">data_count</span><span class="p">]</span>  <span class="c1"># TODO Does this make a copy?</span>
+
+
+<span class="k">def</span> <span class="nf">extract_metadata</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">data_type</span><span class="p">):</span>
+    <span class="s2">&quot;Return one of the classes in _data.py.&quot;</span>
+    <span class="k">if</span> <span class="n">data_type</span> <span class="o">&lt;</span> <span class="mi">7</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>  <span class="c1"># Makes a copy -- maybe not necessary?</span>
+    <span class="k">return</span> <span class="n">dbr</span><span class="o">.</span><span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">data_type</span><span class="p">]</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">payload</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">get_command_class</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
@@ -407,32 +489,31 @@
 
 
 <span class="k">class</span> <span class="nc">Message</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">_MetaDirectionalMessage</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;payload&#39;</span><span class="p">,</span> <span class="s1">&#39;header&#39;</span><span class="p">,</span> <span class="s1">&#39;sender_address&#39;</span><span class="p">)</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;header&#39;</span><span class="p">,</span> <span class="s1">&#39;buffers&#39;</span><span class="p">,</span> <span class="s1">&#39;sender_address&#39;</span><span class="p">)</span>
     <span class="n">ID</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># integer, to be overriden by subclass</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">buffers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sender_address</span> <span class="o">=</span> <span class="n">sender_address</span>
 
         <span class="k">if</span> <span class="n">validate</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validate</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;header.payload_size </span><span class="si">{}</span><span class="s2"> &gt; 0 but &quot;</span>
-                                        <span class="s2">&quot;payload is None.&quot;</span>
-                                        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">))</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;header.payload_size </span><span class="si">{}</span><span class="s2"> != len(payload) </span><span class="si">{}</span><span class="s2">&quot;</span>
-                                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">,</span>
-                                              <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">)))</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">bytelen</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="k">for</span> <span class="n">buf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffers</span> <span class="ow">is</span> <span class="p">()</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.header.payload_size </span><span class="si">{}</span><span class="s2"> &gt; 0 but payload is None.&quot;</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">!=</span> <span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">.header.payload_size </span><span class="si">{}</span><span class="s2"> != payload size of </span><span class="si">{}</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">command</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;A </span><span class="si">{}</span><span class="s2"> must have a header with &quot;</span>
-                                   <span class="s2">&quot;header.command == </span><span class="si">{}</span><span class="s2">, not </span><span class="si">{}</span><span class="s2">.&quot;</span>
-                                   <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span>
-                                             <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">command</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span>
+                <span class="s2">&quot;A </span><span class="si">{}</span><span class="s2"> must have a header with header.command == </span><span class="si">{}</span><span class="s2">, not </span><span class="si">{}</span><span class="s2">.&quot;</span>
+                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ID</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">command</span><span class="p">))</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -443,16 +524,16 @@
 <span class="sd">        field, and these override this method in their subclass.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">cls</span><span class="o">.</span><span class="n">HAS_PAYLOAD</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">payload_struct</span> <span class="o">=</span> <span class="n">from_buffer</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload_struct</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">from_buffer</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">payload</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_components</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_components</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Bwahahahaha</span>
         <span class="n">instance</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
-        <span class="n">instance</span><span class="o">.</span><span class="n">payload</span> <span class="o">=</span> <span class="n">payload</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">buffers</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">sender_address</span> <span class="o">=</span> <span class="n">sender_address</span>
         <span class="k">return</span> <span class="n">instance</span>
 
@@ -463,14 +544,17 @@
         <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__bytes__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># Trim 40-char string struct to payload_size.</span>
-            <span class="n">raw_bytes</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">)[:</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">]</span>
-            <span class="c1"># Pad to multiple of 8.</span>
-            <span class="n">payload_bytes</span> <span class="o">=</span> <span class="n">raw_bytes</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">padded_len</span><span class="p">(</span><span class="n">raw_bytes</span><span class="p">),</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">payload_bytes</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
-        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span> <span class="o">+</span> <span class="n">payload_bytes</span>
+        <span class="c1"># In general it&#39;s better to use self.buffers over bytes(self) because</span>
+        <span class="c1"># The former does not copy large continuous memory arrays.</span>
+        <span class="n">raw_bytes</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
+        <span class="c1"># Concatenate buffers -- this copies data!</span>
+        <span class="k">for</span> <span class="n">buf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">:</span>
+            <span class="n">raw_bytes</span> <span class="o">+=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="c1"># Trim 40-char string struct to payload_size.</span>
+        <span class="n">trimmed_bytes</span> <span class="o">=</span> <span class="n">raw_bytes</span><span class="p">[:</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">]</span>
+        <span class="c1"># Pad to multiple of 8.</span>
+        <span class="n">payload_bytes</span> <span class="o">=</span> <span class="n">trimmed_bytes</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">padded_len</span><span class="p">(</span><span class="n">trimmed_bytes</span><span class="p">),</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span> <span class="o">+</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">payload_bytes</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">signature</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
@@ -489,7 +573,12 @@
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">formatted_args</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">)</span> <span class="o">+</span>
+                <span class="nb">sum</span><span class="p">(</span><span class="n">bytelen</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="k">for</span> <span class="n">buf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="VersionRequest"><a class="viewcode-back" href="../../api.html#caproto.VersionRequest">[docs]</a><span class="k">class</span> <span class="nc">VersionRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -515,7 +604,7 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">priority</span> <span class="o">&lt;</span> <span class="mi">100</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;Expecting 0 &lt; priority &lt; 100&quot;</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">VersionRequestHeader</span><span class="p">(</span><span class="n">priority</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">priority</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">version</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span></div>
@@ -537,7 +626,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">VersionResponseHeader</span><span class="p">(</span><span class="n">version</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">version</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span></div>
 
@@ -581,13 +670,13 @@
                                     <span class="s2">&quot;strings. The &quot;</span> <span class="s2">&quot;string </span><span class="si">{!r}</span><span class="s2"> is </span><span class="si">{}</span><span class="s2"> &quot;</span>
                                     <span class="s2">&quot;characters.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">_len</span><span class="p">))</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">SearchRequestHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">NO_REPLY</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">cid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">reply</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">version</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">))</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="SearchResponse"><a class="viewcode-back" href="../../api.html#caproto.SearchResponse">[docs]</a><span class="k">class</span> <span class="nc">SearchResponse</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -621,35 +710,28 @@
         <span class="k">if</span> <span class="n">ip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ip</span> <span class="o">=</span> <span class="s1">&#39;255.255.255.255&#39;</span>
 
-        <span class="n">encoded_ip</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_pton</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">ip</span><span class="p">)</span>
-        <span class="n">int_encoded_ip</span><span class="p">,</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;!I&#39;</span><span class="p">,</span> <span class="n">encoded_ip</span><span class="p">)</span>  <span class="c1"># bytes -&gt; int</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">SearchResponseHeader</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
-                                      <span class="n">sid</span><span class="o">=</span><span class="n">int_encoded_ip</span><span class="p">,</span>
+                                      <span class="n">sid</span><span class="o">=</span><span class="n">ipv4_to_int32</span><span class="p">(</span><span class="n">ip</span><span class="p">),</span>
                                       <span class="n">cid</span><span class="o">=</span><span class="n">cid</span><span class="p">)</span>
         <span class="c1"># Pad a uint16 to fill 8 bytes.</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">DBR_INT</span><span class="p">(</span><span class="n">version</span><span class="p">))</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># Special-case to handle the fact that data_type field is not the data</span>
         <span class="c1"># type. (It&#39;s used to hold the server port, unrelated to the payload.)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">payload_bytes</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
-                                       <span class="n">sender_address</span><span class="o">=</span><span class="n">sender_address</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">,</span>
                                    <span class="n">sender_address</span><span class="o">=</span><span class="n">sender_address</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># for CA version &gt;= 4.11</span>
-        <span class="n">int_encoded_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span>
-        <span class="n">encoded_ip</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;!I&#39;</span><span class="p">,</span> <span class="n">int_encoded_ip</span><span class="p">)</span>  <span class="c1"># int -&gt; bytes</span>
-        <span class="k">return</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_ntop</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">encoded_ip</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ipv4_from_int32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">DBR_INT</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="n">DBR_INT</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="nb">bytearray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">])[:</span><span class="mi">2</span><span class="p">])</span><span class="o">.</span><span class="n">value</span>
 
     <span class="n">port</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
@@ -676,7 +758,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">NotFoundResponseHeader</span><span class="p">(</span><span class="n">DO_REPLY</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">cid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">reply_flag</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">version</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
@@ -694,7 +776,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EchoRequestHeader</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EchoRequestHeader</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="EchoResponse"><a class="viewcode-back" href="../../api.html#caproto.EchoResponse">[docs]</a><span class="k">class</span> <span class="nc">EchoResponse</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -708,7 +790,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EchoResponseHeader</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EchoResponseHeader</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="RsrvIsUpResponse"><a class="viewcode-back" href="../../api.html#caproto.RsrvIsUpResponse">[docs]</a><span class="k">class</span> <span class="nc">RsrvIsUpResponse</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -746,7 +828,7 @@
         <span class="c1"># the udp packet</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">RsrvIsUpResponseHeader</span><span class="p">(</span><span class="n">version</span><span class="p">,</span> <span class="n">server_port</span><span class="p">,</span> <span class="n">beacon_id</span><span class="p">,</span>
                                         <span class="n">address</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">version</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">server_port</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
@@ -774,16 +856,13 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">repeater_address</span><span class="p">):</span>
-        <span class="n">encoded_ip</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_pton</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">repeater_address</span><span class="p">))</span>
-        <span class="n">int_encoded_ip</span><span class="p">,</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;!I&#39;</span><span class="p">,</span> <span class="n">encoded_ip</span><span class="p">)</span>  <span class="c1"># bytes -&gt; int</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="n">RepeaterConfirmResponseHeader</span><span class="p">(</span><span class="n">int_encoded_ip</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">RepeaterConfirmResponseHeader</span><span class="p">(</span>
+            <span class="n">ipv4_to_int32</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">repeater_address</span><span class="p">)))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">repeater_address</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">int_encoded_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span>
-        <span class="n">encoded_ip</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;!I&#39;</span><span class="p">,</span> <span class="n">int_encoded_ip</span><span class="p">)</span>  <span class="c1"># int -&gt; bytes</span>
-        <span class="k">return</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_ntop</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">encoded_ip</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ipv4_from_int32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RepeaterRegisterRequest"><a class="viewcode-back" href="../../api.html#caproto.RepeaterRegisterRequest">[docs]</a><span class="k">class</span> <span class="nc">RepeaterRegisterRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -801,16 +880,13 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_address</span><span class="p">):</span>
-        <span class="n">encoded_ip</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_pton</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">client_address</span><span class="p">))</span>
-        <span class="n">int_encoded_ip</span><span class="p">,</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">unpack</span><span class="p">(</span><span class="s1">&#39;!I&#39;</span><span class="p">,</span> <span class="n">encoded_ip</span><span class="p">)</span>  <span class="c1"># bytes -&gt; int</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="n">RepeaterRegisterRequestHeader</span><span class="p">(</span><span class="n">int_encoded_ip</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">RepeaterRegisterRequestHeader</span><span class="p">(</span>
+            <span class="n">ipv4_to_int32</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">client_address</span><span class="p">)))</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">client_address</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">int_encoded_ip</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span>
-        <span class="n">encoded_ip</span> <span class="o">=</span> <span class="n">struct</span><span class="o">.</span><span class="n">pack</span><span class="p">(</span><span class="s1">&#39;!I&#39;</span><span class="p">,</span> <span class="n">int_encoded_ip</span><span class="p">)</span>  <span class="c1"># int -&gt; bytes</span>
-        <span class="k">return</span> <span class="n">socket</span><span class="o">.</span><span class="n">inet_ntop</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">encoded_ip</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">ipv4_from_int32</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">EventAddRequestPayload</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">BigEndianStructure</span><span class="p">):</span>
@@ -829,7 +905,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">__padding</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="EventAddRequest"><a class="viewcode-back" href="../../api.html#caproto.EventAddRequest">[docs]</a><span class="k">class</span> <span class="nc">EventAddRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -883,20 +963,25 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">payload_struct</span> <span class="o">=</span> <span class="n">EventAddRequestPayload</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">payload_bytes</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">payload_struct</span> <span class="o">=</span> <span class="n">EventAddRequestPayload</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload_struct</span><span class="p">,</span>
                                    <span class="n">sender_address</span><span class="o">=</span><span class="n">sender_address</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">payload_struct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">EventAddRequestPayload</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">subscriptionid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
-    <span class="n">low</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">low</span><span class="p">)</span>
-    <span class="n">high</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">high</span><span class="p">)</span>
-    <span class="n">to</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">to</span><span class="p">)</span>
-    <span class="n">mask</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span>
-    <span class="n">__padding</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="o">.</span><span class="n">__padding</span><span class="p">)</span></div>
+    <span class="n">low</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload_struct</span><span class="o">.</span><span class="n">low</span><span class="p">)</span>
+    <span class="n">high</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload_struct</span><span class="o">.</span><span class="n">high</span><span class="p">)</span>
+    <span class="n">to</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload_struct</span><span class="o">.</span><span class="n">to</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload_struct</span><span class="o">.</span><span class="n">mask</span><span class="p">)</span>
+    <span class="n">__padding</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload_struct</span><span class="o">.</span><span class="n">__padding</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="EventAddResponse"><a class="viewcode-back" href="../../api.html#caproto.EventAddResponse">[docs]</a><span class="k">class</span> <span class="nc">EventAddResponse</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -905,9 +990,9 @@
 
 <span class="sd">    Fields:</span>
 
-<span class="sd">    .. attribute:: values</span>
+<span class="sd">    .. attribute:: data</span>
 
-<span class="sd">        data in a tuple of built-in Python or numpy types</span>
+<span class="sd">        data as built-in Python or numpy types</span>
 
 <span class="sd">    .. attribute:: data_type</span>
 
@@ -933,30 +1018,36 @@
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
                  <span class="n">status_code</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">size</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
-                                     <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">size</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">EventAddResponseHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
                                         <span class="n">status_code</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
     <span class="n">status_code</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">subscriptionid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># libca responds to EventCancelRequest with an</span>
         <span class="c1"># EventAddResponse with an empty payload.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">payload_bytes</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span>
                                        <span class="n">sender_address</span><span class="o">=</span><span class="n">sender_address</span><span class="p">)</span>
-        <span class="n">payload_struct</span> <span class="o">=</span> <span class="n">from_buffer</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload_struct</span><span class="p">,</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">from_buffer</span><span class="p">(</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">payload</span><span class="p">,</span>
                                    <span class="n">sender_address</span><span class="o">=</span><span class="n">sender_address</span><span class="p">)</span></div>
 
 
@@ -984,7 +1075,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">EventCancelRequestHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
@@ -1020,7 +1111,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">):</span>
         <span class="c1"># TODO: refactor, this does not exist</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">EventCancelResponseHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
@@ -1032,7 +1123,8 @@
             <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;A </span><span class="si">{}</span><span class="s2"> must have a header with &quot;</span>
                                    <span class="s2">&quot;header.command == 1, not </span><span class="si">{}</span><span class="s2">.&quot;</span>
                                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">command</span><span class="p">))</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="k">for</span> <span class="n">buf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;A </span><span class="si">{}</span><span class="s2"> must have no payload.&quot;</span>
                                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span></div>
         <span class="c1"># do not call super()</span>
@@ -1046,7 +1138,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">ReadNotifyRequestHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
@@ -1062,18 +1154,23 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">size</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
-                                     <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">size</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">ReadResponseHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">ioid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">to_builtin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
-                                              <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WriteRequest"><a class="viewcode-back" href="../../api.html#caproto.WriteRequest">[docs]</a><span class="k">class</span> <span class="nc">WriteRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1082,20 +1179,25 @@
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">4</span>
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">size</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
-                                     <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">size</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">WriteRequestHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">ioid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">to_builtin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
-                                              <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span></div>
 
 <span class="c1"># There is no &#39;WriteResponse&#39;. See WriteNotifyRequest/WriteNotifyResponse.</span>
 
@@ -1111,7 +1213,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EventsOffRequestHeader</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EventsOffRequestHeader</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="EventsOnRequest"><a class="viewcode-back" href="../../api.html#caproto.EventsOnRequest">[docs]</a><span class="k">class</span> <span class="nc">EventsOnRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1125,7 +1227,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EventsOnRequestHeader</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">EventsOnRequestHeader</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="ReadSyncRequest"><a class="viewcode-back" href="../../api.html#caproto.ReadSyncRequest">[docs]</a><span class="k">class</span> <span class="nc">ReadSyncRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1135,7 +1237,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ReadSyncRequestHeader</span><span class="p">(),</span> <span class="kc">None</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ReadSyncRequestHeader</span><span class="p">())</span></div>
 
 
 <div class="viewcode-block" id="ErrorResponse"><a class="viewcode-back" href="../../api.html#caproto.ErrorResponse">[docs]</a><span class="k">class</span> <span class="nc">ErrorResponse</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1165,20 +1267,25 @@
         <span class="n">payload</span> <span class="o">=</span> <span class="n">req_bytes</span> <span class="o">+</span> <span class="n">msg_payload</span>
 
         <span class="n">header</span> <span class="o">=</span> <span class="n">ErrorResponseHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">status_code</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">status_code</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
-    <span class="n">error_message</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">[</span><span class="n">_MessageHeaderSize</span><span class="p">:])</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">err_msg_bytes</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">_MessageHeaderSize</span><span class="p">:])</span>
+        <span class="k">return</span> <span class="n">err_msg_bytes</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">original_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">MessageHeader</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">[:</span><span class="n">_MessageHeaderSize</span><span class="p">])</span>
+        <span class="n">req_bytes</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="n">_MessageHeaderSize</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">MessageHeader</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">req_bytes</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span>
                                    <span class="n">sender_address</span><span class="o">=</span><span class="n">sender_address</span><span class="p">)</span></div>
 
 
@@ -1201,7 +1308,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ClearChannelRequestHeader</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ClearChannelRequestHeader</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">))</span>
 
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
@@ -1226,7 +1333,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ClearChannelResponseHeader</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ClearChannelResponseHeader</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">))</span>
 
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
@@ -1261,7 +1368,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">ReadNotifyRequestHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
@@ -1275,6 +1382,14 @@
 
 <span class="sd">    Fields:</span>
 
+<span class="sd">    .. attribute:: data</span>
+
+<span class="sd">        data as built-in Python or numpy types</span>
+
+<span class="sd">    .. attribute:: metadata</span>
+
+<span class="sd">        metadata in a ctypes.Structure</span>
+
 <span class="sd">    .. attribute:: data_type</span>
 
 <span class="sd">        Integer code of desired DBR type of readings.</span>
@@ -1283,38 +1398,40 @@
 
 <span class="sd">        Desired number of elements per reading.</span>
 
-<span class="sd">    .. attribute:: sid</span>
+<span class="sd">    .. attribute:: status</span>
 
-<span class="sd">        Integer ID for this Channel designated by the server.</span>
+<span class="sd">        As per Channel Access spec, 1 is success; 0 or &gt;1 are various failures.</span>
 
 <span class="sd">    .. attribute:: ioid</span>
 
 <span class="sd">        Integer ID for I/O transaction, echoing :class:`ReadNotifyRequest`.</span>
-
-<span class="sd">    .. attribute:: status</span>
-
-<span class="sd">        As per Channel Access spec, 1 is success; 0 or &gt;1 are various failures.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">15</span>
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">size</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
-                                     <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">size</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">ReadNotifyResponseHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
                                           <span class="n">ioid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
+
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
     <span class="n">status</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
-    <span class="n">ioid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">to_builtin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
-                                              <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">))</span></div>
+    <span class="n">ioid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
 
 
 <span class="k">class</span> <span class="nc">CreateChanRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1344,12 +1461,12 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
         <span class="n">size</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">padded_string_payload</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">CreateChanRequestHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">version</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">version</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">))</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">))</span>
 
 
 <span class="k">class</span> <span class="nc">CreateChanResponse</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1383,7 +1500,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">sid</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">CreateChanResponseHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">sid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
@@ -1397,9 +1514,13 @@
 
 <span class="sd">    Fields:</span>
 
-<span class="sd">    .. attribute:: values</span>
+<span class="sd">    .. attribute:: data</span>
 
-<span class="sd">        data in a tuple of built-in Python or numpy types</span>
+<span class="sd">        data as built-in Python or numpy types</span>
+
+<span class="sd">    .. attribute:: metadata</span>
+
+<span class="sd">        metadata in a ctypes.Structure</span>
 
 <span class="sd">    .. attribute:: data_type</span>
 
@@ -1422,21 +1543,26 @@
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">19</span>
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="n">size</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
-                                     <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">size</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">WriteNotifyRequestHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span>
                                           <span class="n">ioid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">ioid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
-    <span class="n">values</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">to_builtin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
-                                              <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">))</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">extract_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="WriteNotifyResponse"><a class="viewcode-back" href="../../api.html#caproto.WriteNotifyResponse">[docs]</a><span class="k">class</span> <span class="nc">WriteNotifyResponse</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1472,7 +1598,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">WriteNotifyResponseHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
@@ -1497,10 +1623,10 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="n">size</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">padded_string_payload</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">ClientNameRequestHeader</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">))</span></div>
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="HostNameRequest"><a class="viewcode-back" href="../../api.html#caproto.HostNameRequest">[docs]</a><span class="k">class</span> <span class="nc">HostNameRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1520,14 +1646,14 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="n">size</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">padded_string_payload</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">HostNameRequestHeader</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">payload</span><span class="p">)</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">))</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">))</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span>
                                    <span class="n">sender_address</span><span class="o">=</span><span class="n">sender_address</span><span class="p">)</span></div>
 
 
@@ -1552,7 +1678,7 @@
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">access_rights</span><span class="p">):</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">AccessRightsResponseHeader</span><span class="p">(</span><span class="n">cid</span><span class="p">,</span> <span class="n">access_rights</span><span class="p">)</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">access_rights</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
@@ -1573,7 +1699,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">CreateChFailResponseHeader</span><span class="p">(</span><span class="n">cid</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">CreateChFailResponseHeader</span><span class="p">(</span><span class="n">cid</span><span class="p">))</span>
 
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span></div>
 
@@ -1593,7 +1719,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cid</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ServerDisconnResponseHeader</span><span class="p">(</span><span class="n">cid</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">ServerDisconnResponseHeader</span><span class="p">(</span><span class="n">cid</span><span class="p">))</span>
 
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span></div>
 </pre></div>
@@ -1632,7 +1758,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.484.gbeb6e49',
+            VERSION:'0+untagged.569.g1bc5fbc',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

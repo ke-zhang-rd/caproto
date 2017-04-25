@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0+untagged.484.gbeb6e49 documentation</title>
+  <title>caproto._utils &mdash; caproto 0+untagged.569.g1bc5fbc documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.484.gbeb6e49 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.569.g1bc5fbc documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.484.gbeb6e49
+                0+untagged.569.g1bc5fbc
               </div>
             
           
@@ -211,6 +211,10 @@
     <span class="o">...</span>
 
 
+<span class="k">class</span> <span class="nc">DisconnectedCircuit</span><span class="p">(</span><span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
 <span class="k">class</span> <span class="nc">ProtocolError</span><span class="p">(</span><span class="n">CaprotoError</span><span class="p">):</span>
     <span class="c1"># Any error resulting from sending or receiving a command will raise (a</span>
     <span class="c1"># subclass of) this error and never any other error.</span>
@@ -307,6 +311,17 @@
              <span class="p">]</span>
 
     <span class="k">return</span> <span class="n">bcast</span>
+
+
+<span class="k">def</span> <span class="nf">ensure_bytes</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Encode string as bytes with null terminator. Bytes pass through.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># be sure to include a null terminator</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;expected str or bytes&quot;</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -343,7 +358,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.484.gbeb6e49',
+            VERSION:'0+untagged.569.g1bc5fbc',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

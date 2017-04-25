@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Simple client that reads, subscribes, writes, and shuts down &mdash; caproto 0+untagged.484.gbeb6e49 documentation</title>
+  <title>Simple client that reads, subscribes, writes, and shuts down &mdash; caproto 0+untagged.569.g1bc5fbc documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="caproto 0+untagged.484.gbeb6e49 documentation" href="../index.html"/>
+    <link rel="top" title="caproto 0+untagged.569.g1bc5fbc documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="index.html"/>
         <link rel="next" title="Simple server that responds to one ‘caget’ and shuts down" href="singleshot_server.html"/>
         <link rel="prev" title="Examples" href="index.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.484.gbeb6e49
+                0+untagged.569.g1bc5fbc
               </div>
             
           
@@ -171,10 +171,8 @@
   <div class="section" id="simple-client-that-reads-subscribes-writes-and-shuts-down">
 <h1>Simple client that reads, subscribes, writes, and shuts down<a class="headerlink" href="#simple-client-that-reads-subscribes-writes-and-shuts-down" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">caproto</span> <span class="kn">as</span> <span class="nn">ca</span>
-<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">time</span>
 <span class="kn">import</span> <span class="nn">socket</span>
-<span class="kn">import</span> <span class="nn">getpass</span>
 
 
 <span class="n">CA_REPEATER_PORT</span> <span class="o">=</span> <span class="mi">5065</span>
@@ -192,8 +190,8 @@
 
 <span class="c1"># Convenience functions that do both transport caproto validation/ingest.</span>
 <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
-    <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-    <span class="n">sockets</span><span class="p">[</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">)</span>
+    <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+    <span class="n">sockets</span><span class="p">[</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">sendmsg</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">recv</span><span class="p">(</span><span class="n">circuit</span><span class="p">):</span>
@@ -208,9 +206,10 @@
     <span class="k">return</span> <span class="n">commands</span>
 
 
-<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="o">*</span><span class="p">,</span> <span class="n">skip_monitor_section</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="c1"># A broadcast socket</span>
-    <span class="n">udp_sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_UDP</span><span class="p">)</span>
+    <span class="n">udp_sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">,</span>
+                             <span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_UDP</span><span class="p">)</span>
     <span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># Register with the repeater.</span>
@@ -265,17 +264,19 @@
                                  <span class="n">subscriptionid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                                  <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="n">send</span><span class="p">(</span><span class="n">chan1</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">add_req</span><span class="p">)</span>
-    <span class="n">subscriptionid</span> <span class="o">=</span> <span class="n">add_req</span><span class="o">.</span><span class="n">subscriptionid</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Monitoring until Ctrl-C is hit. Meanwhile, use caput to change &#39;</span>
-              <span class="s1">&#39;the value and watch for commands to arrive here.&#39;</span><span class="p">)</span>
-        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-            <span class="n">commands</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">chan1</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">commands</span><span class="p">:</span>
-                <span class="k">print</span><span class="p">(</span><span class="n">commands</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
-        <span class="k">pass</span>
+    <span class="n">commands</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">chan1</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">skip_monitor_section</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Monitoring until Ctrl-C is hit. Meanwhile, use caput to &#39;</span>
+                  <span class="s1">&#39;change the value and watch for commands to arrive here.&#39;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="n">commands</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">chan1</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">commands</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">commands</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="k">pass</span>
 
     <span class="n">cancel_req</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">EventCancelRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">add_req</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
                                        <span class="n">sid</span><span class="o">=</span><span class="n">add_req</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
@@ -286,14 +287,13 @@
 
     <span class="c1"># Test reading.</span>
     <span class="n">send</span><span class="p">(</span><span class="n">chan1</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ReadNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                                            <span class="n">sid</span><span class="o">=</span><span class="n">chan1</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
-                                            <span class="n">ioid</span><span class="o">=</span><span class="mi">12</span><span class="p">))</span>
+                                             <span class="n">sid</span><span class="o">=</span><span class="n">chan1</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="o">=</span><span class="mi">12</span><span class="p">))</span>
     <span class="n">commands</span><span class="p">,</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">chan1</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
 
     <span class="c1"># Test writing.</span>
     <span class="n">request</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">WriteNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
                                     <span class="n">sid</span><span class="o">=</span><span class="n">chan1</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
-                                    <span class="n">ioid</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,))</span>
+                                    <span class="n">ioid</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,))</span>
 
     <span class="n">send</span><span class="p">(</span><span class="n">chan1</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">request</span><span class="p">)</span>
     <span class="n">recv</span><span class="p">(</span><span class="n">chan1</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
@@ -361,7 +361,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0+untagged.484.gbeb6e49',
+            VERSION:'0+untagged.569.g1bc5fbc',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

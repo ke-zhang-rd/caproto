@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.484.gbeb6e49 documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.569.g1bc5fbc documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.484.gbeb6e49 documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.569.g1bc5fbc documentation" href="index.html"/>
         <link rel="next" title="Examples" href="examples/index.html"/>
         <link rel="prev" title="Getting Started: Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.484.gbeb6e49
+                0+untagged.569.g1bc5fbc
               </div>
             
           
@@ -479,13 +479,13 @@ subscription on this Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.EventAddResponse">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventAddResponse</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>status_code</em>, <em>subscriptionid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventAddResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventAddResponse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventAddResponse</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>status_code</em>, <em>subscriptionid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventAddResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventAddResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Notify the client of a change in a Channel&#8217;s value.</p>
 <p>Fields:</p>
 <dl class="attribute">
-<dt id="caproto.EventAddResponse.values">
-<code class="descname">values</code><a class="headerlink" href="#caproto.EventAddResponse.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>data in a tuple of built-in Python or numpy types</p>
+<dt id="caproto.EventAddResponse.data">
+<code class="descname">data</code><a class="headerlink" href="#caproto.EventAddResponse.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>data as built-in Python or numpy types</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -584,7 +584,7 @@ subscription on this Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.WriteRequest">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">WriteRequest</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#WriteRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.WriteRequest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">WriteRequest</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#WriteRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.WriteRequest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deprecated: See <a class="reference internal" href="#caproto.WriteNotifyRequest" title="caproto.WriteNotifyRequest"><code class="xref py py-class docutils literal"><span class="pre">WriteNotifyRequest</span></code></a>.</p>
 </dd></dl>
 
@@ -699,9 +699,21 @@ Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.ReadNotifyResponse">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ReadNotifyResponse</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>status</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ReadNotifyResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ReadNotifyResponse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ReadNotifyResponse</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>status</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ReadNotifyResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ReadNotifyResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request a fresh reading of a Channel.</p>
 <p>Fields:</p>
+<dl class="attribute">
+<dt id="caproto.ReadNotifyResponse.data">
+<code class="descname">data</code><a class="headerlink" href="#caproto.ReadNotifyResponse.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>data as built-in Python or numpy types</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="caproto.ReadNotifyResponse.metadata">
+<code class="descname">metadata</code><a class="headerlink" href="#caproto.ReadNotifyResponse.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>metadata in a ctypes.Structure</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="caproto.ReadNotifyResponse.data_type">
 <code class="descname">data_type</code><a class="headerlink" href="#caproto.ReadNotifyResponse.data_type" title="Permalink to this definition">¶</a></dt>
@@ -715,9 +727,9 @@ Virtual Circuit.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="caproto.ReadNotifyResponse.sid">
-<code class="descname">sid</code><a class="headerlink" href="#caproto.ReadNotifyResponse.sid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Integer ID for this Channel designated by the server.</p>
+<dt id="caproto.ReadNotifyResponse.status">
+<code class="descname">status</code><a class="headerlink" href="#caproto.ReadNotifyResponse.status" title="Permalink to this definition">¶</a></dt>
+<dd><p>As per Channel Access spec, 1 is success; 0 or &gt;1 are various failures.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -726,23 +738,23 @@ Virtual Circuit.</p>
 <dd><p>Integer ID for I/O transaction, echoing <a class="reference internal" href="#caproto.ReadNotifyRequest" title="caproto.ReadNotifyRequest"><code class="xref py py-class docutils literal"><span class="pre">ReadNotifyRequest</span></code></a>.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="caproto.ReadNotifyResponse.status">
-<code class="descname">status</code><a class="headerlink" href="#caproto.ReadNotifyResponse.status" title="Permalink to this definition">¶</a></dt>
-<dd><p>As per Channel Access spec, 1 is success; 0 or &gt;1 are various failures.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="class">
 <dt id="caproto.WriteNotifyRequest">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">WriteNotifyRequest</code><span class="sig-paren">(</span><em>values</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#WriteNotifyRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.WriteNotifyRequest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">WriteNotifyRequest</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#WriteNotifyRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.WriteNotifyRequest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write a value to a Channel.</p>
 <p>Fields:</p>
 <dl class="attribute">
-<dt id="caproto.WriteNotifyRequest.values">
-<code class="descname">values</code><a class="headerlink" href="#caproto.WriteNotifyRequest.values" title="Permalink to this definition">¶</a></dt>
-<dd><p>data in a tuple of built-in Python or numpy types</p>
+<dt id="caproto.WriteNotifyRequest.data">
+<code class="descname">data</code><a class="headerlink" href="#caproto.WriteNotifyRequest.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>data as built-in Python or numpy types</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="caproto.WriteNotifyRequest.metadata">
+<code class="descname">metadata</code><a class="headerlink" href="#caproto.WriteNotifyRequest.metadata" title="Permalink to this definition">¶</a></dt>
+<dd><p>metadata in a ctypes.Structure</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -975,7 +987,7 @@ closing the Channel.</p>
 <span class="gp">   ...: </span>
 
 <span class="gp">In [8]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={CLIENT: SEND_VERSION_REQUEST, SERVER: IDLE}&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={SERVER: IDLE, CLIENT: SEND_VERSION_REQUEST}&gt;</span>
 </pre></div>
 </div>
 <p>When a <a class="reference internal" href="#caproto.VersionRequest" title="caproto.VersionRequest"><code class="xref py py-class docutils literal"><span class="pre">VersionRequest</span></code></a> is sent through the VirtualCircuit, both the
@@ -983,7 +995,7 @@ client and the server state update.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">));</span>
 
 <span class="gp">In [10]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={CLIENT: AWAIT_VERSION_RESPONSE, SERVER: SEND_VERSION_RESPONSE}&gt;</span>
+<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={SERVER: SEND_VERSION_RESPONSE, CLIENT: AWAIT_VERSION_RESPONSE}&gt;</span>
 </pre></div>
 </div>
 <p>And we can test the current state using constants like
@@ -1082,16 +1094,22 @@ load. Lowest priority is 0; highest is 99.</p>
 <dl class="method">
 <dt id="caproto.VirtualCircuit.send">
 <code class="descname">send</code><span class="sig-paren">(</span><em>*commands</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#VirtualCircuit.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit.send" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert one or more high-level Commands into bytes that may be
-broadcast together in one TCP packet while updating our internal
+<dd><p>Convert one or more high-level Commands into buffers of bytes that may
+be broadcast together in one TCP packet while updating our internal
 state machine.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>*commands :</strong></p>
-<blockquote class="last">
+<blockquote>
 <div><p>any number of <code class="xref py py-class docutils literal"><span class="pre">Message</span></code> objects</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>buffers_to_send</strong> : list</p>
+<blockquote class="last">
+<div><p>list of buffers to send over a socket</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1101,7 +1119,7 @@ state machine.</p>
 
 <dl class="method">
 <dt id="caproto.VirtualCircuit.recv">
-<code class="descname">recv</code><span class="sig-paren">(</span><em>byteslike</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#VirtualCircuit.recv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit.recv" title="Permalink to this definition">¶</a></dt>
+<code class="descname">recv</code><span class="sig-paren">(</span><em>*buffers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#VirtualCircuit.recv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit.recv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add data received over TCP to our internal recieve buffer.</p>
 <p>This does not actually do any processing on the data, just stores
 it. To trigger processing, you have to call <a class="reference internal" href="#caproto.VirtualCircuit.next_command" title="caproto.VirtualCircuit.next_command"><code class="xref py py-meth docutils literal"><span class="pre">next_command()</span></code></a>.</p>
@@ -1109,7 +1127,11 @@ it. To trigger processing, you have to call <a class="reference internal" href="
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>byteslike</strong> : bytes-like</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>*buffers :</strong></p>
+<blockquote class="last">
+<div><p>any number of bytes-like buffers</p>
+</div></blockquote>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1192,8 +1214,14 @@ state machine.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>*commands :</strong></p>
-<blockquote class="last">
+<blockquote>
 <div><p>any number of <code class="xref py py-class docutils literal"><span class="pre">Message</span></code> objects</p>
+</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>bytes_to_send</strong> : bytes</p>
+<blockquote class="last">
+<div><p>bytes to send over a socket</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1825,7 +1853,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.484.gbeb6e49',
+            VERSION:'0+untagged.569.g1bc5fbc',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._hub &mdash; caproto 0+untagged.484.gbeb6e49 documentation</title>
+  <title>caproto._hub &mdash; caproto 0+untagged.569.g1bc5fbc documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.484.gbeb6e49 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.569.g1bc5fbc documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.484.gbeb6e49
+                0+untagged.569.g1bc5fbc
               </div>
             
           
@@ -260,23 +260,29 @@
 
 <div class="viewcode-block" id="VirtualCircuit.send"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">commands</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert one or more high-level Commands into bytes that may be</span>
-<span class="sd">        broadcast together in one TCP packet while updating our internal</span>
+<span class="sd">        Convert one or more high-level Commands into buffers of bytes that may</span>
+<span class="sd">        be broadcast together in one TCP packet while updating our internal</span>
 <span class="sd">        state machine.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        *commands :</span>
 <span class="sd">            any number of :class:`Message` objects</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        buffers_to_send : list</span>
+<span class="sd">            list of buffers to send over a socket</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
+        <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Serializing </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-            <span class="n">bytes_to_send</span> <span class="o">+=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">bytes_to_send</span></div>
+            <span class="n">buffers_to_send</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">header</span><span class="p">))</span>
+            <span class="n">buffers_to_send</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">buffers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">buffers_to_send</span></div>
 
-<div class="viewcode-block" id="VirtualCircuit.recv"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.recv">[docs]</a>    <span class="k">def</span> <span class="nf">recv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">byteslike</span><span class="p">):</span>
+<div class="viewcode-block" id="VirtualCircuit.recv"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.recv">[docs]</a>    <span class="k">def</span> <span class="nf">recv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Add data received over TCP to our internal recieve buffer.</span>
 
@@ -285,10 +291,12 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        byteslike : bytes-like</span>
+<span class="sd">        *buffers :</span>
+<span class="sd">            any number of bytes-like buffers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received </span><span class="si">%d</span><span class="s2"> bytes.&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">byteslike</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">+=</span> <span class="n">byteslike</span></div>
+        <span class="k">for</span> <span class="n">byteslike</span> <span class="ow">in</span> <span class="n">buffers</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received </span><span class="si">%d</span><span class="s2"> bytes.&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">byteslike</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">+=</span> <span class="n">byteslike</span></div>
 
 <div class="viewcode-block" id="VirtualCircuit.next_command"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.next_command">[docs]</a>    <span class="k">def</span> <span class="nf">next_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -320,7 +328,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ErrorResponse</span><span class="p">):</span>
             <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">{!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">payload</span><span class="p">))</span>
+            <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">{!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">error_message</span><span class="p">))</span>
         <span class="c1"># Filter for Commands that are pertinent to a specific Channel, as</span>
         <span class="c1"># opposed to the Circuit as a whole:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="p">(</span><span class="n">ClearChannelRequest</span><span class="p">,</span> <span class="n">ClearChannelResponse</span><span class="p">,</span>
@@ -543,6 +551,11 @@
 <span class="sd">        ----------</span>
 <span class="sd">        *commands :</span>
 <span class="sd">            any number of :class:`Message` objects</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bytes_to_send : bytes</span>
+<span class="sd">            bytes to send over a socket</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
         <span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># commands sent as part of this datagram</span>
@@ -1192,7 +1205,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.484.gbeb6e49',
+            VERSION:'0+untagged.569.g1bc5fbc',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
