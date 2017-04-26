@@ -1,0 +1,140 @@
+{
+    "benchmarks": {
+        "benchmarks.TimeWaveform4000.time_caproto_curio": {
+            "code": "def time_caproto_curio(self):\n    async def curio_reading():\n        for i in range(self.ITERS):\n            reading = await self.chan1.read()\n            assert len(reading.data) == self.num\n\n    with curio.Kernel() as kernel:\n        kernel.run(curio_reading())\n",
+            "goal_time": 2.0,
+            "name": "benchmarks.TimeWaveform4000.time_caproto_curio",
+            "number": 0,
+            "param_names": [],
+            "params": [],
+            "pretty_name": "benchmarks.TimeWaveform4000.time_caproto_curio",
+            "repeat": 0,
+            "timeout": 60.0,
+            "type": "time",
+            "unit": "seconds"
+        },
+        "benchmarks.TimeWaveform4000.time_pyepics": {
+            "code": "def time_pyepics(self):\n    for i in range(self.ITERS):\n        values = self.pv.get(timeout=0.5, as_numpy=True)\n        assert len(values) == self.num\n",
+            "goal_time": 2.0,
+            "name": "benchmarks.TimeWaveform4000.time_pyepics",
+            "number": 0,
+            "param_names": [],
+            "params": [],
+            "pretty_name": "benchmarks.TimeWaveform4000.time_pyepics",
+            "repeat": 0,
+            "timeout": 60.0,
+            "type": "time",
+            "unit": "seconds"
+        },
+        "benchmarks.TimeWaveformMillion.time_caproto_curio": {
+            "code": "def time_caproto_curio(self):\n    async def curio_reading():\n        for i in range(self.ITERS):\n            reading = await self.chan1.read()\n            assert len(reading.data) == self.num\n\n    with curio.Kernel() as kernel:\n        kernel.run(curio_reading())\n",
+            "goal_time": 2.0,
+            "name": "benchmarks.TimeWaveformMillion.time_caproto_curio",
+            "number": 0,
+            "param_names": [],
+            "params": [],
+            "pretty_name": "benchmarks.TimeWaveformMillion.time_caproto_curio",
+            "repeat": 0,
+            "timeout": 60.0,
+            "type": "time",
+            "unit": "seconds"
+        },
+        "benchmarks.TimeWaveformMillion.time_pyepics": {
+            "code": "def time_pyepics(self):\n    for i in range(self.ITERS):\n        values = self.pv.get(timeout=0.5, as_numpy=True)\n        assert len(values) == self.num\n",
+            "goal_time": 2.0,
+            "name": "benchmarks.TimeWaveformMillion.time_pyepics",
+            "number": 0,
+            "param_names": [],
+            "params": [],
+            "pretty_name": "benchmarks.TimeWaveformMillion.time_pyepics",
+            "repeat": 0,
+            "timeout": 60.0,
+            "type": "time",
+            "unit": "seconds"
+        }
+    },
+    "graph_param_list": [
+        {
+            "arch": "x86_64",
+            "branch": "master",
+            "cpu": "Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz",
+            "machine": "freyja.nsls2.bnl.gov",
+            "numpy": "",
+            "os": "Linux 3.19.0-84-generic",
+            "pip+curio": "",
+            "pip+pyepics": "",
+            "python": "3.6",
+            "ram": "264096552"
+        }
+    ],
+    "hash_length": 8,
+    "machines": {
+        "freyja.nsls2.bnl.gov": {
+            "arch": "x86_64",
+            "cpu": "Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz",
+            "machine": "freyja.nsls2.bnl.gov",
+            "os": "Linux 3.19.0-84-generic",
+            "ram": "264096552",
+            "version": 1
+        }
+    },
+    "pages": [
+        [
+            "",
+            "Grid view",
+            "Display as a agrid"
+        ],
+        [
+            "summarylist",
+            "List view",
+            "Display as a list"
+        ],
+        [
+            "regressions",
+            "Show regressions",
+            "Display information about recent regressions"
+        ]
+    ],
+    "params": {
+        "arch": [
+            "x86_64"
+        ],
+        "branch": [
+            "master"
+        ],
+        "cpu": [
+            "Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz"
+        ],
+        "machine": [
+            "freyja.nsls2.bnl.gov"
+        ],
+        "numpy": [
+            ""
+        ],
+        "os": [
+            "Linux 3.19.0-84-generic"
+        ],
+        "pip+curio": [
+            ""
+        ],
+        "pip+pyepics": [
+            ""
+        ],
+        "python": [
+            "3.6"
+        ],
+        "ram": [
+            "264096552"
+        ]
+    },
+    "project": "caproto",
+    "project_url": "https://danielballan.github.io/caproto/doc",
+    "revision_to_date": {
+        "714": 1493221820000
+    },
+    "revision_to_hash": {
+        "714": "7ae17e31a6bd89bf72f6c5550469f9e8fda69aea"
+    },
+    "show_commit_url": "#",
+    "tags": {}
+}
