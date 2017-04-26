@@ -1,0 +1,42 @@
+[
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 714,
+        "last_value": 0.04055876399999997,
+        "name": "benchmarks.TimeWaveform4000.time_caproto_curio",
+        "pretty_name": "benchmarks.TimeWaveform4000.time_caproto_curio",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 714,
+        "last_value": 0.03233335200000004,
+        "name": "benchmarks.TimeWaveform4000.time_pyepics",
+        "pretty_name": "benchmarks.TimeWaveform4000.time_pyepics",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 714,
+        "last_value": 0.9031220080000002,
+        "name": "benchmarks.TimeWaveformMillion.time_caproto_curio",
+        "pretty_name": "benchmarks.TimeWaveformMillion.time_caproto_curio",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": null,
+        "last_err": 0.0,
+        "last_rev": 714,
+        "last_value": 1.3012795110000002,
+        "name": "benchmarks.TimeWaveformMillion.time_pyepics",
+        "pretty_name": "benchmarks.TimeWaveformMillion.time_pyepics",
+        "prev_value": null
+    }
+]
