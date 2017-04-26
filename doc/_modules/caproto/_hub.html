@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._hub &mdash; caproto 0+untagged.575.gd252a61 documentation</title>
+  <title>caproto._hub &mdash; caproto 0+untagged.605.g9c874b9 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.575.gd252a61 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.605.g9c874b9 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.575.gd252a61
+                0+untagged.605.g9c874b9
               </div>
             
           
@@ -750,7 +750,7 @@
         <span class="k">if</span> <span class="n">data_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_data_type</span>
         <span class="k">if</span> <span class="n">data_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_data_count</span>
+            <span class="n">data_count</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span>
 
     <span class="k">def</span> <span class="nf">state_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">old_state</span><span class="p">,</span> <span class="n">new_state</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
@@ -919,6 +919,8 @@
 <span class="sd">        WriteNotifyRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">data_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">ioid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_ioid</span><span class="p">()</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">WriteNotifyRequest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
                                      <span class="n">ioid</span><span class="p">)</span>
@@ -1205,7 +1207,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.575.gd252a61',
+            VERSION:'0+untagged.605.g9c874b9',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
