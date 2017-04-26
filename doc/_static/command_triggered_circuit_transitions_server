@@ -1,13 +1,13 @@
 digraph {
 	IDLE [label=IDLE]
-	CLOSED [label=CLOSED]
 	SEND_VERSION_RESPONSE [label=SEND_VERSION_RESPONSE]
 	CONNECTED [label=CONNECTED]
+	CLOSED [label=CLOSED]
 		IDLE -> SEND_VERSION_RESPONSE [label=VersionRequest]
 		SEND_VERSION_RESPONSE -> CONNECTED [label=VersionResponse]
 		SEND_VERSION_RESPONSE -> ERROR [label=ErrorResponse]
 		CONNECTED -> ERROR [label=ErrorResponse]
-		CONNECTED -> CONNECTED [label="EchoResponse / EventsOnRequest / EventsOffRequest / HostNameRequest / ClientNameRequest / EchoRequest"]
-		SEND_VERSION_RESPONSE -> SEND_VERSION_RESPONSE [label="HostNameRequest / ClientNameRequest"]
 		IDLE -> IDLE [label=VersionResponse]
+		SEND_VERSION_RESPONSE -> SEND_VERSION_RESPONSE [label="HostNameRequest / ClientNameRequest"]
+		CONNECTED -> CONNECTED [label="HostNameRequest / ClientNameRequest / EventsOffRequest / EventsOnRequest / EchoRequest / EchoResponse"]
 }
