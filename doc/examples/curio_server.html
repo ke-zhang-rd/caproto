@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Fairly complete server using curio for async I/O &mdash; caproto 0+untagged.605.g9c874b9 documentation</title>
+  <title>Fairly complete server using curio for async I/O &mdash; caproto 0+untagged.619.gf794c6f documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../genindex.html"/>
         <link rel="search" title="Search" href="../search.html"/>
-    <link rel="top" title="caproto 0+untagged.605.g9c874b9 documentation" href="../index.html"/>
+    <link rel="top" title="caproto 0+untagged.619.gf794c6f documentation" href="../index.html"/>
         <link rel="up" title="Examples" href="index.html"/>
         <link rel="next" title="References" href="../references.html"/>
         <link rel="prev" title="Fairly complete client using curio for async I/O" href="curio_client.html"/> 
@@ -67,7 +67,7 @@
             
             
               <div class="version">
-                0+untagged.605.g9c874b9
+                0+untagged.619.gf794c6f
               </div>
             
           
@@ -181,7 +181,6 @@
 <span class="kn">from</span> <span class="nn">caproto</span> <span class="kn">import</span> <span class="p">(</span><span class="n">DatabaseRecordDouble</span><span class="p">,</span> <span class="n">DatabaseRecordInteger</span><span class="p">,</span>
                      <span class="n">DatabaseRecordEnum</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">caproto</span> <span class="kn">import</span> <span class="p">(</span><span class="n">EPICS_CA1_PORT</span><span class="p">,</span> <span class="n">EPICS_CA2_PORT</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">caproto</span> <span class="kn">import</span> <span class="n">ReadNotifyResponse</span>
 
 
 <span class="k">def</span> <span class="nf">find_next_tcp_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">starting_port</span><span class="o">=</span><span class="n">EPICS_CA2_PORT</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
@@ -289,9 +288,9 @@
             <span class="c1"># TODO</span>
             <span class="n">db_entry</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;native&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">db_entry</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
             <span class="n">metadata</span><span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">db_entry</span><span class="o">.</span><span class="n">get_dbr_data</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
-            <span class="k">yield</span> <span class="n">ReadNotifyResponse</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
-                                     <span class="n">data_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-                                     <span class="n">ioid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+            <span class="k">yield</span> <span class="n">chan</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+                            <span class="n">data_count</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">ioid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">WriteNotifyRequest</span><span class="p">):</span>
             <span class="n">chan</span><span class="p">,</span> <span class="n">db_entry</span> <span class="o">=</span> <span class="n">get_db_entry</span><span class="p">()</span>
             <span class="k">yield</span> <span class="n">chan</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ioid</span><span class="o">=</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">)</span>
@@ -485,7 +484,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'0+untagged.605.g9c874b9',
+            VERSION:'0+untagged.619.gf794c6f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

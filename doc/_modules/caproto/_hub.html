@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._hub &mdash; caproto 0+untagged.605.g9c874b9 documentation</title>
+  <title>caproto._hub &mdash; caproto 0+untagged.619.gf794c6f documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.605.g9c874b9 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.619.gf794c6f documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.605.g9c874b9
+                0+untagged.619.gf794c6f
               </div>
             
           
@@ -237,7 +237,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sub_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">priority</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">our_role</span> <span class="ow">is</span> <span class="n">CLIENT</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">CaprotoRuntimeError</span><span class="p">(</span><span class="s2">&quot;Client-side VirtualCircuit requires a &quot;</span>
-                                      <span class="s2">&quot;non-None priority at initialization time.&quot;</span><span class="p">)</span>
+                                      <span class="s2">&quot;non-None priority at initialization &quot;</span>
+                                      <span class="s2">&quot;time.&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -326,9 +327,6 @@
 <span class="sd">        role : ``CLIENT`` or ``SERVER``</span>
 <span class="sd">        command : Message</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ErrorResponse</span><span class="p">):</span>
-            <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;Error: </span><span class="si">{!s}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">error_message</span><span class="p">))</span>
         <span class="c1"># Filter for Commands that are pertinent to a specific Channel, as</span>
         <span class="c1"># opposed to the Circuit as a whole:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="p">(</span><span class="n">ClearChannelRequest</span><span class="p">,</span> <span class="n">ClearChannelResponse</span><span class="p">,</span>
@@ -898,13 +896,13 @@
         <span class="n">command</span> <span class="o">=</span> <span class="n">ReadNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-<div class="viewcode-block" id="ClientChannel.write"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ClientChannel.write"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`WriteNotifyRequest`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        data : object</span>
+<span class="sd">        data : tuple, ``numpy.ndarray``, ``array.array``, or bytes</span>
 <span class="sd">        data_type : a :class:`DBR_TYPE` or its designation integer ID, optional</span>
 <span class="sd">            Requested Channel Access data type. Default is the channel&#39;s</span>
 <span class="sd">            native data type, which can be checked in the Channel&#39;s attribute</span>
@@ -913,6 +911,8 @@
 <span class="sd">            Requested number of values. Default is the channel&#39;s native data</span>
 <span class="sd">            count, which can be checked in the Channel&#39;s attribute</span>
 <span class="sd">            :attr:`native_data_count`.</span>
+<span class="sd">        metadata : ``ctypes.BigEndianStructure`` or tuple</span>
+<span class="sd">            Status and control metadata for the values</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -923,7 +923,7 @@
             <span class="n">data_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">ioid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_ioid</span><span class="p">()</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">WriteNotifyRequest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
-                                     <span class="n">ioid</span><span class="p">)</span>
+                                     <span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="ClientChannel.subscribe"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
@@ -1013,7 +1013,7 @@
 <span class="sd">        VersionResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">command</span> <span class="o">=</span> <span class="n">VersionResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_circuit</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">)</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">VersionResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="ServerChannel.create"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_data_type</span><span class="p">,</span> <span class="n">native_data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">):</span>
@@ -1048,14 +1048,14 @@
         <span class="n">command</span> <span class="o">=</span> <span class="n">ClearChannelResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-<div class="viewcode-block" id="ServerChannel.read"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+<div class="viewcode-block" id="ServerChannel.read"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
              <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`ReadNotifyResponse`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        values : ???</span>
+<span class="sd">        data : tuple, ``numpy.ndarray``, ``array.array``, or bytes</span>
 <span class="sd">        ioid : integer</span>
 <span class="sd">        data_type : a :class:`DBR_TYPE` or its designation integer ID, optional</span>
 <span class="sd">            Requested Channel Access data type. Default is the channel&#39;s</span>
@@ -1067,7 +1067,7 @@
 <span class="sd">            :attr:`native_data_count`.</span>
 <span class="sd">        status : integer, optional</span>
 <span class="sd">            Default is 1 (success).</span>
-<span class="sd">        metadata :</span>
+<span class="sd">        metadata : ``ctypes.BigEndianStructure`` or tuple</span>
 <span class="sd">            Status and control metadata for the values</span>
 
 <span class="sd">        Returns</span>
@@ -1075,7 +1075,7 @@
 <span class="sd">        ReadNotifyResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">ReadNotifyResponse</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">ReadNotifyResponse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
                                      <span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
@@ -1105,15 +1105,15 @@
         <span class="n">command</span> <span class="o">=</span> <span class="n">WriteNotifyResponse</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-<div class="viewcode-block" id="ServerChannel.subscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+<div class="viewcode-block" id="ServerChannel.subscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`EventAddResponse`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        values :</span>
-<span class="sd">        subscriptionid :</span>
+<span class="sd">        data : tuple, ``numpy.ndarray``, ``array.array``, or bytes</span>
+<span class="sd">        subscriptionid : integer</span>
 <span class="sd">        data_type : a :class:`DBR_TYPE` or its designation integer ID, optional</span>
 <span class="sd">            Requested Channel Access data type. Default is the channel&#39;s</span>
 <span class="sd">            native data type, which can be checked in the Channel&#39;s attribute</span>
@@ -1124,6 +1124,8 @@
 <span class="sd">            :attr:`native_data_count`.</span>
 <span class="sd">        status_code : integer, optional</span>
 <span class="sd">            Default is 32 (???).</span>
+<span class="sd">        metadata : ``ctypes.BigEndianStructure`` or tuple</span>
+<span class="sd">            Status and control metadata for the values</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1131,8 +1133,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO It&#39;s unclear what the status_code means here.</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">EventAddResponse</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span>
-                                   <span class="n">subscriptionid</span><span class="p">)</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">EventAddResponse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span>
+                                   <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="ServerChannel.unsubscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1207,7 +1209,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.605.g9c874b9',
+            VERSION:'0+untagged.619.gf794c6f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

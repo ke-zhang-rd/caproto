@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0+untagged.605.g9c874b9 documentation</title>
+  <title>caproto._commands &mdash; caproto 0+untagged.619.gf794c6f documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.605.g9c874b9 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.619.gf794c6f documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.605.g9c874b9
+                0+untagged.619.gf794c6f
               </div>
             
           
@@ -212,8 +212,10 @@
                    <span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">,</span> <span class="n">USE_NUMPY</span><span class="p">,</span> <span class="n">array_type_code</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_dbr</span> <span class="k">as</span> <span class="n">dbr</span>
-<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">REQUEST</span><span class="p">,</span> <span class="n">RESPONSE</span><span class="p">,</span>
-                     <span class="n">SERVER</span><span class="p">,</span> <span class="n">CaprotoTypeError</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">ensure_bytes</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">REQUEST</span><span class="p">,</span> <span class="n">RESPONSE</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span>
+                     <span class="n">CaprotoTypeError</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span>
+                     <span class="n">CaprotoNotImplementedError</span><span class="p">,</span>
+                     <span class="n">ensure_bytes</span><span class="p">)</span>
 
 <span class="c1"># numpy is only used if it is available</span>
 <span class="k">try</span><span class="p">:</span>
@@ -311,8 +313,9 @@
         <span class="c1"># We could just fall back on len() but I worry that someone will</span>
         <span class="c1"># unwittingly use this on a type that has a __len__ that is not its</span>
         <span class="c1"># bytelength and is not already caught above. Better to fail like this.</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not sure how to measure byte length of &quot;</span>
-                                  <span class="s2">&quot;object of type </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
+        <span class="k">raise</span> <span class="n">CaprotoNotImplementedError</span><span class="p">(</span><span class="s2">&quot;Not sure how to measure byte length &quot;</span>
+                                         <span class="s2">&quot;of object of type </span><span class="si">{}</span><span class="s2">&quot;</span>
+                                         <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)))</span>
 
 
 <span class="k">def</span> <span class="nf">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">):</span>
@@ -1077,7 +1080,6 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
-    <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">subscriptionid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
 
@@ -1780,7 +1782,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.605.g9c874b9',
+            VERSION:'0+untagged.619.gf794c6f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

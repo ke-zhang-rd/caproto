@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.605.g9c874b9 documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.619.gf794c6f documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.605.g9c874b9 documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.619.gf794c6f documentation" href="index.html"/>
         <link rel="next" title="Examples" href="examples/index.html"/>
         <link rel="prev" title="Getting Started: Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.605.g9c874b9
+                0+untagged.619.gf794c6f
               </div>
             
           
@@ -1471,13 +1471,13 @@ count, which can be checked in the Channel&#8217;s attribute
 
 <dl class="method">
 <dt id="caproto.ClientChannel.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>data_type=None</em>, <em>data_count=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ClientChannel.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.write" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ClientChannel.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.WriteNotifyRequest" title="caproto.WriteNotifyRequest"><code class="xref py py-class docutils literal"><span class="pre">WriteNotifyRequest</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : object</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : tuple, <code class="docutils literal"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal"><span class="pre">array.array</span></code>, or bytes</p>
 <p><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
 <div><p>Requested Channel Access data type. Default is the channel&#8217;s
@@ -1489,6 +1489,10 @@ native data type, which can be checked in the Channel&#8217;s attribute
 <div><p>Requested number of values. Default is the channel&#8217;s native data
 count, which can be checked in the Channel&#8217;s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
+</div></blockquote>
+<p><strong>metadata</strong> : <code class="docutils literal"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</p>
+<blockquote>
+<div><p>Status and control metadata for the values</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1649,13 +1653,13 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 
 <dl class="method">
 <dt id="caproto.ServerChannel.read">
-<code class="descname">read</code><span class="sig-paren">(</span><em>values</em>, <em>ioid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=1</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.read" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read</code><span class="sig-paren">(</span><em>data</em>, <em>ioid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=1</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadNotifyResponse" title="caproto.ReadNotifyResponse"><code class="xref py py-class docutils literal"><span class="pre">ReadNotifyResponse</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>values</strong> : ???</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : tuple, <code class="docutils literal"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal"><span class="pre">array.array</span></code>, or bytes</p>
 <p><strong>ioid</strong> : integer</p>
 <p><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
@@ -1673,7 +1677,7 @@ count, which can be checked in the Channel&#8217;s attribute
 <blockquote>
 <div><p>Default is 1 (success).</p>
 </div></blockquote>
-<p><strong>metadata :</strong></p>
+<p><strong>metadata</strong> : <code class="docutils literal"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</p>
 <blockquote>
 <div><p>Status and control metadata for the values</p>
 </div></blockquote>
@@ -1722,14 +1726,14 @@ count, which can be checked in the Channel&#8217;s attribute
 
 <dl class="method">
 <dt id="caproto.ServerChannel.subscribe">
-<code class="descname">subscribe</code><span class="sig-paren">(</span><em>values</em>, <em>subscriptionid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status_code=32</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.subscribe" title="Permalink to this definition">¶</a></dt>
+<code class="descname">subscribe</code><span class="sig-paren">(</span><em>data</em>, <em>subscriptionid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status_code=32</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.subscribe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.EventAddResponse" title="caproto.EventAddResponse"><code class="xref py py-class docutils literal"><span class="pre">EventAddResponse</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>values :</strong></p>
-<p><strong>subscriptionid :</strong></p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : tuple, <code class="docutils literal"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal"><span class="pre">array.array</span></code>, or bytes</p>
+<p><strong>subscriptionid</strong> : integer</p>
 <p><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
 <div><p>Requested Channel Access data type. Default is the channel&#8217;s
@@ -1745,6 +1749,10 @@ count, which can be checked in the Channel&#8217;s attribute
 <p><strong>status_code</strong> : integer, optional</p>
 <blockquote>
 <div><p>Default is 32 (???).</p>
+</div></blockquote>
+<p><strong>metadata</strong> : <code class="docutils literal"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</p>
+<blockquote>
+<div><p>Status and control metadata for the values</p>
 </div></blockquote>
 </td>
 </tr>
@@ -1853,7 +1861,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.605.g9c874b9',
+            VERSION:'0+untagged.619.gf794c6f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
