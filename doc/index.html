@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0+untagged.626.g14de719 documentation</title>
+  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0+untagged.630.g8bc8586 documentation</title>
   
 
   
@@ -35,8 +35,8 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.626.g14de719 documentation" href="#"/>
-        <link rel="next" title="Getting Started: Writing Your Own Channel Access Client" href="basics.html"/> 
+    <link rel="top" title="caproto 0+untagged.630.g8bc8586 documentation" href="#"/>
+        <link rel="next" title="Writing Your Own Channel Access Client" href="basics.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.626.g14de719
+                0+untagged.630.g8bc8586
               </div>
             
           
@@ -89,12 +89,19 @@
               
             
             
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="basics.html">Getting Started: Writing Your Own Channel Access Client</a></li>
+              <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="curio-client.html">Asynchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curio-server.html">Asynchronous Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
 </ul>
 
             
@@ -160,11 +167,12 @@
             
   <div class="section" id="caproto-a-pure-python-channel-access-protocol-library">
 <h1>caproto: a pure-Python Channel Access protocol library<a class="headerlink" href="#caproto-a-pure-python-channel-access-protocol-library" title="Permalink to this headline">¶</a></h1>
-<p>This is a &#8220;bring your own I/O&#8221; implementation of the
+<p>Caproto is a &#8220;bring your own I/O&#8221; implementation of the
 <a class="reference external" href="http://www.aps.anl.gov/epics/">EPICS</a> Channel Access protocol in
 Python.</p>
 <p>This project is inspired by the broad effort in the Python community to write
-<a class="reference external" href="http://sans-io.readthedocs.io/">sans-I/O implementations of network protocols</a>. The EPICS (Experimental Physics and Industrial Control System) Channel Access
+<a class="reference external" href="http://sans-io.readthedocs.io/">sans-I/O implementations of network protocols</a>.
+The EPICS (Experimental Physics and Industrial Control System) Channel Access
 protocol is used in laboratories and companies
 <a class="reference external" href="https://en.wikipedia.org/wiki/EPICS#Facilities_using_EPICS">around the world</a>
 to implement distributed control systems for devices such as large telescopes,
@@ -177,6 +185,7 @@ and outgoing bytes, keeping track the state of an EPICS Client, Server, Virtual
 Circuits, and Channels. But, crucially, it performs no I/O itself: handling
 sockets and transport is completely up the caller. Caproto is a toolkit for
 building programs that speak EPICS.</p>
+<p>The authors pronounce caproto &#8220;kah-proto&#8221; (not &#8220;C.A. proto&#8221;). It&#8217;s fun to say.</p>
 <div class="section" id="why-do-this">
 <h2>Why do this?<a class="headerlink" href="#why-do-this" title="Permalink to this headline">¶</a></h2>
 <p>The aim is to provide a complete, reusable implementation of the Channel Access
@@ -207,11 +216,13 @@ monitoring the simulated motor IOC, motorsim.</li>
 <li>It can talk to libca as a server &#8212; for example, responding correctly to
 caget, caput, camonitor.</li>
 <li>The Python module that specifies the byte layout of each command is generated
-using Python and Jinja templates from the documentation itself to reduce
-the potential for bugs introduced by human transcription. Where we
-found errors in the documentation, we fixed them and submitted a patch
-upstream. (NOTE: This is a reminder to submit a patch.)</li>
-<li>The byte sizes of the DBR types compare exactly to those in pyepics.</li>
+from a template, scraping the EPICS documentation itself to reduce
+the potential for bugs introduced by human transcription. (In fact, this
+uncovered some bugs in the documentation. A patch will be submitted
+upstream.)</li>
+<li>A pyepics-like interface built on top of caproto passes the pyepics unit
+tests.</li>
+<li>&gt; 90% of the lines of code are covered by tests.</li>
 </ul>
 </div>
 <div class="section" id="so-should-i-use-it">
@@ -224,10 +235,15 @@ or to play with the growing family of asynchronous libraries in Python.</p>
 </div>
 <div class="section" id="how-s-the-performance">
 <h2>How&#8217;s the performance?<a class="headerlink" href="#how-s-the-performance" title="Permalink to this headline">¶</a></h2>
-<p>No idea yet! That&#8217;s high on the list of things we&#8217;d like to know. Caproto gets
-some important basics right, like reading bytes directly from sockets into C
-structs with no extra copies. Time will tell if there are any major
-bottlenecks we haven&#8217;t anticipated.</p>
+<p>Caproto is fast. See its
+<a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">published benchmarks</a>.</p>
+<p>There has been next to no performance tuning at this stage in the development,
+but caproto gets some important basics right, such as reading bytes directly
+between sockets into C structs and numpy arrays with no extra copies. It is
+already faster than pyepics for reading large waveforms. Moreover, the control
+that caproto hands developers to make performance trade-offs should support
+greater optimiziations for use cases beyond a general-purpose Channel Access
+client.</p>
 </div>
 <div class="section" id="acknowledgement">
 <h2>Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permalink to this headline">¶</a></h2>
@@ -240,8 +256,9 @@ indispensible. See <a class="reference internal" href="references.html"><span cl
 <div class="section" id="contents">
 <h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="basics.html">Getting Started: Writing Your Own Channel Access Client</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="basics.html#channel-access-basics">Channel Access Basics</a></li>
 <li class="toctree-l2"><a class="reference internal" href="basics.html#simplify-bookkeepinig-with-channels">Simplify Bookkeepinig with Channels</a></li>
 </ul>
@@ -257,15 +274,17 @@ indispensible. See <a class="reference internal" href="references.html"><span cl
 <li class="toctree-l2"><a class="reference internal" href="api.html#exceptions">Exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="examples/synchronous_client.html">Simple client that reads, subscribes, writes, and shuts down</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/singleshot_server.html">Simple server that responds to one &#8216;caget&#8217; and shuts down</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/curio_client.html">Fairly complete client using curio for async I/O</a></li>
-<li class="toctree-l2"><a class="reference internal" href="examples/curio_server.html">Fairly complete server using curio for async I/O</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="curio-client.html">Asynchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curio-server.html">Asynchronous Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
 </ul>
 </div>
 </div>
@@ -281,7 +300,7 @@ indispensible. See <a class="reference internal" href="references.html"><span cl
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="basics.html" class="btn btn-neutral float-right" title="Getting Started: Writing Your Own Channel Access Client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="basics.html" class="btn btn-neutral float-right" title="Writing Your Own Channel Access Client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>
@@ -313,7 +332,7 @@ indispensible. See <a class="reference internal" href="references.html"><span cl
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.626.g14de719',
+            VERSION:'0+untagged.630.g8bc8586',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

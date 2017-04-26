@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.626.g14de719 documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.630.g8bc8586 documentation</title>
   
 
   
@@ -35,9 +35,9 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.626.g14de719 documentation" href="index.html"/>
-        <link rel="next" title="Examples" href="examples/index.html"/>
-        <link rel="prev" title="Getting Started: Writing Your Own Channel Access Client" href="basics.html"/> 
+    <link rel="top" title="caproto 0+untagged.630.g8bc8586 documentation" href="index.html"/>
+        <link rel="next" title="References" href="references.html"/>
+        <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.626.g14de719
+                0+untagged.630.g8bc8586
               </div>
             
           
@@ -90,8 +90,9 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="basics.html">Getting Started: Writing Your Own Channel Access Client</a></li>
+              <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#commands">Commands</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#the-state-machine">The State Machine</a></li>
@@ -103,9 +104,15 @@
 <li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="examples/index.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="curio-client.html">Asynchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curio-server.html">Asynchronous Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
 </ul>
 
             
@@ -987,7 +994,7 @@ closing the Channel.</p>
 <span class="gp">   ...: </span>
 
 <span class="gp">In [8]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={CLIENT: SEND_VERSION_REQUEST, SERVER: IDLE}&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={SERVER: IDLE, CLIENT: SEND_VERSION_REQUEST}&gt;</span>
 </pre></div>
 </div>
 <p>When a <a class="reference internal" href="#caproto.VersionRequest" title="caproto.VersionRequest"><code class="xref py py-class docutils literal"><span class="pre">VersionRequest</span></code></a> is sent through the VirtualCircuit, both the
@@ -995,7 +1002,7 @@ client and the server state update.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">));</span>
 
 <span class="gp">In [10]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={CLIENT: AWAIT_VERSION_RESPONSE, SERVER: SEND_VERSION_RESPONSE}&gt;</span>
+<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={SERVER: SEND_VERSION_RESPONSE, CLIENT: AWAIT_VERSION_RESPONSE}&gt;</span>
 </pre></div>
 </div>
 <p>And we can test the current state using constants like
@@ -1827,10 +1834,10 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="examples/index.html" class="btn btn-neutral float-right" title="Examples" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="references.html" class="btn btn-neutral float-right" title="References" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="basics.html" class="btn btn-neutral" title="Getting Started: Writing Your Own Channel Access Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="basics.html" class="btn btn-neutral" title="Writing Your Own Channel Access Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -1861,7 +1868,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.626.g14de719',
+            VERSION:'0+untagged.630.g8bc8586',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,14 +8,12 @@
 ./_modules/index.html
 ./_sources/api.rst.txt
 ./_sources/basics.rst.txt
-./_sources/examples/curio_client.rst.txt
-./_sources/examples/curio_server.rst.txt
-./_sources/examples/index.rst.txt
-./_sources/examples/singleshot_server.rst.txt
-./_sources/examples/synchronous_client.rst.txt
+./_sources/curio-client.rst.txt
+./_sources/curio-server.rst.txt
 ./_sources/index.rst.txt
 ./_sources/references.rst.txt
 ./_sources/release-notes.rst.txt
+./_sources/threading-client.rst.txt
 ./_static/ajax-loader.gif
 ./_static/basic.css
 ./_static/command_triggered_channel_transitions_client
@@ -61,11 +59,8 @@
 ./_static/websupport.js
 ./api.html
 ./basics.html
-./examples/curio_client.html
-./examples/curio_server.html
-./examples/index.html
-./examples/singleshot_server.html
-./examples/synchronous_client.html
+./curio-client.html
+./curio-server.html
 ./genindex.html
 ./index.html
 ./objects.inv
@@ -73,3 +68,4 @@
 ./release-notes.html
 ./search.html
 ./searchindex.js
+./threading-client.html

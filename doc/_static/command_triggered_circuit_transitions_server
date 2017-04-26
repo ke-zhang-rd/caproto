@@ -8,6 +8,6 @@ digraph {
 		SEND_VERSION_RESPONSE -> ERROR [label=ErrorResponse]
 		SEND_VERSION_RESPONSE -> CONNECTED [label=VersionResponse]
 		IDLE -> IDLE [label=VersionResponse]
-		CONNECTED -> CONNECTED [label="HostNameRequest / EventsOnRequest / ClientNameRequest / EventsOffRequest / EchoRequest / EchoResponse"]
+		CONNECTED -> CONNECTED [label="EventsOffRequest / HostNameRequest / ClientNameRequest / EchoRequest / EchoResponse / EventsOnRequest"]
 		SEND_VERSION_RESPONSE -> SEND_VERSION_RESPONSE [label="HostNameRequest / ClientNameRequest"]
 }

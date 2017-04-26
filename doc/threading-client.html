@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; caproto 0+untagged.630.g8bc8586 documentation</title>
+  <title>Thread-based Client Mirroring pyepics API &mdash; caproto 0+untagged.630.g8bc8586 documentation</title>
   
 
   
@@ -36,8 +36,7 @@
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
     <link rel="top" title="caproto 0+untagged.630.g8bc8586 documentation" href="index.html"/>
-        <link rel="next" title="Asynchronous Client" href="curio-client.html"/>
-        <link rel="prev" title="References" href="references.html"/> 
+        <link rel="prev" title="Asynchronous Server" href="curio-server.html"/> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
@@ -91,18 +90,18 @@
             
             
               <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
-<ul class="current">
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Clients and Servers</span></p>
-<ul>
+<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="curio-client.html">Asynchronous Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="curio-server.html">Asynchronous Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Thread-based Client Mirroring pyepics API</a></li>
 </ul>
 
             
@@ -147,13 +146,13 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Release Notes</li>
+      <li>Thread-based Client Mirroring pyepics API</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="_sources/release-notes.rst.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/threading-client.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -166,8 +165,32 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="release-notes">
-<h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="thread-based-client-mirroring-pyepics-api">
+<h1>Thread-based Client Mirroring pyepics API<a class="headerlink" href="#thread-based-client-mirroring-pyepics-api" title="Permalink to this headline">¶</a></h1>
+<p>The <code class="xref py py-mod docutils literal"><span class="pre">caproto.threading.client</span></code> implements a Channel Access client using
+threads. It provides an interface familiar to pyepics users.</p>
+<p>Before using you should start a CA repeater process in the background if one is
+not already running. You may use the one from epics-base or one provided with
+caproto as a CLI.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-reapeater <span class="p">&amp;</span>
+</pre></div>
+</div>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">PV</span><span class="p">,</span> <span class="n">caput</span><span class="p">,</span> <span class="n">caget</span><span class="p">,</span> <span class="n">Context</span>
+
+<span class="c1"># Setup</span>
+<span class="n">PV</span><span class="o">.</span><span class="n">_default_context</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
+<span class="n">PV</span><span class="o">.</span><span class="n">_default_context</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>  <span class="c1"># register with the CA repeater</span>
+
+<span class="n">caget</span><span class="p">(</span><span class="s1">&#39;pvname&#39;</span><span class="p">)</span>
+<span class="n">caput</span><span class="p">(</span><span class="s1">&#39;pvname&#39;</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># OO interface</span>
+<span class="n">pv</span> <span class="o">=</span> <span class="n">PV</span><span class="p">(</span><span class="s1">&#39;pvname&#39;</span><span class="p">)</span>
+<span class="n">pv</span><span class="o">.</span><span class="n">wait_for_connection</span><span class="p">()</span>
+<span class="n">pv</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="n">pv</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 
 
@@ -180,10 +203,8 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="curio-client.html" class="btn btn-neutral float-right" title="Asynchronous Client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-      
-        <a href="references.html" class="btn btn-neutral" title="References" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="curio-server.html" class="btn btn-neutral" title="Asynchronous Server" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
