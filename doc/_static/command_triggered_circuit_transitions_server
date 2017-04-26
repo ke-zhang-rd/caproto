@@ -7,7 +7,7 @@ digraph {
 		SEND_VERSION_RESPONSE -> ERROR [label=ErrorResponse]
 		CONNECTED -> ERROR [label=ErrorResponse]
 		IDLE -> SEND_VERSION_RESPONSE [label=VersionRequest]
+		SEND_VERSION_RESPONSE -> SEND_VERSION_RESPONSE [label="ClientNameRequest / HostNameRequest"]
+		CONNECTED -> CONNECTED [label="ClientNameRequest / EchoResponse / EventsOnRequest / EventsOffRequest / EchoRequest / HostNameRequest"]
 		IDLE -> IDLE [label=VersionResponse]
-		CONNECTED -> CONNECTED [label="EventsOffRequest / EchoRequest / HostNameRequest / EchoResponse / ClientNameRequest / EventsOnRequest"]
-		SEND_VERSION_RESPONSE -> SEND_VERSION_RESPONSE [label="HostNameRequest / ClientNameRequest"]
 }

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0+untagged.619.gf794c6f documentation</title>
+  <title>caproto._commands &mdash; caproto 0+untagged.624.g7ae17e3 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.619.gf794c6f documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.624.g7ae17e3 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.619.gf794c6f
+                0+untagged.624.g7ae17e3
               </div>
             
           
@@ -198,7 +198,8 @@
                        <span class="n">EventsOffRequestHeader</span><span class="p">,</span> <span class="n">EventsOnRequestHeader</span><span class="p">,</span>
                        <span class="n">HostNameRequestHeader</span><span class="p">,</span> <span class="n">NotFoundResponseHeader</span><span class="p">,</span>
                        <span class="n">ReadNotifyRequestHeader</span><span class="p">,</span> <span class="n">ReadNotifyResponseHeader</span><span class="p">,</span>
-                       <span class="n">ReadResponseHeader</span><span class="p">,</span> <span class="n">ReadSyncRequestHeader</span><span class="p">,</span>
+                       <span class="n">ReadRequestHeader</span><span class="p">,</span> <span class="n">ReadResponseHeader</span><span class="p">,</span>
+                       <span class="n">ReadSyncRequestHeader</span><span class="p">,</span>
                        <span class="n">RepeaterConfirmResponseHeader</span><span class="p">,</span>
                        <span class="n">RepeaterRegisterRequestHeader</span><span class="p">,</span> <span class="n">RsrvIsUpResponseHeader</span><span class="p">,</span>
                        <span class="n">SearchRequestHeader</span><span class="p">,</span> <span class="n">SearchResponseHeader</span><span class="p">,</span>
@@ -1138,7 +1139,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">):</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="n">ReadNotifyRequestHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">ReadRequestHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">validate</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
@@ -1782,7 +1783,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.619.gf794c6f',
+            VERSION:'0+untagged.624.g7ae17e3',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
