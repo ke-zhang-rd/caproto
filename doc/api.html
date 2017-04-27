@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.649.gd3acf52 documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.663.g054adff documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.649.gd3acf52 documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.663.g054adff documentation" href="index.html"/>
         <link rel="next" title="References" href="references.html"/>
         <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.649.gd3acf52
+                0+untagged.663.g054adff
               </div>
             
           
@@ -961,8 +961,6 @@ closing the Channel.</p>
 <code class="descclassname">caproto.</code><code class="descname">AWAIT_SEARCH_RESPONSE</code><a class="headerlink" href="#caproto.AWAIT_SEARCH_RESPONSE" title="Permalink to this definition">¶</a></dt>
 <dt id="caproto.SEND_SEARCH_RESPONSE">
 <code class="descclassname">caproto.</code><code class="descname">SEND_SEARCH_RESPONSE</code><a class="headerlink" href="#caproto.SEND_SEARCH_RESPONSE" title="Permalink to this definition">¶</a></dt>
-<dt id="caproto.NEED_CIRCUIT">
-<code class="descclassname">caproto.</code><code class="descname">NEED_CIRCUIT</code><a class="headerlink" href="#caproto.NEED_CIRCUIT" title="Permalink to this definition">¶</a></dt>
 <dt id="caproto.SEND_VERSION_REQUEST">
 <code class="descclassname">caproto.</code><code class="descname">SEND_VERSION_REQUEST</code><a class="headerlink" href="#caproto.SEND_VERSION_REQUEST" title="Permalink to this definition">¶</a></dt>
 <dt id="caproto.AWAIT_VERSION_RESPONSE">
@@ -981,10 +979,12 @@ closing the Channel.</p>
 <code class="descclassname">caproto.</code><code class="descname">MUST_CLOSE</code><a class="headerlink" href="#caproto.MUST_CLOSE" title="Permalink to this definition">¶</a></dt>
 <dt id="caproto.CLOSED">
 <code class="descclassname">caproto.</code><code class="descname">CLOSED</code><a class="headerlink" href="#caproto.CLOSED" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.DISCONNECTED">
+<code class="descclassname">caproto.</code><code class="descname">DISCONNECTED</code><a class="headerlink" href="#caproto.DISCONNECTED" title="Permalink to this definition">¶</a></dt>
 <dt id="caproto.IDLE">
 <code class="descclassname">caproto.</code><code class="descname">IDLE</code><a class="headerlink" href="#caproto.IDLE" title="Permalink to this definition">¶</a></dt>
-<dt id="caproto.ERROR">
-<code class="descclassname">caproto.</code><code class="descname">ERROR</code><a class="headerlink" href="#caproto.ERROR" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.FAILED">
+<code class="descclassname">caproto.</code><code class="descname">FAILED</code><a class="headerlink" href="#caproto.FAILED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <p>For example, a new VirtualCiruit starts with these states:</p>
@@ -1151,6 +1151,13 @@ it. To trigger processing, you have to call <a class="reference internal" href="
 internal state machine, and return it.</p>
 <p>Returns a <code class="xref py py-class docutils literal"><span class="pre">Command</span></code> object or a special constant,
 <a class="reference internal" href="#caproto.NEED_DATA" title="caproto.NEED_DATA"><code class="xref py py-data docutils literal"><span class="pre">NEED_DATA</span></code></a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.VirtualCircuit.disconnect">
+<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#VirtualCircuit.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Notify all channels on this circuit that they are disconnected.</p>
+<p>Clients should call this method when a TCP connection is lost.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1645,6 +1652,20 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 </dd></dl>
 
 <dl class="method">
+<dt id="caproto.ServerChannel.create_fail">
+<code class="descname">create_fail</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.create_fail"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.create_fail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <a class="reference internal" href="#caproto.CreateChFailResponse" title="caproto.CreateChFailResponse"><code class="xref py py-class docutils literal"><span class="pre">CreateChFailResponse</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">CreateChFailResponse</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="caproto.ServerChannel.clear">
 <code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ClearChannelResponse" title="caproto.ClearChannelResponse"><code class="xref py py-class docutils literal"><span class="pre">ClearChannelResponse</span></code></a>.</p>
@@ -1778,7 +1799,7 @@ count, which can be checked in the Channel&#8217;s attribute
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>subscriptionid :</strong></p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>subscriptionid</strong> : integer</p>
 <p><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
 <div><p>Requested Channel Access data type. Default is the channel&#8217;s
@@ -1789,6 +1810,20 @@ native data type, which can be checked in the Channel&#8217;s attribute
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">EventCancelResponse</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.ServerChannel.disconnect">
+<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <a class="reference internal" href="#caproto.ServerDisconnResponse" title="caproto.ServerDisconnResponse"><code class="xref py py-class docutils literal"><span class="pre">ServerDisconnResponse</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ServerDisconnResponse</td>
 </tr>
 </tbody>
 </table>
@@ -1868,7 +1903,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.649.gd3acf52',
+            VERSION:'0+untagged.663.g054adff',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

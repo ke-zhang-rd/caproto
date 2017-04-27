@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0+untagged.649.gd3acf52 documentation</title>
+  <title>caproto._utils &mdash; caproto 0+untagged.663.g054adff documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.649.gd3acf52 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.663.g054adff documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.649.gd3acf52
+                0+untagged.663.g054adff
               </div>
             
           
@@ -205,20 +205,16 @@
       <span class="s1">&#39;NEED_DATA&#39;</span><span class="p">,</span>  <span class="c1"># special sentinel for read_* functions</span>
       <span class="c1"># and states</span>
       <span class="s1">&#39;SEND_SEARCH_REQUEST&#39;</span><span class="p">,</span> <span class="s1">&#39;AWAIT_SEARCH_RESPONSE&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;SEND_SEARCH_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;NEED_CIRCUIT&#39;</span><span class="p">,</span> <span class="s1">&#39;SEND_VERSION_REQUEST&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;SEND_SEARCH_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;SEND_VERSION_REQUEST&#39;</span><span class="p">,</span>
       <span class="s1">&#39;AWAIT_VERSION_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;SEND_VERSION_RESPONSE&#39;</span><span class="p">,</span>
       <span class="s1">&#39;SEND_CREATE_CHAN_REQUEST&#39;</span><span class="p">,</span> <span class="s1">&#39;AWAIT_CREATE_CHAN_RESPONSE&#39;</span><span class="p">,</span>
       <span class="s1">&#39;SEND_CREATE_CHAN_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;CONNECTED&#39;</span><span class="p">,</span> <span class="s1">&#39;MUST_CLOSE&#39;</span><span class="p">,</span> <span class="s1">&#39;CLOSED&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;IDLE&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">)</span>
+      <span class="s1">&#39;IDLE&#39;</span><span class="p">,</span> <span class="s1">&#39;FAILED&#39;</span><span class="p">,</span> <span class="s1">&#39;DISCONNECTED&#39;</span><span class="p">)</span>
      <span class="p">})</span>
 
 
 <span class="k">class</span> <span class="nc">CaprotoError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="c1"># All exceptions raised by this codebase inherit from this.</span>
-    <span class="o">...</span>
-
-
-<span class="k">class</span> <span class="nc">DisconnectedCircuit</span><span class="p">(</span><span class="n">CaprotoError</span><span class="p">):</span>
     <span class="o">...</span>
 
 
@@ -369,7 +365,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.649.gd3acf52',
+            VERSION:'0+untagged.663.g054adff',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
