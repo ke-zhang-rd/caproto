@@ -3,6 +3,7 @@
 ./_images/command_triggered_circuit_transitions_client.png
 ./_images/command_triggered_circuit_transitions_server.png
 ./_modules/caproto/_commands.html
+./_modules/caproto/_dbr.html
 ./_modules/caproto/_hub.html
 ./_modules/caproto/_utils.html
 ./_modules/index.html

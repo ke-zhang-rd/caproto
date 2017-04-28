@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asynchronous Server &mdash; caproto 0+untagged.663.g054adff documentation</title>
+  <title>Asynchronous Server &mdash; caproto 0+untagged.689.g125669d documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.663.g054adff documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.689.g125669d documentation" href="index.html"/>
         <link rel="next" title="Thread-based Client Mirroring pyepics API" href="threading-client.html"/>
         <link rel="prev" title="Asynchronous Client" href="curio-client.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.663.g054adff
+                0+untagged.689.g125669d
               </div>
             
           
@@ -181,25 +181,26 @@ this to a <code class="xref py py-class docutils literal"><span class="pre">Cont
 <code class="xref py py-meth docutils literal"><span class="pre">Context.run()</span></code> creates a curio task that starts the server.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">curio</span>
 <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="kn">import</span> <span class="n">Context</span><span class="p">,</span> <span class="n">find_next_tcp_port</span>
+<span class="kn">from</span> <span class="nn">caproto</span> <span class="kn">import</span> <span class="n">ChannelDouble</span><span class="p">,</span> <span class="n">ChannelEnum</span><span class="p">,</span> <span class="n">ChannelInteger</span>
 
-<span class="n">pvdb</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pi&#39;</span><span class="p">:</span> <span class="n">DatabaseRecordDouble</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">3.14</span><span class="p">,</span>
-                                   <span class="n">lower_disp_limit</span><span class="o">=</span><span class="mf">3.13</span><span class="p">,</span>
-                                   <span class="n">upper_disp_limit</span><span class="o">=</span><span class="mf">3.15</span><span class="p">,</span>
-                                   <span class="n">lower_alarm_limit</span><span class="o">=</span><span class="mf">3.12</span><span class="p">,</span>
-                                   <span class="n">upper_alarm_limit</span><span class="o">=</span><span class="mf">3.16</span><span class="p">,</span>
-                                   <span class="n">lower_warning_limit</span><span class="o">=</span><span class="mf">3.11</span><span class="p">,</span>
-                                   <span class="n">upper_warning_limit</span><span class="o">=</span><span class="mf">3.17</span><span class="p">,</span>
-                                   <span class="n">lower_ctrl_limit</span><span class="o">=</span><span class="mf">3.10</span><span class="p">,</span>
-                                   <span class="n">upper_ctrl_limit</span><span class="o">=</span><span class="mf">3.18</span><span class="p">,</span>
-                                   <span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
-                                   <span class="n">units</span><span class="o">=</span><span class="s1">&#39;doodles&#39;</span><span class="p">,</span>
-                                   <span class="p">),</span>
-        <span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="n">DatabaseRecordEnum</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
-                                   <span class="n">strs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
-                                   <span class="p">),</span>
-        <span class="s1">&#39;int&#39;</span><span class="p">:</span> <span class="n">DatabaseRecordInteger</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
-                                     <span class="n">units</span><span class="o">=</span><span class="s1">&#39;doodles&#39;</span><span class="p">,</span>
-                                     <span class="p">),</span>
+<span class="n">pvdb</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pi&#39;</span><span class="p">:</span> <span class="n">ChannelDouble</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mf">3.14</span><span class="p">,</span>
+                            <span class="n">lower_disp_limit</span><span class="o">=</span><span class="mf">3.13</span><span class="p">,</span>
+                            <span class="n">upper_disp_limit</span><span class="o">=</span><span class="mf">3.15</span><span class="p">,</span>
+                            <span class="n">lower_alarm_limit</span><span class="o">=</span><span class="mf">3.12</span><span class="p">,</span>
+                            <span class="n">upper_alarm_limit</span><span class="o">=</span><span class="mf">3.16</span><span class="p">,</span>
+                            <span class="n">lower_warning_limit</span><span class="o">=</span><span class="mf">3.11</span><span class="p">,</span>
+                            <span class="n">upper_warning_limit</span><span class="o">=</span><span class="mf">3.17</span><span class="p">,</span>
+                            <span class="n">lower_ctrl_limit</span><span class="o">=</span><span class="mf">3.10</span><span class="p">,</span>
+                            <span class="n">upper_ctrl_limit</span><span class="o">=</span><span class="mf">3.18</span><span class="p">,</span>
+                            <span class="n">precision</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                            <span class="n">units</span><span class="o">=</span><span class="s1">&#39;doodles&#39;</span><span class="p">,</span>
+                            <span class="p">),</span>
+        <span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="n">ChannelEnum</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
+                            <span class="n">strs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
+                            <span class="p">),</span>
+        <span class="s1">&#39;int&#39;</span><span class="p">:</span> <span class="n">ChannelInteger</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                              <span class="n">units</span><span class="o">=</span><span class="s1">&#39;doodles&#39;</span><span class="p">,</span>
+                              <span class="p">),</span>
         <span class="p">}</span>
 
 <span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">find_next_tcp_port</span><span class="p">(),</span> <span class="n">pvdb</span><span class="p">)</span>
@@ -252,7 +253,7 @@ this to a <code class="xref py py-class docutils literal"><span class="pre">Cont
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.663.g054adff',
+            VERSION:'0+untagged.689.g125669d',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

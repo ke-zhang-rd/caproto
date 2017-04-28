@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0+untagged.663.g054adff documentation</title>
+  <title>caproto._commands &mdash; caproto 0+untagged.689.g125669d documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.663.g054adff documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.689.g125669d documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.663.g054adff
+                0+untagged.689.g125669d
               </div>
             
           
@@ -266,7 +266,6 @@
     <span class="c1"># to make the byte-size of the payload a multiple of 8.</span>
     <span class="n">data_payload</span> <span class="o">=</span> <span class="n">buffer</span><span class="p">[</span><span class="n">md_size</span><span class="p">:</span><span class="n">md_size</span> <span class="o">+</span> <span class="n">payload_size</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">md_payload</span><span class="p">,</span> <span class="n">data_payload</span>
-    <span class="c1"># TODO Handle padding</span>
 
 
 <span class="k">def</span> <span class="nf">padded_len</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
@@ -359,12 +358,14 @@
         <span class="n">data_payload</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">newbyteorder</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">))</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span>
-            <span class="n">data_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
+            <span class="n">data_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="p">[:</span><span class="mi">39</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">data_payload</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array_type_code</span><span class="p">(</span><span class="n">ntype</span><span class="p">),</span> <span class="n">data</span><span class="p">)</span>
             <span class="c1"># Make big-endian.</span>
             <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;little&#39;</span><span class="p">:</span>
                 <span class="n">data_payload</span><span class="o">.</span><span class="n">byteswap</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;data given as type we cannot handle - </span><span class="si">{}</span><span class="s2">&quot;</span>
                                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
@@ -1790,7 +1791,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.663.g054adff',
+            VERSION:'0+untagged.689.g125669d',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

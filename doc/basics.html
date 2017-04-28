@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Writing Your Own Channel Access Client &mdash; caproto 0+untagged.663.g054adff documentation</title>
+  <title>Writing Your Own Channel Access Client &mdash; caproto 0+untagged.689.g125669d documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.663.g054adff documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.689.g125669d documentation" href="index.html"/>
         <link rel="next" title="API Documentation" href="api.html"/>
         <link rel="prev" title="caproto: a pure-Python Channel Access protocol library" href="index.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.663.g054adff
+                0+untagged.689.g125669d
               </div>
             
           
@@ -454,15 +454,15 @@ asked for the &#8220;native&#8221; data type and count that the server reported 
 <span class="gh">Out[41]: </span><span class="go">[WriteNotifyResponse(data_type=6, data_count=1, status=1, ioid=2)]</span>
 </pre></div>
 </div>
-<p>Why is the value given as a tuple? Channel Access has its own sprawling data
-type system. Many of its types bundle a value with metadata like a timestamp
-and various &#8220;limits&#8221;. At the lowest level, caproto reads values into C structs
-that match byte layouts in the canonical implementation of Channel Access,
-libca. At a higher level, the user may interact with values as named tuples
-with an element for each field in the struct. The elements in the tuple are
-built-in Python types (strings, floats, integers). If the value is an array (in
-Channel Access parlance, a &#8220;waveform&#8221;) it is given as a numpy array if numpy
-is available.</p>
+<p>The <code class="docutils literal"><span class="pre">data</span></code> may be given as one of the following types:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">tuple</span></code></li>
+<li><code class="docutils literal"><span class="pre">numpy.ndarray</span></code> (if numpy is installed)</li>
+<li>big-endian <code class="docutils literal"><span class="pre">array.array</span></code> (the somewhat rarely-used builtin array library)</li>
+<li>big-endian bytes-like (<code class="docutils literal"><span class="pre">bytes</span></code>, <code class="docutils literal"><span class="pre">bytearray</span></code>, <code class="docutils literal"><span class="pre">memoryview</span></code>)</li>
+</ul>
+<p>The command also accepts a <code class="docutils literal"><span class="pre">metadata</span></code> parameter for data types that include
+metadata. See <a class="reference internal" href="api.html#payload-data-types"><span class="std std-ref">Payload Data Types</span></a> for details.</p>
 </div>
 <div class="section" id="subscribing-to-events-updates">
 <h3>Subscribing to &#8220;Events&#8221; (Updates)<a class="headerlink" href="#subscribing-to-events-updates" title="Permalink to this headline">¶</a></h3>
@@ -639,7 +639,7 @@ until (unless) the command is actually sent.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.663.g054adff',
+            VERSION:'0+untagged.689.g125669d',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
