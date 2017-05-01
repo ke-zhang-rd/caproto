@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._hub &mdash; caproto 0+untagged.693.g430b0ac documentation</title>
+  <title>caproto._hub &mdash; caproto 0+untagged.731.g41304f1 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.693.g430b0ac documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.731.g41304f1 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.693.g430b0ac
+                0+untagged.731.g41304f1
               </div>
             
           
@@ -718,7 +718,14 @@
             <span class="n">hostname</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
             <span class="n">ip</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">RepeaterRegisterRequest</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div></div>
+        <span class="k">return</span> <span class="n">command</span></div>
+
+    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">registered</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span></div>
 
 
 <span class="k">class</span> <span class="nc">_BaseChannel</span><span class="p">:</span>
@@ -1237,7 +1244,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.693.g430b0ac',
+            VERSION:'0+untagged.731.g41304f1',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
