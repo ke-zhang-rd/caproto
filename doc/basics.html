@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Writing Your Own Channel Access Client &mdash; caproto 0+untagged.731.g41304f1 documentation</title>
+  <title>Writing Your Own Channel Access Client &mdash; caproto 0+untagged.736.g6a06652 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.731.g41304f1 documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.736.g6a06652 documentation" href="index.html"/>
         <link rel="next" title="API Documentation" href="api.html"/>
         <link rel="prev" title="caproto: a pure-Python Channel Access protocol library" href="index.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.731.g41304f1
+                0+untagged.736.g6a06652
               </div>
             
           
@@ -234,34 +234,29 @@ we don&#8217;t need to work with raw bytes. Let&#8217;s try this again using cap
 <em>Command</em>. &#8220;Event&#8221; is an overloaded term in Channel Access, so we&#8217;re going
 our own way here.</p>
 </div>
-<p>Set up the socket, exactly as above. Import <code class="xref py py-mod docutils literal"><span class="pre">caproto</span></code> and make a
-<a class="reference internal" href="api.html#caproto.Broadcaster" title="caproto.Broadcaster"><code class="xref py py-class docutils literal"><span class="pre">Broadcaster</span></code></a>.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">udp_sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_UDP</span><span class="p">)</span>
+<p>Import <code class="xref py py-mod docutils literal"><span class="pre">caproto</span></code> and make a <a class="reference internal" href="api.html#caproto.Broadcaster" title="caproto.Broadcaster"><code class="xref py py-class docutils literal"><span class="pre">Broadcaster</span></code></a>.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="kn">import</span> <span class="nn">caproto</span>
 
-<span class="gp">In [6]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
-<span class="gp">In [7]: </span><span class="kn">import</span> <span class="nn">caproto</span>
-
-<span class="gp">In [8]: </span><span class="n">b</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">Broadcaster</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">caproto</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">)</span>
+<span class="gp">In [6]: </span><span class="n">b</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">Broadcaster</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">caproto</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Make the command we want to send.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">command</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">RepeaterRegisterRequest</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="n">command</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">RepeaterRegisterRequest</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Pass the command to our broadcaster&#8217;s <a class="reference internal" href="api.html#caproto.Broadcaster.send" title="caproto.Broadcaster.send"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.send()</span></code></a> method, which
 translates the command to bytes.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Transport those bytes over the wire.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [11]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">5065</span><span class="p">))</span>
-<span class="gh">Out[11]: </span><span class="go">16</span>
+<p>Transport those bytes over the wire, using the same <code class="docutils literal"><span class="pre">udp_sock</span></code> we configured
+above.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">5065</span><span class="p">))</span>
+<span class="gh">Out[9]: </span><span class="go">16</span>
 </pre></div>
 </div>
 <p>These bytes are the same bytes we spelled out manually before:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">bytes_to_send</span>
-<span class="gh">Out[12]: </span><span class="go">b&#39;\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&#39;</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">bytes_to_send</span>
+<span class="gh">Out[10]: </span><span class="go">b&#39;\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&#39;</span>
 </pre></div>
 </div>
 <p>Why do we need two steps here? Why doesn&#8217;t caproto just send the bytes for us?
@@ -274,23 +269,49 @@ of the protocol are obeyed by both peers.</p>
 and that we are expecting a response. As with sending, receiving is a
 two-step process. First we read bytes from the socket and pass them to the
 broadcaster.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [11]: </span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
 
-<span class="gp">In [14]: </span><span class="n">b</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+<span class="gp">In [12]: </span><span class="n">b</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The bytes have been cached but not yet parsed. The <a class="reference internal" href="api.html#caproto.Broadcaster" title="caproto.Broadcaster"><code class="xref py py-class docutils literal"><span class="pre">Broadcaster</span></code></a> can
 convert the bytes into <em>Commands</em> one at time.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
-<span class="gh">Out[15]: </span><span class="go">RepeaterConfirmResponse(repeater_address=&#39;127.0.0.1&#39;)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-13-9ee21a02a218&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
+
+<span class="nn">/home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages/caproto/_hub.py</span> in <span class="ni">next_command</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">443</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">444</span>             <span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datagram_inbox</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+<span class="ne">--&gt; </span><span class="mi">445</span>             <span class="n">commands</span> <span class="o">=</span> <span class="n">read_datagram</span><span class="p">(</span><span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">446</span>             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Parsed </span><span class="si">%d</span><span class="s2"> commands from first datagram in queue.&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">447</span>                            <span class="nb">len</span><span class="p">(</span><span class="n">commands</span><span class="p">))</span>
+
+<span class="nn">/home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages/caproto/_commands.py</span> in <span class="ni">read_datagram</span><span class="nt">(data, address, role)</span>
+<span class="g g-Whitespace">    </span><span class="mi">261</span>         <span class="n">header</span> <span class="o">=</span> <span class="n">MessageHeader</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">barray</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">262</span>         <span class="n">barray</span> <span class="o">=</span> <span class="n">barray</span><span class="p">[</span><span class="n">_MessageHeaderSize</span><span class="p">:]</span>
+<span class="ne">--&gt; </span><span class="mi">263</span>         <span class="n">_class</span> <span class="o">=</span> <span class="n">get_command_class</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">264</span>         <span class="n">payload_size</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span>
+<span class="g g-Whitespace">    </span><span class="mi">265</span>         <span class="k">if</span> <span class="n">_class</span><span class="o">.</span><span class="n">HAS_PAYLOAD</span><span class="p">:</span>
+
+<span class="nn">/home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages/caproto/_commands.py</span> in <span class="ni">get_command_class</span><span class="nt">(role, header)</span>
+<span class="g g-Whitespace">    </span><span class="mi">247</span> 
+<span class="g g-Whitespace">    </span><span class="mi">248</span> <span class="k">def</span> <span class="nf">get_command_class</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">249</span>     <span class="n">_class</span> <span class="o">=</span> <span class="n">Commands</span><span class="p">[</span><span class="n">role</span><span class="p">][</span><span class="n">header</span><span class="o">.</span><span class="n">command</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">250</span>     <span class="c1"># Special case for EventCancelResponse which is coded inconsistently.</span>
+<span class="g g-Whitespace">    </span><span class="mi">251</span>     <span class="k">if</span> <span class="n">role</span> <span class="ow">is</span> <span class="n">SERVER</span> <span class="ow">and</span> <span class="n">header</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+<span class="ne">KeyError</span>: 24
 </pre></div>
 </div>
 <p>Think of this as a mutating operation, like using <a class="reference external" href="https://docs.python.org/3/library/functions.html#next" title="(in Python v3.6)"><code class="xref py py-func docutils literal"><span class="pre">next()</span></code></a> on an iterator.
 When there aren&#8217;t enough bytes cached to interpret another complete Command,
 <a class="reference internal" href="api.html#caproto.Broadcaster.next_command" title="caproto.Broadcaster.next_command"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.next_command()</span></code></a> returns the special constant
 <a class="reference internal" href="api.html#caproto.NEED_DATA" title="caproto.NEED_DATA"><code class="xref py py-class docutils literal"><span class="pre">NEED_DATA</span></code></a>.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
-<span class="gh">Out[16]: </span><span class="go">NEED_DATA</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
+<span class="gh">Out[14]: </span><span class="go">NEED_DATA</span>
 </pre></div>
 </div>
 <p>When we call <a class="reference internal" href="api.html#caproto.Broadcaster.send" title="caproto.Broadcaster.send"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.send()</span></code></a> or <a class="reference internal" href="api.html#caproto.Broadcaster.next_command" title="caproto.Broadcaster.next_command"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.next_command()</span></code></a>,
@@ -308,9 +329,9 @@ receive bytes from the server that constitute an illegal command, it will raise
 EPICS name like <code class="xref py py-data docutils literal"><span class="pre">&quot;XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL&quot;</span></code>. Some server on our
 network provides this channel. The range of IP addresses to search is
 conventionally recorded in an environment variable.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="kn">import</span> <span class="nn">os</span>
 
-<span class="gp">In [18]: </span><span class="n">hosts</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EPICS_CA_ADDR_LIST&#39;</span><span class="p">]</span>  <span class="c1"># example: &#39;172.17.255.255&#39;</span>
+<span class="gp">In [16]: </span><span class="n">hosts</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EPICS_CA_ADDR_LIST&#39;</span><span class="p">]</span>  <span class="c1"># example: &#39;172.17.255.255&#39;</span>
 </pre></div>
 </div>
 <p>We need to broadcast a search request to the servers on our network and receive
@@ -320,29 +341,83 @@ same pattern as above, still using our broadcaster <code class="docutils literal
 <code class="docutils literal"><span class="pre">udp_sock</span></code>, and some new caproto commands.</p>
 <p>In a single UDP datagram, we need to announce which version of the protocol we
 are using and the channel name we are looking for.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="n">name</span>  <span class="o">=</span> <span class="s2">&quot;XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL&quot;</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">name</span>  <span class="o">=</span> <span class="s2">&quot;XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL&quot;</span>
 
-<span class="gp">In [20]: </span><span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">),</span>
+<span class="gp">In [18]: </span><span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">),</span>
 <span class="gp">   ....: </span>                       <span class="n">caproto</span><span class="o">.</span><span class="n">SearchRequest</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
 <span class="gp">   ....: </span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">LocalProtocolError</span><span class="g g-Whitespace">                        </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-18-af7ee1c90aac&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">),</span>
+<span class="ne">----&gt; </span><span class="mi">2</span>                        <span class="n">caproto</span><span class="o">.</span><span class="n">SearchRequest</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span> 
 
-<span class="gp">In [21]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">hosts</span><span class="p">,</span> <span class="mi">5064</span><span class="p">))</span>
-<span class="gh">Out[21]: </span><span class="go">64</span>
+<span class="nn">/home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages/caproto/_hub.py</span> in <span class="ni">send</span><span class="nt">(self, *commands)</span>
+<span class="g g-Whitespace">    </span><span class="mi">409</span>         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">commands</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">410</span>             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> of </span><span class="si">%d</span><span class="s2"> </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">commands</span><span class="p">),</span> <span class="n">command</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">411</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">history</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">412</span>             <span class="n">bytes_to_send</span> <span class="o">+=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">413</span>         <span class="k">return</span> <span class="n">bytes_to_send</span>
+
+<span class="nn">/home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages/caproto/_hub.py</span> in <span class="ni">_process_command</span><span class="nt">(self, role, command, history)</span>
+<span class="g g-Whitespace">    </span><span class="mi">478</span>               <span class="bp">self</span><span class="o">.</span><span class="n">our_role</span> <span class="ow">is</span> <span class="n">CLIENT</span> <span class="ow">and</span>
+<span class="g g-Whitespace">    </span><span class="mi">479</span>               <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">480</span>             <span class="k">raise</span> <span class="n">LocalProtocolError</span><span class="p">(</span><span class="s2">&quot;Client must send a &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">481</span>                                      <span class="s2">&quot;RegisterRepeaterRequest before any &quot;</span>
+<span class="g g-Whitespace">    </span><span class="mi">482</span>                                      <span class="s2">&quot;other commands&quot;</span><span class="p">)</span>
+
+<span class="ne">LocalProtocolError</span>: Client must send a RegisterRepeaterRequest before any other commands
+
+<span class="gp">In [19]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">hosts</span><span class="p">,</span> <span class="mi">5064</span><span class="p">))</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Out[19]: 16</span>
 </pre></div>
 </div>
 <p>Our answer will arrive in a single datagram with multiple commands in it.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [22]: </span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">timeout</span><span class="g g-Whitespace">                                   </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-20-3cda84f48ef7&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
 
-<span class="gp">In [23]: </span><span class="n">b</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+<span class="ne">timeout</span>: timed out
 
-<span class="gp">In [24]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
-<span class="gh">Out[24]: </span><span class="go">VersionResponse(version=13)</span>
+<span class="gp">In [21]: </span><span class="n">b</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
 
-<span class="gp">In [25]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
-<span class="go">                                     Out[25]: SearchResponse(port=5064, ip=&#39;255.255.255.255&#39;, cid=0, version=13)</span>
+<span class="gp">In [22]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">KeyError</span><span class="g g-Whitespace">                                  </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-22-9ee21a02a218&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
 
-<span class="gp">In [26]: </span><span class="n">address</span>
-<span class="go">                                                                                                                 Out[26]: (&#39;172.17.0.2&#39;, 5064)</span>
+<span class="nn">/home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages/caproto/_hub.py</span> in <span class="ni">next_command</span><span class="nt">(self)</span>
+<span class="g g-Whitespace">    </span><span class="mi">443</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="g g-Whitespace">    </span><span class="mi">444</span>             <span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datagram_inbox</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
+<span class="ne">--&gt; </span><span class="mi">445</span>             <span class="n">commands</span> <span class="o">=</span> <span class="n">read_datagram</span><span class="p">(</span><span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">446</span>             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Parsed </span><span class="si">%d</span><span class="s2"> commands from first datagram in queue.&quot;</span><span class="p">,</span>
+<span class="g g-Whitespace">    </span><span class="mi">447</span>                            <span class="nb">len</span><span class="p">(</span><span class="n">commands</span><span class="p">))</span>
+
+<span class="nn">/home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages/caproto/_commands.py</span> in <span class="ni">read_datagram</span><span class="nt">(data, address, role)</span>
+<span class="g g-Whitespace">    </span><span class="mi">261</span>         <span class="n">header</span> <span class="o">=</span> <span class="n">MessageHeader</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">barray</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">262</span>         <span class="n">barray</span> <span class="o">=</span> <span class="n">barray</span><span class="p">[</span><span class="n">_MessageHeaderSize</span><span class="p">:]</span>
+<span class="ne">--&gt; </span><span class="mi">263</span>         <span class="n">_class</span> <span class="o">=</span> <span class="n">get_command_class</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">264</span>         <span class="n">payload_size</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span>
+<span class="g g-Whitespace">    </span><span class="mi">265</span>         <span class="k">if</span> <span class="n">_class</span><span class="o">.</span><span class="n">HAS_PAYLOAD</span><span class="p">:</span>
+
+<span class="nn">/home/travis/virtualenv/python3.5.2/lib/python3.5/site-packages/caproto/_commands.py</span> in <span class="ni">get_command_class</span><span class="nt">(role, header)</span>
+<span class="g g-Whitespace">    </span><span class="mi">247</span> 
+<span class="g g-Whitespace">    </span><span class="mi">248</span> <span class="k">def</span> <span class="nf">get_command_class</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">header</span><span class="p">):</span>
+<span class="ne">--&gt; </span><span class="mi">249</span>     <span class="n">_class</span> <span class="o">=</span> <span class="n">Commands</span><span class="p">[</span><span class="n">role</span><span class="p">][</span><span class="n">header</span><span class="o">.</span><span class="n">command</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">250</span>     <span class="c1"># Special case for EventCancelResponse which is coded inconsistently.</span>
+<span class="g g-Whitespace">    </span><span class="mi">251</span>     <span class="k">if</span> <span class="n">role</span> <span class="ow">is</span> <span class="n">SERVER</span> <span class="ow">and</span> <span class="n">header</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+<span class="ne">KeyError</span>: 24
+
+<span class="gp">In [23]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      Out[23]: NEED_DATA</span>
+
+<span class="gp">In [24]: </span><span class="n">address</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         Out[24]: (&#39;127.0.0.1&#39;, 52839)</span>
 </pre></div>
 </div>
 <p>Now we have the address of a server that has the channel we&#8217;re interested in.
@@ -352,14 +427,34 @@ particular server.</p>
 <div class="section" id="creating-a-channel">
 <h3>Creating a Channel<a class="headerlink" href="#creating-a-channel" title="Permalink to this headline">¶</a></h3>
 <p>Create a TCP connection with the server at the <code class="docutils literal"><span class="pre">address</span></code> we found above.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [27]: </span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [25]: </span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ConnectionRefusedError</span><span class="g g-Whitespace">                    </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-25-1c94f885de2f&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+
+<span class="nn">/opt/python/3.5.2/lib/python3.5/socket.py</span> in <span class="ni">create_connection</span><span class="nt">(address, timeout, source_address)</span>
+<span class="g g-Whitespace">    </span><span class="mi">709</span> 
+<span class="g g-Whitespace">    </span><span class="mi">710</span>     <span class="k">if</span> <span class="n">err</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+<span class="ne">--&gt; </span><span class="mi">711</span>         <span class="k">raise</span> <span class="n">err</span>
+<span class="g g-Whitespace">    </span><span class="mi">712</span>     <span class="k">else</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">713</span>         <span class="k">raise</span> <span class="n">error</span><span class="p">(</span><span class="s2">&quot;getaddrinfo returns an empty list&quot;</span><span class="p">)</span>
+
+<span class="nn">/opt/python/3.5.2/lib/python3.5/socket.py</span> in <span class="ni">create_connection</span><span class="nt">(address, timeout, source_address)</span>
+<span class="g g-Whitespace">    </span><span class="mi">700</span>             <span class="k">if</span> <span class="n">source_address</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">701</span>                 <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">source_address</span><span class="p">)</span>
+<span class="ne">--&gt; </span><span class="mi">702</span>             <span class="n">sock</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">sa</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">703</span>             <span class="k">return</span> <span class="n">sock</span>
+<span class="g g-Whitespace">    </span><span class="mi">704</span> 
+
+<span class="ne">ConnectionRefusedError</span>: [Errno 111] Connection refused
 </pre></div>
 </div>
 <p>A <a class="reference internal" href="api.html#caproto.VirtualCircuit" title="caproto.VirtualCircuit"><code class="xref py py-class docutils literal"><span class="pre">VirtualCircuit</span></code></a> plays the same role for a TCP connection as
 the <a class="reference internal" href="api.html#caproto.Broadcaster" title="caproto.Broadcaster"><code class="xref py py-class docutils literal"><span class="pre">Broadcaster</span></code></a> played for UDP: we&#8217;ll use it to interpret
 received bytes as Commands and to ensure that incoming and outgoing bytes abide
 by the protocol.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [28]: </span><span class="n">circuit</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">caproto</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [26]: </span><span class="n">circuit</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">caproto</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>We&#8217;ll use these two convenience functions for what follows.</p>
@@ -382,32 +477,112 @@ by the protocol.</p>
 </pre></div>
 </div>
 <p>We initialize the circuit by specifying our protocol version.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [29]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [27]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-27-bbc2f2a0838a&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
 
-<span class="gp">In [30]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[30]: </span><span class="go">[VersionResponse(version=13)]</span>
+<span class="nn">&lt;ipython-input-27-d856333f2af7&gt;</span> in <span class="ni">send</span><span class="nt">(command)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">3</span>     <span class="n">sock</span><span class="o">.</span><span class="n">sendmsg</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="k">def</span> <span class="nf">recv</span><span class="p">():</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+
+<span class="ne">NameError</span>: name &#39;sock&#39; is not defined
+
+<span class="gp">In [28]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-28-bbfdba23da9b&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 recv()</span>
+
+<span class="go">&lt;ipython-input-27-d856333f2af7&gt; in recv()</span>
+<span class="go">      3     sock.sendmsg(buffers_to_send)</span>
+<span class="go">      4 def recv():</span>
+<span class="go">----&gt; 5     bytes_received = sock.recv(4096)</span>
+<span class="go">      6     circuit.recv(bytes_received)</span>
+<span class="go">      7     commands = []</span>
+
+<span class="go">NameError: name &#39;sock&#39; is not defined</span>
 </pre></div>
 </div>
 <p>Optionally provide the host name and &#8220;client&#8221; name, which the server may use
 to determine our read/write permissions on channels. (There is no
 authentication in Channel Access; security has to be provided at the network
 level.)</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [31]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">HostNameRequest</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">))</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [29]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">HostNameRequest</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">))</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-29-b38e8fffc21b&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">HostNameRequest</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">))</span>
 
-<span class="gp">In [32]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClientNameRequest</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">))</span>
+<span class="nn">&lt;ipython-input-27-d856333f2af7&gt;</span> in <span class="ni">send</span><span class="nt">(command)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">3</span>     <span class="n">sock</span><span class="o">.</span><span class="n">sendmsg</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="k">def</span> <span class="nf">recv</span><span class="p">():</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+
+<span class="ne">NameError</span>: name &#39;sock&#39; is not defined
+
+<span class="gp">In [30]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClientNameRequest</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">))</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-30-0b19978e88db&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 send(caproto.ClientNameRequest(&#39;user&#39;))</span>
+
+<span class="go">&lt;ipython-input-27-d856333f2af7&gt; in send(command)</span>
+<span class="go">      1 def send(command):</span>
+<span class="go">      2     buffers_to_send = circuit.send(command)</span>
+<span class="go">----&gt; 3     sock.sendmsg(buffers_to_send)</span>
+<span class="go">      4 def recv():</span>
+<span class="go">      5     bytes_received = sock.recv(4096)</span>
+
+<span class="go">NameError: name &#39;sock&#39; is not defined</span>
 </pre></div>
 </div>
 <p>Finally, create the channel.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [33]: </span><span class="n">cid</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># a client-specified unique ID for this Channel</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [31]: </span><span class="n">cid</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># a client-specified unique ID for this Channel</span>
 
-<span class="gp">In [34]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">CreateChanRequest</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
+<span class="gp">In [32]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">CreateChanRequest</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-32-666ce91da3b5&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">CreateChanRequest</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
 
-<span class="gp">In [35]: </span><span class="n">access_response</span><span class="p">,</span> <span class="n">create_chan_response</span> <span class="o">=</span> <span class="n">recv</span><span class="p">()</span>
+<span class="nn">&lt;ipython-input-27-d856333f2af7&gt;</span> in <span class="ni">send</span><span class="nt">(command)</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+<span class="ne">----&gt; </span><span class="mi">3</span>     <span class="n">sock</span><span class="o">.</span><span class="n">sendmsg</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="k">def</span> <span class="nf">recv</span><span class="p">():</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>     <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
 
-<span class="gp">In [36]: </span><span class="n">access_response</span><span class="p">,</span> <span class="n">create_chan_response</span>
-<span class="gh">Out[36]: </span><span class="go"></span>
-<span class="go">(AccessRightsResponse(cid=1, access_rights=3),</span>
-<span class="go"> CreateChanResponse(data_type=6, data_count=1, cid=1, sid=7))</span>
+<span class="ne">NameError</span>: name &#39;sock&#39; is not defined
+
+<span class="gp">In [33]: </span><span class="n">access_response</span><span class="p">,</span> <span class="n">create_chan_response</span> <span class="o">=</span> <span class="n">recv</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-33-fed5b5ceb61f&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 access_response, create_chan_response = recv()</span>
+
+<span class="go">&lt;ipython-input-27-d856333f2af7&gt; in recv()</span>
+<span class="go">      3     sock.sendmsg(buffers_to_send)</span>
+<span class="go">      4 def recv():</span>
+<span class="go">----&gt; 5     bytes_received = sock.recv(4096)</span>
+<span class="go">      6     circuit.recv(bytes_received)</span>
+<span class="go">      7     commands = []</span>
+
+<span class="go">NameError: name &#39;sock&#39; is not defined</span>
+
+<span class="gp">In [34]: </span><span class="n">access_response</span><span class="p">,</span> <span class="n">create_chan_response</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-34-e18d1f006d51&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 access_response, create_chan_response</span>
+
+<span class="go">NameError: name &#39;access_response&#39; is not defined</span>
 </pre></div>
 </div>
 <p>Success! We now have a connection to the <code class="docutils literal"><span class="pre">XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL</span></code>
@@ -417,7 +592,13 @@ other channels on the same server. In the commands that follow, we&#8217;ll use 
 integer IDs <code class="docutils literal"><span class="pre">cid</span></code> (specified by our client in <code class="xref py py-class docutils literal"><span class="pre">CreateChanRequest</span></code>) and
 <code class="docutils literal"><span class="pre">sid</span></code> (specified by the server in its <code class="xref py py-class docutils literal"><span class="pre">CreateChanResponse</span></code>) to specify
 which channel we mean.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [37]: </span><span class="n">sid</span> <span class="o">=</span> <span class="n">create_chan_response</span><span class="o">.</span><span class="n">sid</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [35]: </span><span class="n">sid</span> <span class="o">=</span> <span class="n">create_chan_response</span><span class="o">.</span><span class="n">sid</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-35-8915bd85bfe9&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">sid</span> <span class="o">=</span> <span class="n">create_chan_response</span><span class="o">.</span><span class="n">sid</span>
+
+<span class="ne">NameError</span>: name &#39;create_chan_response&#39; is not defined
 </pre></div>
 </div>
 <p>In the event of high traffic clogging the network, we can open up <em>multiple</em>
@@ -429,29 +610,73 @@ there can be multiple VirtualCircuits between peers.</p>
 <div class="section" id="reading-and-writing-values">
 <h3>Reading and Writing Values<a class="headerlink" href="#reading-and-writing-values" title="Permalink to this headline">¶</a></h3>
 <p>Read:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [38]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ReadNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [36]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ReadNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
 <span class="gp">   ....: </span>                               <span class="n">data_count</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
 <span class="gp">   ....: </span>                               <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
 <span class="gp">   ....: </span>                               <span class="n">ioid</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 <span class="gp">   ....: </span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-36-4104b3e6b39d&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ReadNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>                                <span class="n">data_count</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>                                <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>                                <span class="n">ioid</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span> 
 
-<span class="gp">In [39]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[39]: </span><span class="go">[ReadNotifyResponse(data=array([ 6.]), data_type=6, data_count=1, status=1, ioid=1, metadata=None)]</span>
+<span class="ne">NameError</span>: name &#39;create_chan_response&#39; is not defined
+
+<span class="gp">In [37]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-37-bbfdba23da9b&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 recv()</span>
+
+<span class="go">&lt;ipython-input-27-d856333f2af7&gt; in recv()</span>
+<span class="go">      3     sock.sendmsg(buffers_to_send)</span>
+<span class="go">      4 def recv():</span>
+<span class="go">----&gt; 5     bytes_received = sock.recv(4096)</span>
+<span class="go">      6     circuit.recv(bytes_received)</span>
+<span class="go">      7     commands = []</span>
+
+<span class="go">NameError: name &#39;sock&#39; is not defined</span>
 </pre></div>
 </div>
 <p>We may request a particular data type and element count; in the case we just
 asked for the &#8220;native&#8221; data type and count that the server reported in its
 <code class="xref py py-class docutils literal"><span class="pre">CreateChanResponse</span></code> above.</p>
 <p>Write:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [40]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">WriteNotifyRequest</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,),</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [38]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">WriteNotifyRequest</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,),</span>
 <span class="gp">   ....: </span>                                <span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">data_count</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">ioid</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="gp">   ....: </span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-38-83d23cf7b1ad&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">WriteNotifyRequest</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,),</span>
+<span class="ne">----&gt; </span><span class="mi">2</span>                                 <span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>                                 <span class="n">data_count</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>                                 <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>                                 <span class="n">ioid</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 
-<span class="gp">In [41]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[41]: </span><span class="go">[WriteNotifyResponse(data_type=6, data_count=1, status=1, ioid=2)]</span>
+<span class="ne">NameError</span>: name &#39;create_chan_response&#39; is not defined
+
+<span class="gp">In [39]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-39-bbfdba23da9b&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 recv()</span>
+
+<span class="go">&lt;ipython-input-27-d856333f2af7&gt; in recv()</span>
+<span class="go">      3     sock.sendmsg(buffers_to_send)</span>
+<span class="go">      4 def recv():</span>
+<span class="go">----&gt; 5     bytes_received = sock.recv(4096)</span>
+<span class="go">      6     circuit.recv(bytes_received)</span>
+<span class="go">      7     commands = []</span>
+
+<span class="go">NameError: name &#39;sock&#39; is not defined</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal"><span class="pre">data</span></code> may be given as one of the following types:</p>
@@ -469,47 +694,120 @@ metadata. See <a class="reference internal" href="api.html#payload-data-types"><
 <p>Ask the server to send responses every time the value of the Channel changes.
 As with reading, above, we have the option of requesting a specific data type
 or element count, but we&#8217;ll use the &#8220;native&#8221; parameters.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [42]: </span><span class="n">req</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">EventAddRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [40]: </span><span class="n">req</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">EventAddRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
 <span class="gp">   ....: </span>                              <span class="n">data_count</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
 <span class="gp">   ....: </span>                              <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
 <span class="gp">   ....: </span>                              <span class="n">subscriptionid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="gp">   ....: </span>                              <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">   ....: </span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-40-5b0969e5d748&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">req</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">EventAddRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>                               <span class="n">data_count</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>                               <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span>                               <span class="n">subscriptionid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">5</span>                               <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="gp">In [43]: </span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+<span class="ne">NameError</span>: name &#39;create_chan_response&#39; is not defined
+
+<span class="gp">In [41]: </span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-41-9beae9fbfa45&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 send(req)</span>
+
+<span class="go">NameError: name &#39;req&#39; is not defined</span>
 </pre></div>
 </div>
 <p>The server always sends at least one response with the current value at
 subscription time.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [44]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[44]: </span><span class="go">[EventAddResponse(data=array([ 4.]), data_type=6, data_count=1, status_code=1, subscriptionid=0, metadata=None)]</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [42]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-42-bbfdba23da9b&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">recv</span><span class="p">()</span>
+
+<span class="nn">&lt;ipython-input-27-d856333f2af7&gt;</span> in <span class="ni">recv</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>     <span class="n">sock</span><span class="o">.</span><span class="n">sendmsg</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> <span class="k">def</span> <span class="nf">recv</span><span class="p">():</span>
+<span class="ne">----&gt; </span><span class="mi">5</span>     <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">6</span>     <span class="n">circuit</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">)</span>
+<span class="g g-Whitespace">      </span><span class="mi">7</span>     <span class="n">commands</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="ne">NameError</span>: name &#39;sock&#39; is not defined
 </pre></div>
 </div>
 <p>If the value changes, additional responses will come in. If multiple
 subscriptions are in play at once over this circuit, we can use the
 <code class="docutils literal"><span class="pre">subscriptionid</span></code> to match them to the right channel. We also use it to end
 the subscription:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [45]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">EventCancelRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [43]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">EventCancelRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">sid</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">subscriptionid</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">))</span>
 <span class="gp">   ....: </span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-43-96223fa54724&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">EventCancelRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>                                 <span class="n">sid</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
+<span class="g g-Whitespace">      </span><span class="mi">3</span>                                 <span class="n">subscriptionid</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">))</span>
+<span class="g g-Whitespace">      </span><span class="mi">4</span> 
 
-<span class="gp">In [46]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[46]: </span><span class="go">[EventCancelResponse(data_type=6, sid=7, subscriptionid=0)]</span>
+<span class="ne">NameError</span>: name &#39;req&#39; is not defined
+
+<span class="gp">In [44]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-44-bbfdba23da9b&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 recv()</span>
+
+<span class="go">&lt;ipython-input-27-d856333f2af7&gt; in recv()</span>
+<span class="go">      3     sock.sendmsg(buffers_to_send)</span>
+<span class="go">      4 def recv():</span>
+<span class="go">----&gt; 5     bytes_received = sock.recv(4096)</span>
+<span class="go">      6     circuit.recv(bytes_received)</span>
+<span class="go">      7     commands = []</span>
+
+<span class="go">NameError: name &#39;sock&#39; is not defined</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="closing-the-channel">
 <h3>Closing the Channel<a class="headerlink" href="#closing-the-channel" title="Permalink to this headline">¶</a></h3>
 <p>To clean up, close the Channel.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [47]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClearChannelRequest</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">))</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [45]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClearChannelRequest</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">))</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-45-30fdb32afa50&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClearChannelRequest</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">))</span>
 
-<span class="gp">In [48]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[48]: </span><span class="go">[ClearChannelResponse(sid=7, cid=1)]</span>
+<span class="ne">NameError</span>: name &#39;sid&#39; is not defined
+
+<span class="gp">In [46]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-46-bbfdba23da9b&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 recv()</span>
+
+<span class="go">&lt;ipython-input-27-d856333f2af7&gt; in recv()</span>
+<span class="go">      3     sock.sendmsg(buffers_to_send)</span>
+<span class="go">      4 def recv():</span>
+<span class="go">----&gt; 5     bytes_received = sock.recv(4096)</span>
+<span class="go">      6     circuit.recv(bytes_received)</span>
+<span class="go">      7     commands = []</span>
+
+<span class="go">NameError: name &#39;sock&#39; is not defined</span>
 </pre></div>
 </div>
 <p>If we are done with the circuit, close the socket too.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [49]: </span><span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [47]: </span><span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-47-58c07f0e1562&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="ne">NameError</span>: name &#39;sock&#39; is not defined
 </pre></div>
 </div>
 </div>
@@ -639,7 +937,7 @@ until (unless) the command is actually sent.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.731.g41304f1',
+            VERSION:'0+untagged.736.g6a06652',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

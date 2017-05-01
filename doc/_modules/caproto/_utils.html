@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0+untagged.731.g41304f1 documentation</title>
+  <title>caproto._utils &mdash; caproto 0+untagged.736.g6a06652 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.731.g41304f1 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.736.g6a06652 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.731.g41304f1
+                0+untagged.736.g6a06652
               </div>
             
           
@@ -167,6 +167,7 @@
             
   <h1>Source code for caproto._utils</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">socket</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">netifaces</span>
@@ -329,6 +330,31 @@
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;expected str or bytes&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">bcast_socket</span><span class="p">(</span><span class="n">socket_module</span><span class="o">=</span><span class="n">socket</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a socket and configure it for UDP broadcast.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    socket_module: module, optional</span>
+<span class="sd">        Default is the built-in :mod:`socket` module, but anything with the</span>
+<span class="sd">        same interface may be used, such as :mod:`curio.socket`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">socket</span> <span class="o">=</span> <span class="n">socket_module</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># for BSD/Darwin only</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEPORT</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="o">...</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sock</span>
 </pre></div>
 
            </div>
@@ -365,7 +391,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.731.g41304f1',
+            VERSION:'0+untagged.736.g6a06652',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
