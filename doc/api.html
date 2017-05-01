@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.753.g4c7c48a documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.754.g8246d7c documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.753.g4c7c48a documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.754.g8246d7c documentation" href="index.html"/>
         <link rel="next" title="References" href="references.html"/>
         <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.753.g4c7c48a
+                0+untagged.754.g8246d7c
               </div>
             
           
@@ -994,7 +994,7 @@ closing the Channel.</p>
 <span class="gp">   ...: </span>
 
 <span class="gp">In [8]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={SERVER: IDLE, CLIENT: SEND_VERSION_REQUEST}&gt;</span>
+<span class="gh">Out[8]: </span><span class="go">&lt;CircuitState states={CLIENT: SEND_VERSION_REQUEST, SERVER: IDLE}&gt;</span>
 </pre></div>
 </div>
 <p>When a <a class="reference internal" href="#caproto.VersionRequest" title="caproto.VersionRequest"><code class="xref py py-class docutils literal"><span class="pre">VersionRequest</span></code></a> is sent through the VirtualCircuit, both the
@@ -1002,7 +1002,7 @@ client and the server state update.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">));</span>
 
 <span class="gp">In [10]: </span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span>
-<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={SERVER: SEND_VERSION_RESPONSE, CLIENT: AWAIT_VERSION_RESPONSE}&gt;</span>
+<span class="gh">Out[10]: </span><span class="go">&lt;CircuitState states={CLIENT: AWAIT_VERSION_RESPONSE, SERVER: SEND_VERSION_RESPONSE}&gt;</span>
 </pre></div>
 </div>
 <p>And we can test the current state using constants like
@@ -1441,6 +1441,20 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="caproto.ClientChannel.disconnect">
+<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ClientChannel.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <a class="reference internal" href="#caproto.ClearChannelRequest" title="caproto.ClearChannelRequest"><code class="xref py py-class docutils literal"><span class="pre">ClearChannelRequest</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ClearChannelRequest</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="caproto.ClientChannel.read">
 <code class="descname">read</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ClientChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadNotifyRequest" title="caproto.ReadNotifyRequest"><code class="xref py py-class docutils literal"><span class="pre">ReadNotifyRequest</span></code></a>.</p>
@@ -1652,6 +1666,20 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 </dd></dl>
 
 <dl class="method">
+<dt id="caproto.ServerChannel.disconnect">
+<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <a class="reference internal" href="#caproto.ServerDisconnResponse" title="caproto.ServerDisconnResponse"><code class="xref py py-class docutils literal"><span class="pre">ServerDisconnResponse</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ServerDisconnResponse</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="caproto.ServerChannel.read">
 <code class="descname">read</code><span class="sig-paren">(</span><em>data</em>, <em>ioid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=1</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadNotifyResponse" title="caproto.ReadNotifyResponse"><code class="xref py py-class docutils literal"><span class="pre">ReadNotifyResponse</span></code></a>.</p>
@@ -1788,8 +1816,8 @@ native data type, which can be checked in the Channel&#8217;s attribute
 </dd></dl>
 
 <dl class="method">
-<dt id="caproto.ServerChannel.disconnect">
-<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.disconnect" title="Permalink to this definition">¶</a></dt>
+<dt>
+<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#ServerChannel.disconnect"><span class="viewcode-link">[source]</span></a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ServerDisconnResponse" title="caproto.ServerDisconnResponse"><code class="xref py py-class docutils literal"><span class="pre">ServerDisconnResponse</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2140,7 +2168,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.753.g4c7c48a',
+            VERSION:'0+untagged.754.g8246d7c',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
