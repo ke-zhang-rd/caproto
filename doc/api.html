@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.768.g63f3daa documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.915.ge9ea522 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.768.g63f3daa documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.915.ge9ea522 documentation" href="index.html"/>
         <link rel="next" title="References" href="references.html"/>
         <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.768.g63f3daa
+                0+untagged.915.ge9ea522
               </div>
             
           
@@ -104,7 +104,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
 </ul>
@@ -218,7 +218,7 @@ provided by the Channel Access specification.</p>
 </div>
 <p>These names are rather opaque, but each Command provides views on this same
 data through type-specific attributes with more obvious names. These are the
-same names used in the Command&#8217;s <code class="docutils literal"><span class="pre">__repr__()</span></code> and <code class="docutils literal"><span class="pre">__init__</span></code> arguments.</p>
+same names used in the Command’s <code class="docutils literal"><span class="pre">__repr__()</span></code> and <code class="docutils literal"><span class="pre">__init__</span></code> arguments.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">com</span><span class="o">.</span><span class="n">version</span>
 <span class="gh">Out[5]: </span><span class="go">13</span>
 
@@ -236,7 +236,7 @@ designated by the Channel Access specification.</p>
 <dl class="attribute">
 <dt id="caproto.VersionRequest.priority">
 <code class="descname">priority</code><a class="headerlink" href="#caproto.VersionRequest.priority" title="Permalink to this definition">¶</a></dt>
-<dd><p>Between 0 (low) and 99 (high) designating this connection&#8217;s priority
+<dd><p>Between 0 (low) and 99 (high) designating this connection’s priority
 in the event of congestion.</p>
 </dd></dl>
 
@@ -251,7 +251,7 @@ in the event of congestion.</p>
 <dl class="class">
 <dt id="caproto.VersionResponse">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">VersionResponse</code><span class="sig-paren">(</span><em>version</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#VersionResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VersionResponse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Respond to a client&#8217;s initiation of a new connection or broadcast.</p>
+<dd><p>Respond to a client’s initiation of a new connection or broadcast.</p>
 <p>Fields:</p>
 <dl class="attribute">
 <dt id="caproto.VersionResponse.version">
@@ -269,7 +269,7 @@ in the event of congestion.</p>
 <dl class="attribute">
 <dt id="caproto.SearchRequest.name">
 <code class="descname">name</code><a class="headerlink" href="#caproto.SearchRequest.name" title="Permalink to this definition">¶</a></dt>
-<dd><p>String name of the channel (i.e. &#8216;PV&#8217;)</p>
+<dd><p>String name of the channel (i.e. ‘PV’)</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -431,7 +431,7 @@ this response with the original request.</p>
 <dl class="class">
 <dt id="caproto.EventAddRequest">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventAddRequest</code><span class="sig-paren">(</span><em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>subscriptionid</em>, <em>low</em>, <em>high</em>, <em>to</em>, <em>mask</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventAddRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventAddRequest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subscribe; i.e. request to notified of changes in a Channel&#8217;s value.</p>
+<dd><p>Subscribe; i.e. request to notified of changes in a Channel’s value.</p>
 <p>Fields:</p>
 <dl class="attribute">
 <dt id="caproto.EventAddRequest.data_type">
@@ -487,7 +487,7 @@ subscription on this Virtual Circuit.</p>
 <dl class="class">
 <dt id="caproto.EventAddResponse">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventAddResponse</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>status_code</em>, <em>subscriptionid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventAddResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventAddResponse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Notify the client of a change in a Channel&#8217;s value.</p>
+<dd><p>Notify the client of a change in a Channel’s value.</p>
 <p>Fields:</p>
 <dl class="attribute">
 <dt id="caproto.EventAddResponse.data">
@@ -530,7 +530,7 @@ subscription on this Virtual Circuit.</p>
 <dl class="class">
 <dt id="caproto.EventCancelRequest">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventCancelRequest</code><span class="sig-paren">(</span><em>data_type</em>, <em>sid</em>, <em>subscriptionid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventCancelRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventCancelRequest" title="Permalink to this definition">¶</a></dt>
-<dd><p>End notifcations about chnages in a Channel&#8217;s value.</p>
+<dd><p>End notifcations about chnages in a Channel’s value.</p>
 <p>Fields:</p>
 <dl class="attribute">
 <dt id="caproto.EventCancelRequest.data_type">
@@ -1019,7 +1019,7 @@ client and the server state update.</p>
 <code class="descclassname">caproto.</code><code class="descname">SERVER</code><a class="headerlink" href="#caproto.SERVER" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<p>Special constants are also used to represent the &#8220;direction&#8221; of a command.</p>
+<p>Special constants are also used to represent the “direction” of a command.</p>
 <dl class="data">
 <dt id="caproto.RESPONSE">
 <code class="descclassname">caproto.</code><code class="descname">RESPONSE</code><a class="headerlink" href="#caproto.RESPONSE" title="Permalink to this definition">¶</a></dt>
@@ -1027,12 +1027,19 @@ client and the server state update.</p>
 <code class="descclassname">caproto.</code><code class="descname">REQUEST</code><a class="headerlink" href="#caproto.REQUEST" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<p>Another special constant serves as a sentinel &#8220;Command&#8221; returned by
-<a class="reference internal" href="#caproto.Broadcaster.next_command" title="caproto.Broadcaster.next_command"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.next_command()</span></code></a> and <a class="reference internal" href="#caproto.VirtualCircuit.next_command" title="caproto.VirtualCircuit.next_command"><code class="xref py py-meth docutils literal"><span class="pre">VirtualCircuit.next_command()</span></code></a> when
-more data needs to be received before any new Commands can be parsed.</p>
+<p>Another special constant serves as a sentinel “Command” returned by
+<code class="xref py py-func docutils literal"><span class="pre">read_from_bytestream()</span></code> when more data needs to be received before any new
+Commands can be parsed.</p>
 <dl class="data">
 <dt id="caproto.NEED_DATA">
 <code class="descclassname">caproto.</code><code class="descname">NEED_DATA</code><a class="headerlink" href="#caproto.NEED_DATA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<p>Similarly, one sentinel is re-used as a “Command” allowing for consistent
+handling of disconnection events through the command queues:</p>
+<dl class="data">
+<dt>
+<code class="descclassname">caproto.</code><code class="descname">DISCONNECTED</code></dt>
 <dd></dd></dl>
 
 <p>Borrowing a trick (one of many!) from the h11 project, these special constants
@@ -1047,7 +1054,7 @@ Command or might be a sentinel (e.g. <a class="reference internal" href="#caprot
 <dl class="class">
 <dt id="caproto.VirtualCircuit">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">VirtualCircuit</code><span class="sig-paren">(</span><em>our_role</em>, <em>address</em>, <em>priority</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#VirtualCircuit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit" title="Permalink to this definition">¶</a></dt>
-<dd><p>An object encapulating the state of one CA client&#8211;server connection.</p>
+<dd><p>An object encapulating the state of one CA client–server connection.</p>
 <p>It is a companion to a TCP socket managed by the user. All data
 received over the socket should be passed to <a class="reference internal" href="#caproto.VirtualCircuit.recv" title="caproto.VirtualCircuit.recv"><code class="xref py py-meth docutils literal"><span class="pre">recv()</span></code></a>. Any data sent
 over the socket should first be passed through <a class="reference internal" href="#caproto.VirtualCircuit.send" title="caproto.VirtualCircuit.send"><code class="xref py py-meth docutils literal"><span class="pre">send()</span></code></a>.</p>
@@ -1102,7 +1109,7 @@ load. Lowest priority is 0; highest is 99.</p>
 <dt id="caproto.VirtualCircuit.send">
 <code class="descname">send</code><span class="sig-paren">(</span><em>*commands</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#VirtualCircuit.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert one or more high-level Commands into buffers of bytes that may
-be broadcast together in one TCP packet while updating our internal
+be broadcast together in one TCP packet. Update our internal
 state machine.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1127,17 +1134,21 @@ state machine.</p>
 <dl class="method">
 <dt id="caproto.VirtualCircuit.recv">
 <code class="descname">recv</code><span class="sig-paren">(</span><em>*buffers</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#VirtualCircuit.recv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit.recv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add data received over TCP to our internal recieve buffer.</p>
-<p>This does not actually do any processing on the data, just stores
-it. To trigger processing, you have to call <a class="reference internal" href="#caproto.VirtualCircuit.next_command" title="caproto.VirtualCircuit.next_command"><code class="xref py py-meth docutils literal"><span class="pre">next_command()</span></code></a>.</p>
+<dd><p>Parse commands from buffers received over TCP.</p>
+<p>When the caller is ready to process the commands, each command should
+first be passed to <a class="reference internal" href="#caproto.VirtualCircuit.process_command" title="caproto.VirtualCircuit.process_command"><code class="xref py py-meth docutils literal"><span class="pre">VirtualCircuit.process_command()</span></code></a> to validate
+it against the protocol and update the VirtualCircuit’s state.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>*buffers :</strong></p>
-<blockquote class="last">
+<blockquote>
 <div><p>any number of bytes-like buffers</p>
 </div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal"><span class="pre">(commands,</span> <span class="pre">num_bytes_needed)</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -1145,12 +1156,11 @@ it. To trigger processing, you have to call <a class="reference internal" href="
 </dd></dl>
 
 <dl class="method">
-<dt id="caproto.VirtualCircuit.next_command">
-<code class="descname">next_command</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#VirtualCircuit.next_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit.next_command" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse the next Command out of our internal receive buffer, update our
-internal state machine, and return it.</p>
-<p>Returns a <code class="xref py py-class docutils literal"><span class="pre">Command</span></code> object or a special constant,
-<a class="reference internal" href="#caproto.NEED_DATA" title="caproto.NEED_DATA"><code class="xref py py-data docutils literal"><span class="pre">NEED_DATA</span></code></a>.</p>
+<dt id="caproto.VirtualCircuit.process_command">
+<code class="descname">process_command</code><span class="sig-paren">(</span><em>command</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#VirtualCircuit.process_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit.process_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update internal state machine and raise if protocol is violated.</p>
+<p>Received commands should be passed through here before any additional
+processing by a server or client layer.</p>
 </dd></dl>
 
 <dl class="method">
@@ -1187,7 +1197,7 @@ It does not update any important state.</p>
 <h2><a class="toc-backref" href="#id7">The Broadcaster object</a><a class="headerlink" href="#the-broadcaster-object" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="caproto.Broadcaster">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">Broadcaster</code><span class="sig-paren">(</span><em>our_role</em>, <em>protocol_version=13</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#Broadcaster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">Broadcaster</code><span class="sig-paren">(</span><em>our_role</em>, <em>protocol_version=13</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster" title="Permalink to this definition">¶</a></dt>
 <dd><p>An object encapulating the state of one CA UDP connection.</p>
 <p>It is a companion to a UDP socket managed by the user. All data
 received over the socket should be passed to <a class="reference internal" href="#caproto.Broadcaster.recv" title="caproto.Broadcaster.recv"><code class="xref py py-meth docutils literal"><span class="pre">recv()</span></code></a>. Any data sent
@@ -1219,9 +1229,9 @@ over the socket should first be passed through <a class="reference internal" hre
 
 <dl class="method">
 <dt id="caproto.Broadcaster.send">
-<code class="descname">send</code><span class="sig-paren">(</span><em>*commands</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#Broadcaster.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.send" title="Permalink to this definition">¶</a></dt>
+<code class="descname">send</code><span class="sig-paren">(</span><em>*commands</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert one or more high-level Commands into bytes that may be
-broadcast together in one UDP datagram while updating our internal
+broadcast together in one UDP datagram. Update our internal
 state machine.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1245,19 +1255,23 @@ state machine.</p>
 
 <dl class="method">
 <dt id="caproto.Broadcaster.recv">
-<code class="descname">recv</code><span class="sig-paren">(</span><em>byteslike</em>, <em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#Broadcaster.recv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.recv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Add data from a UDP broadcast to our internal recieve buffer.</p>
-<p>This does not actually do any processing on the data, just stores
-it. To trigger processing, you have to call <a class="reference internal" href="#caproto.Broadcaster.next_command" title="caproto.Broadcaster.next_command"><code class="xref py py-meth docutils literal"><span class="pre">next_command()</span></code></a>.</p>
+<code class="descname">recv</code><span class="sig-paren">(</span><em>byteslike</em>, <em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster.recv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.recv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse commands from a UDP datagram.</p>
+<p>When the caller is ready to process the commands, each command should
+first be passed to <code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.process_command()</span></code> to validate it
+against the protocol and update the Broadcaster’s state.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>byteslike</strong> : bytes-like</p>
 <p><strong>address</strong> : tuple</p>
-<blockquote class="last">
+<blockquote>
 <div><p><code class="docutils literal"><span class="pre">(host,</span> <span class="pre">port)</span></code> as a string and an integer respectively</p>
 </div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>commands</strong> : list</p>
 </td>
 </tr>
 </tbody>
@@ -1265,22 +1279,21 @@ it. To trigger processing, you have to call <a class="reference internal" href="
 </dd></dl>
 
 <dl class="method">
-<dt id="caproto.Broadcaster.next_command">
-<code class="descname">next_command</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#Broadcaster.next_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.next_command" title="Permalink to this definition">¶</a></dt>
-<dd><p>Parse the next Command out of our internal receive buffer, update our
-internal state machine, and return it.</p>
-<p>Returns a <code class="xref py py-class docutils literal"><span class="pre">Command</span></code> object or a special constant,
-<a class="reference internal" href="#caproto.NEED_DATA" title="caproto.NEED_DATA"><code class="xref py py-data docutils literal"><span class="pre">NEED_DATA</span></code></a>.</p>
+<dt id="caproto.Broadcaster.process_commands">
+<code class="descname">process_commands</code><span class="sig-paren">(</span><em>commands</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster.process_commands"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.process_commands" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update internal state machine and raise if protocol is violated.</p>
+<p>Received commands should be passed through here before any additional
+processing by a server or client layer.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="caproto.Broadcaster.new_search_id">
-<code class="descname">new_search_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#Broadcaster.new_search_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.new_search_id" title="Permalink to this definition">¶</a></dt>
+<code class="descname">new_search_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster.new_search_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.new_search_id" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="caproto.Broadcaster.search">
-<code class="descname">search</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#Broadcaster.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.search" title="Permalink to this definition">¶</a></dt>
+<code class="descname">search</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.search" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.VersionRequest" title="caproto.VersionRequest"><code class="xref py py-class docutils literal"><span class="pre">VersionRequest</span></code></a> and <a class="reference internal" href="#caproto.SearchRequest" title="caproto.SearchRequest"><code class="xref py py-class docutils literal"><span class="pre">SearchRequest</span></code></a>.</p>
 <p>The protocol requires that these be transmitted together as part of one
 datagram.</p>
@@ -1303,7 +1316,7 @@ datagram.</p>
 
 <dl class="method">
 <dt id="caproto.Broadcaster.register">
-<code class="descname">register</code><span class="sig-paren">(</span><em>ip=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_hub.html#Broadcaster.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.register" title="Permalink to this definition">¶</a></dt>
+<code class="descname">register</code><span class="sig-paren">(</span><em>ip=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.RepeaterRegisterRequest" title="caproto.RepeaterRegisterRequest"><code class="xref py py-class docutils literal"><span class="pre">RepeaterRegisterRequest</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1342,7 +1355,7 @@ one is allocated by the VirtualCircuit.
 (2) A VirtualCircuit processes a CreateChanRequest that refers to a cid
 that it has not yet seen. A ClientChannel will be automatically
 instantiated with the name and cid indicated that command and the address
-and priority of that VirtualCircuit. It can be accessed in the circuit&#8217;s
+and priority of that VirtualCircuit. It can be accessed in the circuit’s
 <code class="docutils literal"><span class="pre">channels</span></code> attribute.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1464,14 +1477,14 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
-<div><p>Requested Channel Access data type. Default is the channel&#8217;s
-native data type, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested Channel Access data type. Default is the channel’s
+native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_type</span></code>.</p>
 </div></blockquote>
 <p><strong>data_count</strong> : integer, optional</p>
 <blockquote>
-<div><p>Requested number of values. Default is the channel&#8217;s native data
-count, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested number of values. Default is the channel’s native data
+count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
 </div></blockquote>
 </td>
@@ -1494,14 +1507,14 @@ count, which can be checked in the Channel&#8217;s attribute
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : tuple, <code class="docutils literal"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal"><span class="pre">array.array</span></code>, or bytes</p>
 <p><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
-<div><p>Requested Channel Access data type. Default is the channel&#8217;s
-native data type, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested Channel Access data type. Default is the channel’s
+native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_type</span></code>.</p>
 </div></blockquote>
 <p><strong>data_count</strong> : integer, optional</p>
 <blockquote>
-<div><p>Requested number of values. Default is the channel&#8217;s native data
-count, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested number of values. Default is the channel’s native data
+count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
 </div></blockquote>
 <p><strong>metadata</strong> : <code class="docutils literal"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</p>
@@ -1527,14 +1540,14 @@ count, which can be checked in the Channel&#8217;s attribute
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
-<div><p>Requested Channel Access data type. Default is the channel&#8217;s
-native data type, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested Channel Access data type. Default is the channel’s
+native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_type</span></code>.</p>
 </div></blockquote>
 <p><strong>data_count</strong> : integer, optional</p>
 <blockquote>
-<div><p>Requested number of values. Default is the channel&#8217;s native data
-count, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested number of values. Default is the channel’s native data
+count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
 </div></blockquote>
 <p><strong>low</strong> : number</p>
@@ -1691,14 +1704,14 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <p><strong>ioid</strong> : integer</p>
 <p><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
-<div><p>Requested Channel Access data type. Default is the channel&#8217;s
-native data type, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested Channel Access data type. Default is the channel’s
+native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_type</span></code>.</p>
 </div></blockquote>
 <p><strong>data_count</strong> : integer, optional</p>
 <blockquote>
-<div><p>Requested number of values. Default is the channel&#8217;s native data
-count, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested number of values. Default is the channel’s native data
+count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
 </div></blockquote>
 <p><strong>status</strong> : integer, optional</p>
@@ -1729,14 +1742,14 @@ count, which can be checked in the Channel&#8217;s attribute
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ioid</strong> : integer</p>
 <p><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
-<div><p>Requested Channel Access data type. Default is the channel&#8217;s
-native data type, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested Channel Access data type. Default is the channel’s
+native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_type</span></code>.</p>
 </div></blockquote>
 <p><strong>data_count</strong> : integer, optional</p>
 <blockquote>
-<div><p>Requested number of values. Default is the channel&#8217;s native data
-count, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested number of values. Default is the channel’s native data
+count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
 </div></blockquote>
 <p><strong>status</strong> : integer, optional</p>
@@ -1764,14 +1777,14 @@ count, which can be checked in the Channel&#8217;s attribute
 <p><strong>subscriptionid</strong> : integer</p>
 <p><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
-<div><p>Requested Channel Access data type. Default is the channel&#8217;s
-native data type, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested Channel Access data type. Default is the channel’s
+native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_type</span></code>.</p>
 </div></blockquote>
 <p><strong>data_count</strong> : integer, optional</p>
 <blockquote>
-<div><p>Requested number of values. Default is the channel&#8217;s native data
-count, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested number of values. Default is the channel’s native data
+count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
 </div></blockquote>
 <p><strong>status_code</strong> : integer, optional</p>
@@ -1802,8 +1815,8 @@ count, which can be checked in the Channel&#8217;s attribute
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>subscriptionid</strong> : integer</p>
 <p><strong>data_type</strong> : a <code class="xref py py-class docutils literal"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
 <blockquote>
-<div><p>Requested Channel Access data type. Default is the channel&#8217;s
-native data type, which can be checked in the Channel&#8217;s attribute
+<div><p>Requested Channel Access data type. Default is the channel’s
+native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal"><span class="pre">native_data_type</span></code>.</p>
 </div></blockquote>
 </td>
@@ -1834,7 +1847,7 @@ native data type, which can be checked in the Channel&#8217;s attribute
 </div>
 <div class="section" id="payload-data-types">
 <span id="id1"></span><h2><a class="toc-backref" href="#id9">Payload Data Types</a><a class="headerlink" href="#payload-data-types" title="Permalink to this headline">¶</a></h2>
-<p>Channel Access implements a system of data structures (&#8220;Database Records&#8221;) that
+<p>Channel Access implements a system of data structures (“Database Records”) that
 encode metadata like time, alarm status, and control limits with the data
 value(s). Each Channel Access data type has an integer ID, encoded by caproto
 in the <a class="reference internal" href="#caproto.ChannelType" title="caproto.ChannelType"><code class="xref py py-class docutils literal"><span class="pre">ChannelType</span></code></a> enum:</p>
@@ -1842,7 +1855,7 @@ in the <a class="reference internal" href="#caproto.ChannelType" title="caproto.
 <dt id="caproto.ChannelType">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ChannelType</code><a class="reference internal" href="_modules/caproto/_dbr.html#ChannelType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ChannelType" title="Permalink to this definition">¶</a></dt>
 <dd><p>An enumeration.</p>
-<p>&#8220;Native&#8221; types hold a scalar or a homogeous array of values.</p>
+<p>“Native” types hold a scalar or a homogeous array of values.</p>
 <dl class="attribute">
 <dt>
 <code class="descname">STRING = 1</code></dt>
@@ -2058,7 +2071,7 @@ in the <a class="reference internal" href="#caproto.ChannelType" title="caproto.
 
 <p>All commands that accept a <code class="docutils literal"><span class="pre">data_type</span></code> argument expect one of these
 <a class="reference internal" href="#caproto.ChannelType" title="caproto.ChannelType"><code class="xref py py-class docutils literal"><span class="pre">ChannelType</span></code></a> attributes or the corresponding integer. Here some valid
-examples using the simple &#8220;native&#8221; types.</p>
+examples using the simple “native” types.</p>
 <div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">caproto</span> <span class="kn">as</span> <span class="nn">ca</span>
 
 <span class="n">ReadNotifyResponse</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
@@ -2168,7 +2181,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.768.g63f3daa',
+            VERSION:'0+untagged.915.ge9ea522',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

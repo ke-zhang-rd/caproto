@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._hub &mdash; caproto 0+untagged.768.g63f3daa documentation</title>
+  <title>caproto._hub &mdash; caproto 0+untagged.915.ge9ea522 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.768.g63f3daa documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.915.ge9ea522 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.768.g63f3daa
+                0+untagged.915.ge9ea522
               </div>
             
           
@@ -93,7 +93,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basics.html">Writing Your Own Channel Access Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release-notes.html">Release Notes</a></li>
 </ul>
@@ -172,39 +172,29 @@
 <span class="c1"># incoming and outgoing TCP bytestreams. Each Channel belongs to a circuit, and</span>
 <span class="c1"># tracks state particular to that Channel.</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">getpass</span>
 <span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
 <span class="c1"># N.B. We do no networking whatsoever in caproto. We only use socket for</span>
 <span class="c1"># socket.gethostname() to give a nice default for a HostNameRequest command.</span>
 <span class="kn">from</span> <span class="nn">._commands</span> <span class="k">import</span> <span class="p">(</span><span class="n">AccessRightsResponse</span><span class="p">,</span> <span class="n">CreateChFailResponse</span><span class="p">,</span>
                         <span class="n">ClearChannelRequest</span><span class="p">,</span> <span class="n">ClearChannelResponse</span><span class="p">,</span>
                         <span class="n">ClientNameRequest</span><span class="p">,</span> <span class="n">CreateChanRequest</span><span class="p">,</span>
-                        <span class="n">CreateChanResponse</span><span class="p">,</span> <span class="n">ErrorResponse</span><span class="p">,</span>
-                        <span class="n">EventAddRequest</span><span class="p">,</span> <span class="n">EventAddResponse</span><span class="p">,</span>
+                        <span class="n">CreateChanResponse</span><span class="p">,</span> <span class="n">EventAddRequest</span><span class="p">,</span> <span class="n">EventAddResponse</span><span class="p">,</span>
                         <span class="n">EventCancelRequest</span><span class="p">,</span> <span class="n">EventCancelResponse</span><span class="p">,</span>
                         <span class="n">HostNameRequest</span><span class="p">,</span> <span class="n">ReadNotifyRequest</span><span class="p">,</span> <span class="n">ReadNotifyResponse</span><span class="p">,</span>
-                        <span class="n">RepeaterConfirmResponse</span><span class="p">,</span> <span class="n">RepeaterRegisterRequest</span><span class="p">,</span>
-                        <span class="n">SearchRequest</span><span class="p">,</span> <span class="n">SearchResponse</span><span class="p">,</span> <span class="n">ServerDisconnResponse</span><span class="p">,</span>
+                        <span class="n">SearchResponse</span><span class="p">,</span> <span class="n">ServerDisconnResponse</span><span class="p">,</span>
                         <span class="n">VersionRequest</span><span class="p">,</span> <span class="n">VersionResponse</span><span class="p">,</span> <span class="n">WriteNotifyRequest</span><span class="p">,</span>
-                        <span class="n">WriteNotifyResponse</span><span class="p">,</span>
-
-                        <span class="n">read_datagram</span><span class="p">,</span> <span class="n">read_from_bytestream</span><span class="p">,</span>
-                        <span class="p">)</span>
+                        <span class="n">WriteNotifyResponse</span><span class="p">,</span> <span class="n">WriteRequest</span><span class="p">,</span>
+                        <span class="n">read_from_bytestream</span><span class="p">,)</span>
 <span class="kn">from</span> <span class="nn">._state</span> <span class="k">import</span> <span class="p">(</span><span class="n">ChannelState</span><span class="p">,</span> <span class="n">CircuitState</span><span class="p">,</span> <span class="n">get_exception</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">CaprotoKeyError</span><span class="p">,</span>
-                     <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">LocalProtocolError</span><span class="p">,</span>
-                     <span class="n">CaprotoRuntimeError</span><span class="p">,</span>
+<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">DISCONNECTED</span><span class="p">,</span> <span class="n">CaprotoKeyError</span><span class="p">,</span>
+                     <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">CaprotoRuntimeError</span><span class="p">,</span>
                      <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">SubscriptionType</span><span class="p">,</span> <span class="p">)</span>
-
-
-<span class="n">DEFAULT_PROTOCOL_VERSION</span> <span class="o">=</span> <span class="mi">13</span>
-<span class="n">MAX_ID</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span> <span class="c1"># max value of various integer IDs</span>
-
-<span class="c1"># official IANA ports</span>
-<span class="n">EPICS_CA1_PORT</span><span class="p">,</span> <span class="n">EPICS_CA2_PORT</span> <span class="o">=</span> <span class="mi">5064</span><span class="p">,</span> <span class="mi">5065</span>
+<span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">,</span> <span class="n">MAX_ID</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="VirtualCircuit"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit">[docs]</a><span class="k">class</span> <span class="nc">VirtualCircuit</span><span class="p">:</span>
@@ -269,7 +259,7 @@
 <div class="viewcode-block" id="VirtualCircuit.send"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">commands</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convert one or more high-level Commands into buffers of bytes that may</span>
-<span class="sd">        be broadcast together in one TCP packet while updating our internal</span>
+<span class="sd">        be broadcast together in one TCP packet. Update our internal</span>
 <span class="sd">        state machine.</span>
 
 <span class="sd">        Parameters</span>
@@ -286,54 +276,75 @@
         <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Serializing </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-            <span class="n">buffers_to_send</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">header</span><span class="p">))</span>
+            <span class="n">buffers_to_send</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">memoryview</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">header</span><span class="p">))</span>
             <span class="n">buffers_to_send</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">buffers</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">buffers_to_send</span></div>
 
 <div class="viewcode-block" id="VirtualCircuit.recv"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.recv">[docs]</a>    <span class="k">def</span> <span class="nf">recv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add data received over TCP to our internal recieve buffer.</span>
+<span class="sd">        Parse commands from buffers received over TCP.</span>
 
-<span class="sd">        This does not actually do any processing on the data, just stores</span>
-<span class="sd">        it. To trigger processing, you have to call :meth:`next_command`.</span>
+<span class="sd">        When the caller is ready to process the commands, each command should</span>
+<span class="sd">        first be passed to :meth:`VirtualCircuit.process_command` to validate</span>
+<span class="sd">        it against the protocol and update the VirtualCircuit&#39;s state.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        *buffers :</span>
 <span class="sd">            any number of bytes-like buffers</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">for</span> <span class="n">byteslike</span> <span class="ow">in</span> <span class="n">buffers</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received </span><span class="si">%d</span><span class="s2"> bytes.&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">byteslike</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">+=</span> <span class="n">byteslike</span></div>
 
-<div class="viewcode-block" id="VirtualCircuit.next_command"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.next_command">[docs]</a>    <span class="k">def</span> <span class="nf">next_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ``(commands, num_bytes_needed)``</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">total_received</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">byteslike</span><span class="p">)</span> <span class="k">for</span> <span class="n">byteslike</span> <span class="ow">in</span> <span class="n">buffers</span><span class="p">)</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">total_received</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Zero-length recv; sending disconnect notification&#39;</span><span class="p">)</span>
+            <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DISCONNECTED</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">commands</span><span class="p">,</span> <span class="mi">0</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received </span><span class="si">%d</span><span class="s2"> bytes.&quot;</span><span class="p">,</span> <span class="n">total_received</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">+=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">buffers</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span>
+             <span class="n">command</span><span class="p">,</span>
+             <span class="n">num_bytes_needed</span><span class="p">)</span> <span class="o">=</span> <span class="n">read_from_bytestream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span>
+                                                      <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">)</span>
+            <span class="n">len_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>  <span class="c1"># just for logging</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">NEED_DATA</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Parsed </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> cached bytes into </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span>
+                               <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="n">len_data</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+                <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> bytes are cached. Need more bytes to parse &quot;</span>
+                               <span class="s2">&quot;next command.&quot;</span><span class="p">,</span> <span class="n">len_data</span><span class="p">)</span>
+                <span class="k">break</span>
+        <span class="k">return</span> <span class="n">commands</span><span class="p">,</span> <span class="n">num_bytes_needed</span></div>
+
+<div class="viewcode-block" id="VirtualCircuit.process_command"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.process_command">[docs]</a>    <span class="k">def</span> <span class="nf">process_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parse the next Command out of our internal receive buffer, update our</span>
-<span class="sd">        internal state machine, and return it.</span>
+<span class="sd">        Update internal state machine and raise if protocol is violated.</span>
 
-<span class="sd">        Returns a :class:`Command` object or a special constant,</span>
-<span class="sd">        :data:`NEED_DATA`.</span>
+<span class="sd">        Received commands should be passed through here before any additional</span>
+<span class="sd">        processing by a server or client layer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">len_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="n">command</span> <span class="o">=</span> <span class="n">read_from_bytestream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">NEED_DATA</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Parsed </span><span class="si">%d</span><span class="s2">/</span><span class="si">%d</span><span class="s2"> cached bytes into </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span>
-                           <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="n">len_data</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> bytes are cached. Need more bytes to parse &quot;</span>
-                           <span class="s2">&quot;next command.&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        All comands go through here.</span>
+<span class="sd">        All commands go through here.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        role : ``CLIENT`` or ``SERVER``</span>
 <span class="sd">        command : Message</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">command</span> <span class="ow">is</span> <span class="n">DISCONNECTED</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+            <span class="k">return</span>
+
         <span class="c1"># Filter for Commands that are pertinent to a specific Channel, as</span>
         <span class="c1"># opposed to the Circuit as a whole:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="p">(</span><span class="n">ClearChannelRequest</span><span class="p">,</span> <span class="n">ClearChannelResponse</span><span class="p">,</span>
@@ -341,6 +352,7 @@
                                 <span class="n">CreateChFailResponse</span><span class="p">,</span> <span class="n">AccessRightsResponse</span><span class="p">,</span>
                                 <span class="n">ReadNotifyRequest</span><span class="p">,</span> <span class="n">ReadNotifyResponse</span><span class="p">,</span>
                                 <span class="n">WriteNotifyRequest</span><span class="p">,</span> <span class="n">WriteNotifyResponse</span><span class="p">,</span>
+                                <span class="n">WriteRequest</span><span class="p">,</span>
                                 <span class="n">EventAddRequest</span><span class="p">,</span> <span class="n">EventAddResponse</span><span class="p">,</span>
                                 <span class="n">EventCancelRequest</span><span class="p">,</span> <span class="n">EventCancelResponse</span><span class="p">,</span>
                                 <span class="n">ServerDisconnResponse</span><span class="p">,)):</span>
@@ -348,7 +360,7 @@
             <span class="c1"># do this in one of a couple different ways depenending on the</span>
             <span class="c1"># Command.</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="p">(</span><span class="n">ReadNotifyRequest</span><span class="p">,</span> <span class="n">WriteNotifyRequest</span><span class="p">,</span>
-                                    <span class="n">EventAddRequest</span><span class="p">)):</span>
+                                    <span class="n">WriteRequest</span><span class="p">,</span> <span class="n">EventAddRequest</span><span class="p">)):</span>
                 <span class="c1"># Identify the Channel based on its sid.</span>
                 <span class="n">sid</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">sid</span>
                 <span class="k">try</span><span class="p">:</span>
@@ -425,7 +437,7 @@
             <span class="c1"># If this is not a valid command, the state machine will raise</span>
             <span class="c1"># here. Stash the state transitions in a local var and run the</span>
             <span class="c1"># callbacks at the end.</span>
-            <span class="n">transitions</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="n">transitions</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">process_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 
             <span class="c1"># If we got this far, the state machine has validated this Command.</span>
             <span class="c1"># Update other Channel and Circuit state.</span>
@@ -473,7 +485,7 @@
 
 <span class="sd">        Clients should call this method when a TCP connection is lost.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="n">DISCONNECTED</span></div>
 
 <div class="viewcode-block" id="VirtualCircuit.new_channel_id"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.new_channel_id">[docs]</a>    <span class="k">def</span> <span class="nf">new_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Return a valid value for a cid or sid.&quot;</span>
@@ -518,216 +530,6 @@
             <span class="k">return</span> <span class="n">i</span></div></div>
 
 
-<div class="viewcode-block" id="Broadcaster"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster">[docs]</a><span class="k">class</span> <span class="nc">Broadcaster</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    An object encapulating the state of one CA UDP connection.</span>
-
-<span class="sd">    It is a companion to a UDP socket managed by the user. All data</span>
-<span class="sd">    received over the socket should be passed to :meth:`recv`. Any data sent</span>
-<span class="sd">    over the socket should first be passed through :meth:`send`.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    our_role : CLIENT or SERVER</span>
-<span class="sd">    protocol_version : integer</span>
-<span class="sd">        Default is ``DEFAULT_PROTOCOL_VERSION``.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">our_role</span><span class="p">,</span> <span class="n">protocol_version</span><span class="o">=</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">our_role</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">SERVER</span><span class="p">,</span> <span class="n">CLIENT</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;role must be caproto.SERVER or &quot;</span>
-                                    <span class="s2">&quot;caproto.CLIENT&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">our_role</span> <span class="o">=</span> <span class="n">our_role</span>
-        <span class="k">if</span> <span class="n">our_role</span> <span class="ow">is</span> <span class="n">CLIENT</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span> <span class="o">=</span> <span class="n">SERVER</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span> <span class="o">=</span> <span class="n">CLIENT</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map search id (cid) to name</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_datagram_inbox</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>  <span class="c1"># datagrams to be parsed into Commands</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_history</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># commands parsed so far from current datagram</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_commands</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>  <span class="c1"># parsed Commands to be processed</span>
-        <span class="c1"># Unlike VirtualCircuit and Channel, there is very little state to</span>
-        <span class="c1"># track for the Broadcaster. We don&#39;t need a full state machine, just</span>
-        <span class="c1"># one flag to check whether we have yet registered with a repeater.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_search_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">logger_name</span> <span class="o">=</span> <span class="s2">&quot;caproto.Broadcaster&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Broadcaster.send"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">commands</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convert one or more high-level Commands into bytes that may be</span>
-<span class="sd">        broadcast together in one UDP datagram while updating our internal</span>
-<span class="sd">        state machine.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        *commands :</span>
-<span class="sd">            any number of :class:`Message` objects</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        bytes_to_send : bytes</span>
-<span class="sd">            bytes to send over a socket</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
-        <span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># commands sent as part of this datagram</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Serializing </span><span class="si">%d</span><span class="s2"> commands into one datagram&quot;</span><span class="p">,</span>
-                       <span class="nb">len</span><span class="p">(</span><span class="n">commands</span><span class="p">))</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">commands</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> of </span><span class="si">%d</span><span class="s2"> </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">commands</span><span class="p">),</span> <span class="n">command</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">history</span><span class="p">)</span>
-            <span class="n">bytes_to_send</span> <span class="o">+=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">bytes_to_send</span></div>
-
-<div class="viewcode-block" id="Broadcaster.recv"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.recv">[docs]</a>    <span class="k">def</span> <span class="nf">recv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Add data from a UDP broadcast to our internal recieve buffer.</span>
-
-<span class="sd">        This does not actually do any processing on the data, just stores</span>
-<span class="sd">        it. To trigger processing, you have to call :meth:`next_command`.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        byteslike : bytes-like</span>
-<span class="sd">        address : tuple</span>
-<span class="sd">            ``(host, port)`` as a string and an integer respectively</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received datagram from </span><span class="si">%r</span><span class="s2"> with </span><span class="si">%d</span><span class="s2"> bytes.&quot;</span><span class="p">,</span>
-                      <span class="n">address</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">byteslike</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_datagram_inbox</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span><span class="p">))</span></div>
-
-<div class="viewcode-block" id="Broadcaster.next_command"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.next_command">[docs]</a>    <span class="k">def</span> <span class="nf">next_command</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Parse the next Command out of our internal receive buffer, update our</span>
-<span class="sd">        internal state machine, and return it.</span>
-
-<span class="sd">        Returns a :class:`Command` object or a special constant,</span>
-<span class="sd">        :data:`NEED_DATA`.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_commands</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datagram_inbox</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">NEED_DATA</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-            <span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datagram_inbox</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
-            <span class="n">commands</span> <span class="o">=</span> <span class="n">read_datagram</span><span class="p">(</span><span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Parsed </span><span class="si">%d</span><span class="s2"> commands from first datagram in queue.&quot;</span><span class="p">,</span>
-                           <span class="nb">len</span><span class="p">(</span><span class="n">commands</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">command</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">commands</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> of </span><span class="si">%d</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">commands</span><span class="p">),</span> <span class="n">command</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_commands</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">commands</span><span class="p">)</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">commands</span><span class="p">:</span>
-                <span class="c1"># Handle rare edge case: empty datagram.</span>
-                <span class="k">return</span> <span class="n">NEED_DATA</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">((</span><span class="s2">&quot;Processing 1/</span><span class="si">%d</span><span class="s2"> commands left in datagram. &quot;</span>
-                        <span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> more datagrams are cached.&quot;</span><span class="p">),</span>
-                       <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_parsed_commands</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datagram_inbox</span><span class="p">))</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parsed_commands</span><span class="o">.</span><span class="n">popleft</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_history</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
-
-    <span class="k">def</span> <span class="nf">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        All comands go through here.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        role : ``CLIENT`` or ``SERVER``</span>
-<span class="sd">        command : Message</span>
-<span class="sd">        history : list</span>
-<span class="sd">            This input will be mutated: command will be appended at the end.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># All commands go through here.</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">RepeaterRegisterRequest</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">RepeaterConfirmResponse</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span> <span class="o">=</span> <span class="kc">True</span>
-        <span class="k">elif</span> <span class="p">(</span><span class="n">role</span> <span class="ow">is</span> <span class="n">CLIENT</span> <span class="ow">and</span>
-              <span class="bp">self</span><span class="o">.</span><span class="n">our_role</span> <span class="ow">is</span> <span class="n">CLIENT</span> <span class="ow">and</span>
-              <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">LocalProtocolError</span><span class="p">(</span><span class="s2">&quot;Client must send a &quot;</span>
-                                     <span class="s2">&quot;RegisterRepeaterRequest before any &quot;</span>
-                                     <span class="s2">&quot;other commands&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">SearchRequest</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">VersionRequest</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
-                <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;A broadcasted SearchResponse must be preceded by a &quot;</span>
-                          <span class="s2">&quot;VersionResponse in the same datagram.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">]</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">SearchResponse</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">VersionResponse</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
-                <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;A broadcasted SearchResponse must be preceded by a &quot;</span>
-                          <span class="s2">&quot;VersionResponse in the same datagram.&quot;</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">search_request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;No SearchRequest we have seen has a cid matching &quot;</span>
-                          <span class="s2">&quot;this response: </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
-        <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-
-    <span class="c1">### CONVENIENCE METHODS ###</span>
-
-<div class="viewcode-block" id="Broadcaster.new_search_id"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.new_search_id">[docs]</a>    <span class="k">def</span> <span class="nf">new_search_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># Return the next sequential unused id. Wrap back to 0 on overflow.</span>
-        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-            <span class="n">i</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_search_id_counter</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="p">:</span>
-                <span class="k">continue</span>
-            <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MAX_ID</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_search_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="k">continue</span>
-            <span class="k">return</span> <span class="n">i</span></div>
-
-<div class="viewcode-block" id="Broadcaster.search"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate a valid :class:`VersionRequest` and :class:`SearchRequest`.</span>
-
-<span class="sd">        The protocol requires that these be transmitted together as part of one</span>
-<span class="sd">        datagram.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        name : string</span>
-<span class="sd">            Channnel name (PV)</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        (VersionRequest, SearchRequest)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_search_id</span><span class="p">()</span>
-        <span class="n">commands</span> <span class="o">=</span> <span class="p">(</span><span class="n">VersionRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">),</span>
-                    <span class="n">SearchRequest</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">commands</span></div>
-
-<div class="viewcode-block" id="Broadcaster.register"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate a valid :class:`RepeaterRegisterRequest`.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        ip : string, optional</span>
-<span class="sd">            Our IP address. Defaults is output of ``socket.gethostbyname``.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        RepeaterRegisterRequest</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">ip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">hostname</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
-            <span class="n">ip</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">RepeaterRegisterRequest</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
-
-    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span> <span class="o">=</span> <span class="kc">False</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">registered</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span></div>
-
-
 <span class="k">class</span> <span class="nc">_BaseChannel</span><span class="p">:</span>
     <span class="c1"># Base class for ClientChannel and ServerChannel, which add convenience</span>
     <span class="c1"># methods for composing requests and repsponses, respectively. All of the</span>
@@ -769,7 +571,7 @@
         <span class="sd">&#39;&#39;&#39;State changed callback for subclass usage&#39;&#39;&#39;</span>
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">process_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">CreateChanResponse</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">native_data_type</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">data_type</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">native_data_count</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">data_count</span>
@@ -1061,17 +863,6 @@
         <span class="n">command</span> <span class="o">=</span> <span class="n">CreateChFailResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate a valid :class:`ClearChannelResponse`.</span>
-
-<span class="sd">        Returns</span>
-<span class="sd">        -------</span>
-<span class="sd">        ClearChannelResponse</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">ClearChannelResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span>
-
 <div class="viewcode-block" id="ServerChannel.read"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
              <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1244,7 +1035,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.768.g63f3daa',
+            VERSION:'0+untagged.915.ge9ea522',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

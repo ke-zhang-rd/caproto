@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asynchronous Server &mdash; caproto 0+untagged.768.g63f3daa documentation</title>
+  <title>Asynchronous Server &mdash; caproto 0+untagged.915.ge9ea522 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.768.g63f3daa documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.915.ge9ea522 documentation" href="index.html"/>
         <link rel="next" title="Thread-based Client Mirroring pyepics API" href="threading-client.html"/>
         <link rel="prev" title="Asynchronous Client" href="curio-client.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.768.g63f3daa
+                0+untagged.915.ge9ea522
               </div>
             
           
@@ -94,7 +94,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
 </ul>
@@ -169,7 +169,7 @@
   <div class="section" id="asynchronous-server">
 <h1>Asynchronous Server<a class="headerlink" href="#asynchronous-server" title="Permalink to this headline">¶</a></h1>
 <p>The <code class="xref py py-mod docutils literal"><span class="pre">caproto.curio.server</span></code> implements a Channel Access server using the
-curio framework for asynchronous programming in Python, making use of Python&#8217;s
+curio framework for asynchronous programming in Python, making use of Python’s
 new async/await syntax. Curio is not a required dependeny of caproto; you may
 need to install it separately using pip:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>pip install curio
@@ -196,7 +196,7 @@ this to a <code class="xref py py-class docutils literal"><span class="pre">Cont
                             <span class="n">units</span><span class="o">=</span><span class="s1">&#39;doodles&#39;</span><span class="p">,</span>
                             <span class="p">),</span>
         <span class="s1">&#39;enum&#39;</span><span class="p">:</span> <span class="n">ChannelEnum</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span>
-                            <span class="n">strs</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
+                            <span class="n">enum_strings</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">],</span>
                             <span class="p">),</span>
         <span class="s1">&#39;int&#39;</span><span class="p">:</span> <span class="n">ChannelInteger</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                               <span class="n">units</span><span class="o">=</span><span class="s1">&#39;doodles&#39;</span><span class="p">,</span>
@@ -253,7 +253,7 @@ this to a <code class="xref py py-class docutils literal"><span class="pre">Cont
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.768.g63f3daa',
+            VERSION:'0+untagged.915.ge9ea522',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

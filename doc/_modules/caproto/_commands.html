@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0+untagged.768.g63f3daa documentation</title>
+  <title>caproto._commands &mdash; caproto 0+untagged.915.ge9ea522 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.768.g63f3daa documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.915.ge9ea522 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.768.g63f3daa
+                0+untagged.915.ge9ea522
               </div>
             
           
@@ -93,7 +93,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basics.html">Writing Your Own Channel Access Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release-notes.html">Release Notes</a></li>
 </ul>
@@ -441,30 +441,70 @@
     <span class="k">return</span> <span class="n">commands</span>
 
 
-<span class="k">def</span> <span class="nf">read_from_bytestream</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">bytes_needed_for_command</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data</span>
+<span class="sd">    role</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (header, num_bytes_needed)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
     <span class="n">header_size</span> <span class="o">=</span> <span class="n">_MessageHeaderSize</span>
+    <span class="n">data_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
     <span class="c1"># We need at least one header&#39;s worth of bytes to interpret anything.</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">header_size</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">NEED_DATA</span>
+    <span class="k">if</span> <span class="n">data_len</span> <span class="o">&lt;</span> <span class="n">header_size</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">header_size</span> <span class="o">-</span> <span class="n">data_len</span>
+
     <span class="n">header</span> <span class="o">=</span> <span class="n">MessageHeader</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
     <span class="c1"># Looks for sentinels that mark this as an &quot;extended header&quot;.</span>
     <span class="k">if</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span> <span class="o">==</span> <span class="mh">0xFFFF</span> <span class="ow">and</span> <span class="n">header</span><span class="o">.</span><span class="n">data_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">header_size</span> <span class="o">=</span> <span class="n">_ExtendedMessageHeaderSize</span>
         <span class="c1"># Do we have enough bytes to interpret the extended header?</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">header_size</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">NEED_DATA</span>
+        <span class="k">if</span> <span class="n">data_len</span> <span class="o">&lt;</span> <span class="n">header_size</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="n">header_size</span> <span class="o">-</span> <span class="n">data_len</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">ExtendedMessageHeader</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-    <span class="n">_class</span> <span class="o">=</span> <span class="n">get_command_class</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
-    <span class="n">payload_size</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span>
-    <span class="n">total_size</span> <span class="o">=</span> <span class="n">header_size</span> <span class="o">+</span> <span class="n">payload_size</span>
+
+    <span class="n">total_size</span> <span class="o">=</span> <span class="n">header_size</span> <span class="o">+</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span>
     <span class="c1"># Do we have all the bytes in the payload?</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">total_size</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">NEED_DATA</span>
+    <span class="k">if</span> <span class="n">data_len</span> <span class="o">&lt;</span> <span class="n">total_size</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">header</span><span class="p">,</span> <span class="n">total_size</span> <span class="o">-</span> <span class="n">data_len</span>
+    <span class="k">return</span> <span class="n">header</span><span class="p">,</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">read_from_bytestream</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data</span>
+<span class="sd">    role</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    (remaining_data, command, num_bytes_needed)</span>
+<span class="sd">        if more data is required, NEED_DATA will be returned in place of</span>
+<span class="sd">        `command`</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">header</span><span class="p">,</span> <span class="n">num_bytes_needed</span> <span class="o">=</span> <span class="n">bytes_needed_for_command</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">role</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">num_bytes_needed</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">num_bytes_needed</span>
+
+    <span class="n">_class</span> <span class="o">=</span> <span class="n">get_command_class</span><span class="p">(</span><span class="n">role</span><span class="p">,</span> <span class="n">header</span><span class="p">)</span>
+
+    <span class="n">header_size</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
+    <span class="n">total_size</span> <span class="o">=</span> <span class="n">header_size</span> <span class="o">+</span> <span class="n">header</span><span class="o">.</span><span class="n">payload_size</span>
+
     <span class="c1"># Receive the buffer (zero-copy).</span>
     <span class="n">payload_bytes</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">header_size</span><span class="p">:</span><span class="n">total_size</span><span class="p">]</span>
     <span class="n">command</span> <span class="o">=</span> <span class="n">_class</span><span class="o">.</span><span class="n">from_wire</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">)</span>
     <span class="c1"># Advance the buffer.</span>
-    <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">total_size</span><span class="p">:],</span> <span class="n">command</span>
+    <span class="k">return</span> <span class="n">data</span><span class="p">[</span><span class="n">total_size</span><span class="p">:],</span> <span class="n">command</span><span class="p">,</span> <span class="mi">0</span>
 
 
 <span class="n">Commands</span> <span class="o">=</span> <span class="p">{}</span>
@@ -571,13 +611,7 @@
         <span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">signature</span><span class="o">.</span><span class="n">parameters</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Message</span>
                       <span class="k">else</span> <span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">])</span>
 
-        <span class="n">d</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">arg</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">))))</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="n">d</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">arg</span><span class="p">,</span> <span class="s1">&#39;(repr failure </span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ex</span><span class="p">)))</span>
-
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">)))</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">]</span>
         <span class="n">formatted_args</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{!s}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
                                     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="p">])</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">formatted_args</span><span class="p">)</span>
@@ -900,6 +934,20 @@
 
 
 <span class="k">class</span> <span class="nc">EventAddRequestPayload</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">BigEndianStructure</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    low : float</span>
+<span class="sd">        Low delta value (deprecated)</span>
+<span class="sd">    high : float</span>
+<span class="sd">        High delta value (deprecated)</span>
+<span class="sd">    to : float</span>
+<span class="sd">        Period between samples (deprecated)</span>
+<span class="sd">    mask : int</span>
+<span class="sd">        Event selection mask</span>
+
+
+<span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;low&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
                 <span class="p">(</span><span class="s1">&#39;high&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
                 <span class="p">(</span><span class="s1">&#39;to&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
@@ -1791,7 +1839,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.768.g63f3daa',
+            VERSION:'0+untagged.915.ge9ea522',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

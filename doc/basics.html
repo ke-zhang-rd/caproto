@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Writing Your Own Channel Access Client &mdash; caproto 0+untagged.768.g63f3daa documentation</title>
+  <title>Writing Your Own Channel Access Client &mdash; caproto 0+untagged.915.ge9ea522 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.768.g63f3daa documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.915.ge9ea522 documentation" href="index.html"/>
         <link rel="next" title="API Documentation" href="api.html"/>
         <link rel="prev" title="caproto: a pure-Python Channel Access protocol library" href="index.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.768.g63f3daa
+                0+untagged.915.ge9ea522
               </div>
             
           
@@ -98,15 +98,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#searching-for-a-channel">Searching for a Channel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#creating-a-channel">Creating a Channel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#reading-and-writing-values">Reading and Writing Values</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#subscribing-to-events-updates">Subscribing to &#8220;Events&#8221; (Updates)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subscribing-to-events-updates">Subscribing to “Events” (Updates)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#closing-the-channel">Closing the Channel</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#simplify-bookkeepinig-with-channels">Simplify Bookkeepinig with Channels</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#simplify-bookkeeping-with-channels">Simplify Bookkeeping with Channels</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
-<li class="toctree-l1"><a class="reference external" href="https://danielballan.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
 </ul>
@@ -201,20 +201,19 @@ talk to any Channel Access server, including one implemented in caproto itself.<
 <span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="c1"># for BSD/Darwin only</span>
-<span class="c1"># udp_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)</span>
+<span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">socket</span><span class="p">,</span> <span class="s1">&#39;SO_REUSEPORT&#39;</span><span class="p">):</span>
+    <span class="n">udp_sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A new Channel Access client is required to register itself with a Channel
-Access Repeater.  (What a Repeater is <em>for</em> is not really important to our
-story here. It&#8217;s an independent process that rebroadcasts incoming server
-heartbeats to all clients on our host. It exists because old systems don&#8217;t
+Access <em>Repeater</em>.  (What a Repeater is <em>for</em> is not really important to our
+story here. It’s an independent process that rebroadcasts incoming server
+heartbeats to all clients on our host. It exists because old systems don’t
 handle broadcasts properly.) To register, we must send a <em>request</em> to the
-Repeater and receive a <em>response</em>. At the lowest level, we simply need to send
-the right bytes over the network. This is effective, but not especially
-readable:</p>
+Repeater and receive a <em>response</em>.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="n">bytes_to_send</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00</span><span class="s1">&#39;</span>
 
-<span class="gp">In [2]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">5065</span><span class="p">))</span>
+<span class="gp">In [2]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">5065</span><span class="p">))</span>
 <span class="gh">Out[2]: </span><span class="go">16</span>
 </pre></div>
 </div>
@@ -224,14 +223,14 @@ readable:</p>
 <span class="gh">Out[4]: </span><span class="go">b&#39;\x00\x11\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x7f\x00\x00\x01&#39;</span>
 </pre></div>
 </div>
-<p>Hurray it worked? Unless you possess some Davidsaver-like talent for reading
-Channel Access hex codes the way Neo experiences the Matrix, you may want a
-better way. Caproto provides a higher level of abstraction, <em>Commands</em>, so that
-we don&#8217;t need to work with raw bytes. Let&#8217;s try this again using caproto.</p>
+<p>Hurray it worked? Unless you can read Channel Access hex codes the way Neo
+experiences the Matrix, you may want a better way. Caproto provides a higher
+level of abstraction, <em>Commands</em>, so that we don’t need to work with raw bytes.
+Let’s try this again using caproto.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">Other sans-I/O libraries use the word <em>Event</em> for what we are calling a
-<em>Command</em>. &#8220;Event&#8221; is an overloaded term in Channel Access, so we&#8217;re going
+<em>Command</em>. “Event” is an overloaded term in Channel Access, so we’re going
 our own way here.</p>
 </div>
 <p>As above, create a fresh UDP socket and configure it for broadcast. Follow the
@@ -241,76 +240,76 @@ same steps we used above, or use a convenience function provided by caproto:</p>
 <span class="gp">In [6]: </span><span class="n">udp_sock</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">bcast_socket</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Instantiate a caproto <a class="reference internal" href="api.html#caproto.Broadcaster" title="caproto.Broadcaster"><code class="xref py py-class docutils literal"><span class="pre">Broadcaster</span></code></a> and a command to broadcast &#8212; a
+<p>Instantiate a caproto <a class="reference internal" href="api.html#caproto.Broadcaster" title="caproto.Broadcaster"><code class="xref py py-class docutils literal"><span class="pre">Broadcaster</span></code></a> and a command to broadcast — a
 <a class="reference internal" href="api.html#caproto.RepeaterRegisterRequest" title="caproto.RepeaterRegisterRequest"><code class="xref py py-class docutils literal"><span class="pre">RepeaterRegisterRequest</span></code></a>.`</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [7]: </span><span class="n">b</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">Broadcaster</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">caproto</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">)</span>
 
 <span class="gp">In [8]: </span><span class="n">command</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">RepeaterRegisterRequest</span><span class="p">(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Pass the command to our broadcaster&#8217;s <a class="reference internal" href="api.html#caproto.Broadcaster.send" title="caproto.Broadcaster.send"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.send()</span></code></a> method, which
-translates the command to bytes.</p>
+<p>Pass the command to our broadcaster’s <a class="reference internal" href="api.html#caproto.Broadcaster.send" title="caproto.Broadcaster.send"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.send()</span></code></a> method, which
+does two things. It translates command objects into bytes, and it checks
+them against the rules of the Channel Access protocol. The rules are encoded in
+the Broadcaster’s internal state machine, which tracks the state of both the
+client and the server. (It can serve as either.) If you try to send an illegal
+command, it will raise <a class="reference internal" href="api.html#caproto.LocalProtocolError" title="caproto.LocalProtocolError"><code class="xref py py-class docutils literal"><span class="pre">LocalProtocolError</span></code></a>.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+
+<span class="gp">In [10]: </span><span class="n">bytes_to_send</span>
+<span class="gh">Out[10]: </span><span class="go">b&#39;\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&#39;</span>
 </pre></div>
 </div>
 <p>Transport those bytes over the wire, using the same <code class="docutils literal"><span class="pre">udp_sock</span></code> we configured
-above.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="mi">5065</span><span class="p">))</span>
-<span class="gh">Out[10]: </span><span class="go">16</span>
+above.  A quick comparison will show that these bytes are the same bytes we
+spelled out manually before.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [11]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;127.0.0.1&#39;</span><span class="p">,</span> <span class="mi">5065</span><span class="p">))</span>
+<span class="gh">Out[11]: </span><span class="go">16</span>
 </pre></div>
 </div>
-<p>These bytes are the same bytes we spelled out manually before:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [11]: </span><span class="n">bytes_to_send</span>
-<span class="gh">Out[11]: </span><span class="go">b&#39;\x00\x18\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00&#39;</span>
-</pre></div>
-</div>
-<p>Why do we need two steps here? Why doesn&#8217;t caproto just send the bytes for us?
-Because it&#8217;s designed to support any socket API you might want to use &#8212;
+<p>Why do we need two steps here? Why doesn’t caproto just send the bytes for us?
+Because it’s designed to support any socket API you might want to use —
 synchronous (like this example), asynchronous, etc. Caproto does not care how
 or when you send and receive the bytes. Its job is to make it easier to
 compose outgoing messages, interpret incoming ones, and verify that the rules
 of the protocol are obeyed by both peers.</p>
-<p>Recall that we are in the process of registering our client with a <em>Repeater</em>
-and that we are expecting a response. As with sending, receiving is a
-two-step process. First we read bytes from the socket and pass them to the
-broadcaster.</p>
+<p>Recall that we are in the process of registering our client with a Channel
+Access Repeater and that we are expecting a response. As with sending,
+receiving is a two-step process. First we read bytes from the socket and pass
+them to the broadcaster.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
 
-<span class="gp">In [13]: </span><span class="n">b</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+<span class="gp">In [13]: </span><span class="n">commands</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The bytes have been cached but not yet parsed. The <a class="reference internal" href="api.html#caproto.Broadcaster" title="caproto.Broadcaster"><code class="xref py py-class docutils literal"><span class="pre">Broadcaster</span></code></a> can
-convert the bytes into <em>Commands</em> one at time.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
-<span class="gh">Out[14]: </span><span class="go">RepeaterConfirmResponse(repeater_address=&#39;127.0.0.1&#39;)</span>
+<p>The bytes have been parsed into command objects. Next, check them against the
+Channel Access protocol.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">b</span><span class="o">.</span><span class="n">process_commands</span><span class="p">(</span><span class="n">commands</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Think of this as a mutating operation, like using <a class="reference external" href="https://docs.python.org/3/library/functions.html#next" title="(in Python v3.6)"><code class="xref py py-func docutils literal"><span class="pre">next()</span></code></a> on an iterator.
-When there aren&#8217;t enough bytes cached to interpret another complete Command,
-<a class="reference internal" href="api.html#caproto.Broadcaster.next_command" title="caproto.Broadcaster.next_command"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.next_command()</span></code></a> returns the special constant
-<a class="reference internal" href="api.html#caproto.NEED_DATA" title="caproto.NEED_DATA"><code class="xref py py-class docutils literal"><span class="pre">NEED_DATA</span></code></a>.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
-<span class="gh">Out[15]: </span><span class="go">NEED_DATA</span>
-</pre></div>
-</div>
-<p>When we call <a class="reference internal" href="api.html#caproto.Broadcaster.send" title="caproto.Broadcaster.send"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.send()</span></code></a> or <a class="reference internal" href="api.html#caproto.Broadcaster.next_command" title="caproto.Broadcaster.next_command"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.next_command()</span></code></a>,
-two things happen. The broadcaster translates between low-level bytes and a
-high-level <em>Command</em>. The broadcaster also updates its internal state machine
-encoding the rules of the protocol. It tracks the state of both the client and
-server (it can serve as either). If, as the client, you send an illegal
-command, it will raise <a class="reference internal" href="api.html#caproto.LocalProtocolError" title="caproto.LocalProtocolError"><code class="xref py py-class docutils literal"><span class="pre">LocalProtocolError</span></code></a>. If, as the client, you
-receive bytes from the server that constitute an illegal command, it will raise
-<a class="reference internal" href="api.html#caproto.RemoteProtocolError" title="caproto.RemoteProtocolError"><code class="xref py py-class docutils literal"><span class="pre">RemoteProtocolError</span></code></a>.</p>
+<p>When we call <a class="reference internal" href="api.html#caproto.Broadcaster.process_commands" title="caproto.Broadcaster.process_commands"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.process_commands()</span></code></a>, the Broadcaster does the
+same thing is did for <a class="reference internal" href="api.html#caproto.Broadcaster.send" title="caproto.Broadcaster.send"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.send()</span></code></a> in reverse: if one of the
+received commands is illegal, it raises <a class="reference internal" href="api.html#caproto.RemoteProtocolError" title="caproto.RemoteProtocolError"><code class="xref py py-class docutils literal"><span class="pre">RemoteProtocolError</span></code></a>.</p>
 </div>
 <div class="section" id="searching-for-a-channel">
 <h3>Searching for a Channel<a class="headerlink" href="#searching-for-a-channel" title="Permalink to this headline">¶</a></h3>
-<p>Say we&#8217;re looking for a channel (&#8220;Process Variable&#8221;) with a typically lyrical
+<p>Say we’re looking for a channel (“Process Variable”) with a typically lyrical
 EPICS name like <code class="xref py py-data docutils literal"><span class="pre">&quot;XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL&quot;</span></code>. Some server on our
 network provides this channel. The range of IP addresses to search is
 conventionally recorded in an environment variable.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="kn">import</span> <span class="nn">os</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="kn">import</span> <span class="nn">os</span>
 
-<span class="gp">In [17]: </span><span class="n">hosts</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EPICS_CA_ADDR_LIST&#39;</span><span class="p">]</span>  <span class="c1"># example: &#39;172.17.255.255&#39;</span>
+<span class="gp">In [16]: </span><span class="n">hosts</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EPICS_CA_ADDR_LIST&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+<span class="go"># example: [&#39;172.17.255.255&#39;]</span>
+</pre></div>
+</div>
+<p>Something simple like this would work, but a more complete implementation is
+avaailable in the convenience function <code class="xref py py-func docutils literal"><span class="pre">get_address_list()</span></code>, which respects
+EPICS_CA_AUTO_ADDR_LIST settings and checks network interfaces for broadcast
+addresses in the case of an automatic address list setting.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="kn">import</span> <span class="nn">caproto</span>
+
+<span class="gp">In [18]: </span><span class="n">hosts</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">get_address_list</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>We need to broadcast a search request to the servers on our network and receive
@@ -318,106 +317,116 @@ a response. (In the event that multiple responses arrive, Channel Access
 specifies that all but the first response should be ignored.) We follow the
 same pattern as above, still using our broadcaster <code class="docutils literal"><span class="pre">b</span></code>, our socket
 <code class="docutils literal"><span class="pre">udp_sock</span></code>, and some new caproto commands.</p>
-<p>In a single UDP datagram, we need to announce which version of the protocol we
-are using and the channel name we are looking for.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [18]: </span><span class="n">name</span>  <span class="o">=</span> <span class="s2">&quot;XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL&quot;</span>
+<p>We need to announce which version of the protocol we are using and the name of
+the channel we are seraching for. These two commands must be sent in the same
+broadcast (UDP datagram), so we pass them to <a class="reference internal" href="api.html#caproto.Broadcaster.send" title="caproto.Broadcaster.send"><code class="xref py py-meth docutils literal"><span class="pre">Broadcaster.send()</span></code></a> together.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="n">name</span>  <span class="o">=</span> <span class="s2">&quot;XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL&quot;</span>
 
-<span class="gp">In [19]: </span><span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">),</span>
+<span class="gp">In [20]: </span><span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">),</span>
 <span class="gp">   ....: </span>                       <span class="n">caproto</span><span class="o">.</span><span class="n">SearchRequest</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
 <span class="gp">   ....: </span>
 
-<span class="gp">In [20]: </span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">hosts</span><span class="p">,</span> <span class="mi">5064</span><span class="p">))</span>
-<span class="gh">Out[20]: </span><span class="go">64</span>
+<span class="gp">In [21]: </span><span class="n">bytes_to_send</span>
+<span class="gh">Out[21]: </span><span class="go">b&#39;\x00\x00\x00\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x06\x00 \x00\x05\x00\r\x00\x00\x00\x00\x00\x00\x00\x00XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL\x00\x00\x00&#39;</span>
+
+<span class="gp">In [22]: </span><span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">hosts</span><span class="p">:</span>
+<span class="gp">   ....: </span>    <span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="mi">5064</span><span class="p">))</span>
+<span class="gp">   ....: </span>
 </pre></div>
 </div>
 <p>Our answer will arrive in a single datagram with multiple commands in it.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [21]: </span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [23]: </span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">recv_address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="mi">1024</span><span class="p">)</span>
 
-<span class="gp">In [22]: </span><span class="n">b</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+<span class="gp">In [24]: </span><span class="n">version_response</span><span class="p">,</span> <span class="n">search_response</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">recv_address</span><span class="p">)</span>
 
-<span class="gp">In [23]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
-<span class="gh">Out[23]: </span><span class="go">VersionResponse(version=13)</span>
+<span class="gp">In [25]: </span><span class="n">version_response</span>
+<span class="gh">Out[25]: </span><span class="go">VersionResponse(version=13)</span>
 
-<span class="gp">In [24]: </span><span class="n">b</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>
-<span class="go">                                     Out[24]: SearchResponse(port=5064, ip=&#39;255.255.255.255&#39;, cid=0, version=13)</span>
+<span class="gp">In [26]: </span><span class="n">search_response</span>
+<span class="go">                                     Out[26]: SearchResponse(port=5064, ip=&#39;255.255.255.255&#39;, cid=0, version=13)</span>
 
-<span class="gp">In [25]: </span><span class="n">address</span>
-<span class="go">                                                                                                                 Out[25]: (&#39;172.17.0.2&#39;, 5064)</span>
+<span class="gp">In [27]: </span><span class="n">address</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">extract_address</span><span class="p">(</span><span class="n">search_response</span><span class="p">)</span>
+
+<span class="gp">In [28]: </span><span class="n">address</span>
+<span class="gh">Out[28]: </span><span class="go">(&#39;172.17.0.2&#39;, 5064)</span>
 </pre></div>
 </div>
-<p>Now we have the address of a server that has the channel we&#8217;re interested in.
-Next, we&#8217;ll set aside the broadcaster and initiate TCP communication with this
+<p>Now we have the address of a server that has the channel we’re interested in.
+Next, we’ll set aside the broadcaster and initiate TCP communication with this
 particular server.</p>
 </div>
 <div class="section" id="creating-a-channel">
 <h3>Creating a Channel<a class="headerlink" href="#creating-a-channel" title="Permalink to this headline">¶</a></h3>
 <p>Create a TCP connection with the server at the <code class="docutils literal"><span class="pre">address</span></code> we found above.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [26]: </span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [29]: </span><span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="gp">In [30]: </span><span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A <a class="reference internal" href="api.html#caproto.VirtualCircuit" title="caproto.VirtualCircuit"><code class="xref py py-class docutils literal"><span class="pre">VirtualCircuit</span></code></a> plays the same role for a TCP connection as
-the <a class="reference internal" href="api.html#caproto.Broadcaster" title="caproto.Broadcaster"><code class="xref py py-class docutils literal"><span class="pre">Broadcaster</span></code></a> played for UDP: we&#8217;ll use it to interpret
-received bytes as Commands and to ensure that incoming and outgoing bytes abide
+the <a class="reference internal" href="api.html#caproto.Broadcaster" title="caproto.Broadcaster"><code class="xref py py-class docutils literal"><span class="pre">Broadcaster</span></code></a> played for UDP: we’ll use it to interpret
+received bytes as commands and to ensure that incoming and outgoing bytes abide
 by the protocol.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [27]: </span><span class="n">circuit</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">caproto</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [31]: </span><span class="n">circuit</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">caproto</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span>
+<span class="gp">   ....: </span>                                 <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">   ....: </span>
 </pre></div>
 </div>
-<p>We&#8217;ll use these two convenience functions for what follows.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
-    <span class="s2">&quot;Process a Command in the VirtualCircuit and then transmit its bytes.&quot;</span>
-    <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>  <span class="c1"># Update state machine.</span>
-    <span class="n">sock</span><span class="o">.</span><span class="n">sendmsg</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>  <span class="c1"># Actually transmit bytes.</span>
-
-<span class="k">def</span> <span class="nf">recv</span><span class="p">():</span>
-    <span class="s2">&quot;Receive some bytes and parse all the Commands in them.&quot;</span>
-    <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
-    <span class="n">circuit</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">)</span>  <span class="c1"># Cache bytes.</span>
-    <span class="n">commands</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">next_command</span><span class="p">()</span>  <span class="c1"># Parsing happens here.</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="ow">is</span> <span class="n">caproto</span><span class="o">.</span><span class="n">NEED_DATA</span><span class="p">:</span>
-            <span class="k">break</span>  <span class="c1"># Not enough bytes to parse any more commands.</span>
-        <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">commands</span>
+<p>We’ll use these convenience functions for what follows.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [32]: </span><span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">command</span><span class="p">):</span>
+<span class="gp">   ....: </span>    <span class="s2">&quot;Process a command in the VirtualCircuit and then transmit its bytes.&quot;</span>
+<span class="gp">   ....: </span>    <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+<span class="gp">   ....: </span>    <span class="n">sock</span><span class="o">.</span><span class="n">sendmsg</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
+<span class="gp">   ....: </span>
+</pre></div>
+</div>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [33]: </span><span class="k">def</span> <span class="nf">recv</span><span class="p">():</span>
+<span class="gp">   ....: </span>    <span class="s2">&quot;Receive bytes; parse commands; process them in the VirtualCircuit.&quot;</span>
+<span class="gp">   ....: </span>    <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">sock</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+<span class="gp">   ....: </span>    <span class="n">commands</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">)</span>
+<span class="gp">   ....: </span>    <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+<span class="gp">   ....: </span>        <span class="n">circuit</span><span class="o">.</span><span class="n">process_command</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+<span class="gp">   ....: </span>    <span class="k">return</span> <span class="n">commands</span>
+<span class="gp">   ....: </span>
 </pre></div>
 </div>
 <p>We initialize the circuit by specifying our protocol version.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [28]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [34]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
 
-<span class="gp">In [29]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[29]: </span><span class="go">[VersionResponse(version=13)]</span>
+<span class="gp">In [35]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="gh">Out[35]: </span><span class="go">deque([VersionResponse(version=13)])</span>
 </pre></div>
 </div>
-<p>Optionally provide the host name and &#8220;client&#8221; name, which the server may use
+<p>Optionally provide the host name and “client” name, which the server may use
 to determine our read/write permissions on channels. (There is no
 authentication in Channel Access; security has to be provided at the network
 level.)</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [30]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">HostNameRequest</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">))</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [36]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">HostNameRequest</span><span class="p">(</span><span class="s1">&#39;localhost&#39;</span><span class="p">))</span>
 
-<span class="gp">In [31]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClientNameRequest</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">))</span>
+<span class="gp">In [37]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClientNameRequest</span><span class="p">(</span><span class="s1">&#39;user&#39;</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>Finally, create the channel.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [32]: </span><span class="n">cid</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># a client-specified unique ID for this Channel</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [38]: </span><span class="n">cid</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># a client-specified unique ID for this Channel</span>
 
-<span class="gp">In [33]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">CreateChanRequest</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
+<span class="gp">In [39]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">CreateChanRequest</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="n">cid</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
 
-<span class="gp">In [34]: </span><span class="n">access_response</span><span class="p">,</span> <span class="n">create_chan_response</span> <span class="o">=</span> <span class="n">recv</span><span class="p">()</span>
+<span class="gp">In [40]: </span><span class="n">access_response</span><span class="p">,</span> <span class="n">create_chan_response</span> <span class="o">=</span> <span class="n">recv</span><span class="p">()</span>
 
-<span class="gp">In [35]: </span><span class="n">access_response</span><span class="p">,</span> <span class="n">create_chan_response</span>
-<span class="gh">Out[35]: </span><span class="go"></span>
+<span class="gp">In [41]: </span><span class="n">access_response</span><span class="p">,</span> <span class="n">create_chan_response</span>
+<span class="gh">Out[41]: </span><span class="go"></span>
 <span class="go">(AccessRightsResponse(cid=1, access_rights=3),</span>
-<span class="go"> CreateChanResponse(data_type=6, data_count=1, cid=1, sid=7))</span>
+<span class="go"> CreateChanResponse(data_type=6, data_count=1, cid=1, sid=9))</span>
 </pre></div>
 </div>
 <p>Success! We now have a connection to the <code class="docutils literal"><span class="pre">XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL</span></code>
-channel. Next we&#8217;ll read and write values.</p>
+channel. Next we’ll read and write values.</p>
 <p>Incidentally, we can reuse this same <code class="docutils literal"><span class="pre">circuit</span></code> and <code class="docutils literal"><span class="pre">sock</span></code> to connect to
-other channels on the same server. In the commands that follow, we&#8217;ll use the
+other channels on the same server. In the commands that follow, we’ll use the
 integer IDs <code class="docutils literal"><span class="pre">cid</span></code> (specified by our client in <code class="xref py py-class docutils literal"><span class="pre">CreateChanRequest</span></code>) and
 <code class="docutils literal"><span class="pre">sid</span></code> (specified by the server in its <code class="xref py py-class docutils literal"><span class="pre">CreateChanResponse</span></code>) to specify
 which channel we mean.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [36]: </span><span class="n">sid</span> <span class="o">=</span> <span class="n">create_chan_response</span><span class="o">.</span><span class="n">sid</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [42]: </span><span class="n">sid</span> <span class="o">=</span> <span class="n">create_chan_response</span><span class="o">.</span><span class="n">sid</span>
 </pre></div>
 </div>
 <p>In the event of high traffic clogging the network, we can open up <em>multiple</em>
@@ -429,29 +438,29 @@ there can be multiple VirtualCircuits between peers.</p>
 <div class="section" id="reading-and-writing-values">
 <h3>Reading and Writing Values<a class="headerlink" href="#reading-and-writing-values" title="Permalink to this headline">¶</a></h3>
 <p>Read:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [37]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ReadNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [43]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ReadNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
 <span class="gp">   ....: </span>                               <span class="n">data_count</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
 <span class="gp">   ....: </span>                               <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
 <span class="gp">   ....: </span>                               <span class="n">ioid</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
 <span class="gp">   ....: </span>
 
-<span class="gp">In [38]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[38]: </span><span class="go">[ReadNotifyResponse(data=array([ 6.]), data_type=6, data_count=1, status=1, ioid=1, metadata=None)]</span>
+<span class="gp">In [44]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="gh">Out[44]: </span><span class="go">deque([ReadNotifyResponse(data=array([ 6.]), data_type=6, data_count=1, status=1, ioid=1, metadata=None)])</span>
 </pre></div>
 </div>
 <p>We may request a particular data type and element count; in the case we just
-asked for the &#8220;native&#8221; data type and count that the server reported in its
+asked for the “native” data type and count that the server reported in its
 <code class="xref py py-class docutils literal"><span class="pre">CreateChanResponse</span></code> above.</p>
 <p>Write:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [39]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">WriteNotifyRequest</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,),</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [45]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">WriteNotifyRequest</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,),</span>
 <span class="gp">   ....: </span>                                <span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">data_count</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">ioid</span><span class="o">=</span><span class="mi">2</span><span class="p">))</span>
 <span class="gp">   ....: </span>
 
-<span class="gp">In [40]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[40]: </span><span class="go">[WriteNotifyResponse(data_type=6, data_count=1, status=1, ioid=2)]</span>
+<span class="gp">In [46]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="gh">Out[46]: </span><span class="go">deque([WriteNotifyResponse(data_type=6, data_count=1, status=1, ioid=2)])</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal"><span class="pre">data</span></code> may be given as one of the following types:</p>
@@ -465,57 +474,57 @@ asked for the &#8220;native&#8221; data type and count that the server reported 
 metadata. See <a class="reference internal" href="api.html#payload-data-types"><span class="std std-ref">Payload Data Types</span></a> for details.</p>
 </div>
 <div class="section" id="subscribing-to-events-updates">
-<h3>Subscribing to &#8220;Events&#8221; (Updates)<a class="headerlink" href="#subscribing-to-events-updates" title="Permalink to this headline">¶</a></h3>
+<h3>Subscribing to “Events” (Updates)<a class="headerlink" href="#subscribing-to-events-updates" title="Permalink to this headline">¶</a></h3>
 <p>Ask the server to send responses every time the value of the Channel changes.
 As with reading, above, we have the option of requesting a specific data type
-or element count, but we&#8217;ll use the &#8220;native&#8221; parameters.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [41]: </span><span class="n">req</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">EventAddRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+or element count, but we’ll use the “native” parameters.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [47]: </span><span class="n">req</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">EventAddRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
 <span class="gp">   ....: </span>                              <span class="n">data_count</span><span class="o">=</span><span class="n">create_chan_response</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
 <span class="gp">   ....: </span>                              <span class="n">sid</span><span class="o">=</span><span class="n">sid</span><span class="p">,</span>
 <span class="gp">   ....: </span>                              <span class="n">subscriptionid</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
 <span class="gp">   ....: </span>                              <span class="n">low</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="gp">   ....: </span>
 
-<span class="gp">In [42]: </span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
+<span class="gp">In [48]: </span><span class="n">send</span><span class="p">(</span><span class="n">req</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The server always sends at least one response with the current value at
 subscription time.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [43]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[43]: </span><span class="go">[EventAddResponse(data=array([ 4.]), data_type=6, data_count=1, status_code=1, subscriptionid=0, metadata=None)]</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [49]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="gh">Out[49]: </span><span class="go">deque([EventAddResponse(data=array([ 4.]), data_type=6, data_count=1, status_code=1, subscriptionid=0, metadata=None)])</span>
 </pre></div>
 </div>
 <p>If the value changes, additional responses will come in. If multiple
 subscriptions are in play at once over this circuit, we can use the
 <code class="docutils literal"><span class="pre">subscriptionid</span></code> to match them to the right channel. We also use it to end
 the subscription:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [44]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">EventCancelRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [50]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">EventCancelRequest</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">sid</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
 <span class="gp">   ....: </span>                                <span class="n">subscriptionid</span><span class="o">=</span><span class="n">req</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">))</span>
 <span class="gp">   ....: </span>
 
-<span class="gp">In [45]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[45]: </span><span class="go">[EventCancelResponse(data_type=6, sid=7, subscriptionid=0)]</span>
+<span class="gp">In [51]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="gh">Out[51]: </span><span class="go">deque([EventCancelResponse(data_type=6, sid=9, subscriptionid=0)])</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="closing-the-channel">
 <h3>Closing the Channel<a class="headerlink" href="#closing-the-channel" title="Permalink to this headline">¶</a></h3>
 <p>To clean up, close the Channel.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [46]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClearChannelRequest</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">))</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [52]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClearChannelRequest</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">))</span>
 
-<span class="gp">In [47]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[47]: </span><span class="go">[ClearChannelResponse(sid=7, cid=1)]</span>
+<span class="gp">In [53]: </span><span class="n">recv</span><span class="p">()</span>
+<span class="gh">Out[53]: </span><span class="go">deque([ClearChannelResponse(sid=9, cid=1)])</span>
 </pre></div>
 </div>
 <p>If we are done with the circuit, close the socket too.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [48]: </span><span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [54]: </span><span class="n">sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
-<div class="section" id="simplify-bookkeepinig-with-channels">
-<h2>Simplify Bookkeepinig with Channels<a class="headerlink" href="#simplify-bookkeepinig-with-channels" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="simplify-bookkeeping-with-channels">
+<h2>Simplify Bookkeeping with Channels<a class="headerlink" href="#simplify-bookkeeping-with-channels" title="Permalink to this headline">¶</a></h2>
 <p>In the example above, we handled a <a class="reference internal" href="api.html#caproto.VirtualCircuit" title="caproto.VirtualCircuit"><code class="xref py py-class docutils literal"><span class="pre">VirtualCircuit</span></code></a> and several
 different commands. The <a class="reference internal" href="api.html#caproto.VirtualCircuit" title="caproto.VirtualCircuit"><code class="xref py py-class docutils literal"><span class="pre">VirtualCircuit</span></code></a> policed our adherence to the
 Channel Access protocol by watching incoming and outgoing commands and tracking
@@ -586,10 +595,10 @@ the state machines.</p>
 <span class="n">recv</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Notice that the channel convenience methods like <code class="docutils literal"><span class="pre">chan.create()</span></code> don&#8217;t
+<p>Notice that the channel convenience methods like <code class="docutils literal"><span class="pre">chan.create()</span></code> don’t
 actually <em>do</em> anything. We still have to <code class="docutils literal"><span class="pre">send</span></code> the command into the
 VirtualCircuit and then send it over the socket. These are just easy ways to
-generate valid commands &#8212; with auto-generated unique IDs filled in &#8212; which
+generate valid commands — with auto-generated unique IDs filled in — which
 you may or may not then choose to send. The state machines are not updated
 until (unless) the command is actually sent.</p>
 </div>
@@ -639,7 +648,7 @@ until (unless) the command is actually sent.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.768.g63f3daa',
+            VERSION:'0+untagged.915.ge9ea522',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
