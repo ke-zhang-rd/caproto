@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0+untagged.919.g9cc67fb documentation</title>
+  <title>caproto._utils &mdash; caproto 0+untagged.928.g4659c4b documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.919.g9cc67fb documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.928.g4659c4b documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.919.g9cc67fb
+                0+untagged.928.g4659c4b
               </div>
             
           
@@ -270,6 +270,13 @@
                     <span class="n">EPICS_CA_MAX_ARRAY_BYTES</span><span class="o">=</span><span class="mi">16384</span><span class="p">,</span>
                     <span class="n">EPICS_CA_MAX_SEARCH_PERIOD</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
                     <span class="n">EPICS_TS_MIN_WEST</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_SERVER_PORT</span><span class="o">=</span><span class="mi">5064</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_AUTO_BEACON_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;YES&#39;</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_BEACON_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_BEACON_PERIOD</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_BEACON_PORT</span><span class="o">=</span><span class="mi">5065</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_INTF_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_IGNORE_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
                     <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="n">env_var</span><span class="p">):</span>
@@ -281,7 +288,7 @@
 
 
 <span class="k">def</span> <span class="nf">get_address_list</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;Get channel access address list based on environment variables</span>
+    <span class="sd">&#39;&#39;&#39;Get channel access client address list based on environment variables</span>
 
 <span class="sd">    If the address list is set to be automatic, the network interfaces will be</span>
 <span class="sd">    scanned and used to determine the broadcast addresses available.</span>
@@ -294,6 +301,34 @@
         <span class="k">return</span> <span class="n">broadcast_address_list_from_interfaces</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">addr_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_beacon_address_list</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Get channel access beacon address list based on environment variables</span>
+
+<span class="sd">    If the address list is set to be automatic, the network interfaces will be</span>
+<span class="sd">    scanned and used to determine the broadcast addresses available.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    addr_list : list of (addr, beacon_port)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">get_environment_variables</span><span class="p">()</span>
+    <span class="n">auto_addr_list</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;EPICS_CAS_AUTO_BEACON_ADDR_LIST&#39;</span><span class="p">]</span>
+    <span class="n">addr_list</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;EPICS_CAS_BEACON_ADDR_LIST&#39;</span><span class="p">]</span>
+    <span class="n">beacon_port</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;EPICS_CAS_BEACON_PORT&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">addr</span><span class="p">:</span>
+            <span class="n">addr</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">specified_port</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">specified_port</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">beacon_port</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">addr_list</span> <span class="ow">or</span> <span class="n">auto_addr_list</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span>
+                <span class="n">broadcast_address_list_from_interfaces</span><span class="p">()]</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">addr_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)]</span>
 
 
 <span class="k">def</span> <span class="nf">broadcast_address_list_from_interfaces</span><span class="p">():</span>
@@ -391,7 +426,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.919.g9cc67fb',
+            VERSION:'0+untagged.928.g4659c4b',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
