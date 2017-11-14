@@ -1,0 +1,471 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>caproto._utils &mdash; caproto 0+untagged.1031.gc909959 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="caproto 0+untagged.1031.gc909959 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> caproto
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1031.gc909959
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../basics.html">Writing Your Own Channel Access Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../release-notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../curio-client.html">Asynchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../curio-server.html">Asynchronous Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">caproto</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>caproto._utils</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for caproto._utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">netifaces</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">netifaces</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="c1"># This module defines sentinels used in the state machine and elsewhere, such</span>
+<span class="c1"># as NEED_DATA, CLIENT, SERVER, AWAITING_SEARCH_RESPONSE, etc.</span>
+<span class="c1"># It also defines some custom Exceptions. That is all.</span>
+
+<span class="c1"># This sentinel code is copied, with thanks and admiration, from h11,</span>
+<span class="c1"># which is released under an MIT license.</span>
+<span class="c1">#</span>
+<span class="c1"># Sentinel values</span>
+<span class="c1">#</span>
+<span class="c1"># - Inherit identity-based comparison and hashing from object</span>
+<span class="c1"># - Have a nice repr</span>
+<span class="c1"># - Have a *bonus property*: type(sentinel) is sentinel</span>
+<span class="c1">#</span>
+<span class="c1"># The bonus property is useful if you want to take the return value from</span>
+<span class="c1"># next_event() and do some sort of dispatch based on type(event).</span>
+<span class="k">class</span> <span class="nc">_SentinelBase</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>
+
+<span class="k">def</span> <span class="nf">make_sentinel</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="bp">cls</span> <span class="o">=</span> <span class="n">_SentinelBase</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">_SentinelBase</span><span class="p">,),</span> <span class="p">{})</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="bp">cls</span>
+    <span class="k">return</span> <span class="bp">cls</span>
+
+
+<span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+    <span class="p">{</span><span class="n">token</span><span class="p">:</span> <span class="n">make_sentinel</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span>
+     <span class="p">(</span><span class="s1">&#39;CLIENT&#39;</span><span class="p">,</span> <span class="s1">&#39;SERVER&#39;</span><span class="p">,</span>  <span class="c1"># roles</span>
+      <span class="s1">&#39;RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;REQUEST&#39;</span><span class="p">,</span>  <span class="c1"># directions</span>
+      <span class="s1">&#39;NEED_DATA&#39;</span><span class="p">,</span>  <span class="c1"># special sentinel for read_* functions</span>
+      <span class="c1"># and states</span>
+      <span class="s1">&#39;SEND_SEARCH_REQUEST&#39;</span><span class="p">,</span> <span class="s1">&#39;AWAIT_SEARCH_RESPONSE&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;SEND_SEARCH_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;SEND_VERSION_REQUEST&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;AWAIT_VERSION_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;SEND_VERSION_RESPONSE&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;SEND_CREATE_CHAN_REQUEST&#39;</span><span class="p">,</span> <span class="s1">&#39;AWAIT_CREATE_CHAN_RESPONSE&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;SEND_CREATE_CHAN_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;CONNECTED&#39;</span><span class="p">,</span> <span class="s1">&#39;MUST_CLOSE&#39;</span><span class="p">,</span> <span class="s1">&#39;CLOSED&#39;</span><span class="p">,</span>
+      <span class="s1">&#39;IDLE&#39;</span><span class="p">,</span> <span class="s1">&#39;FAILED&#39;</span><span class="p">,</span> <span class="s1">&#39;DISCONNECTED&#39;</span><span class="p">)</span>
+     <span class="p">})</span>
+
+
+<span class="k">class</span> <span class="nc">CaprotoError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="c1"># All exceptions raised by this codebase inherit from this.</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">ProtocolError</span><span class="p">(</span><span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="c1"># Any error resulting from sending or receiving a command will raise (a</span>
+    <span class="c1"># subclass of) this error and never any other error.</span>
+    <span class="o">...</span>
+
+
+<div class="viewcode-block" id="LocalProtocolError"><a class="viewcode-back" href="../../api.html#caproto.LocalProtocolError">[docs]</a><span class="k">class</span> <span class="nc">LocalProtocolError</span><span class="p">(</span><span class="n">ProtocolError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    You tried to do something that caproto thinks is illegal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="RemoteProtocolError"><a class="viewcode-back" href="../../api.html#caproto.RemoteProtocolError">[docs]</a><span class="k">class</span> <span class="nc">RemoteProtocolError</span><span class="p">(</span><span class="n">ProtocolError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Your remote peer tried to do something that caproto thinks is illegal.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="o">...</span></div>
+
+
+<span class="k">class</span> <span class="nc">CaprotoKeyError</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">CaprotoNotImplementedError</span><span class="p">(</span><span class="ne">NotImplementedError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">CaprotoValueError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">CaprotoTypeError</span><span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">CaprotoRuntimeError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">def</span> <span class="nf">get_environment_variables</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Get a dictionary of known EPICS environment variables&#39;&#39;&#39;</span>
+    <span class="n">defaults</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">EPICS_CA_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">EPICS_CA_AUTO_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;YES&#39;</span><span class="p">,</span>
+                    <span class="n">EPICS_CA_CONN_TMO</span><span class="o">=</span><span class="mf">30.0</span><span class="p">,</span>
+                    <span class="n">EPICS_CA_BEACON_PERIOD</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+                    <span class="n">EPICS_CA_REPEATER_PORT</span><span class="o">=</span><span class="mi">5065</span><span class="p">,</span>
+                    <span class="n">EPICS_CA_SERVER_PORT</span><span class="o">=</span><span class="mi">5064</span><span class="p">,</span>
+                    <span class="n">EPICS_CA_MAX_ARRAY_BYTES</span><span class="o">=</span><span class="mi">16384</span><span class="p">,</span>
+                    <span class="n">EPICS_CA_MAX_SEARCH_PERIOD</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span>
+                    <span class="n">EPICS_TS_MIN_WEST</span><span class="o">=</span><span class="mi">360</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_SERVER_PORT</span><span class="o">=</span><span class="mi">5064</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_AUTO_BEACON_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;YES&#39;</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_BEACON_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_BEACON_PERIOD</span><span class="o">=</span><span class="mf">15.0</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_BEACON_PORT</span><span class="o">=</span><span class="mi">5065</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_INTF_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="n">EPICS_CAS_IGNORE_ADDR_LIST</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="n">env_var</span><span class="p">):</span>
+        <span class="n">default</span> <span class="o">=</span> <span class="n">defaults</span><span class="p">[</span><span class="n">env_var</span><span class="p">]</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">env_var</span><span class="p">,</span> <span class="n">default</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="n">default</span><span class="p">)(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">((</span><span class="n">env_var</span><span class="p">,</span> <span class="n">get_value</span><span class="p">(</span><span class="n">env_var</span><span class="p">))</span> <span class="k">for</span> <span class="n">env_var</span> <span class="ow">in</span> <span class="n">defaults</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+
+<span class="k">def</span> <span class="nf">get_address_list</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Get channel access client address list based on environment variables</span>
+
+<span class="sd">    If the address list is set to be automatic, the network interfaces will be</span>
+<span class="sd">    scanned and used to determine the broadcast addresses available.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">get_environment_variables</span><span class="p">()</span>
+    <span class="n">auto_addr_list</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;EPICS_CA_AUTO_ADDR_LIST&#39;</span><span class="p">]</span>
+    <span class="n">addr_list</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;EPICS_CA_ADDR_LIST&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">addr_list</span> <span class="ow">or</span> <span class="n">auto_addr_list</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">broadcast_address_list_from_interfaces</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">addr_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_beacon_address_list</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Get channel access beacon address list based on environment variables</span>
+
+<span class="sd">    If the address list is set to be automatic, the network interfaces will be</span>
+<span class="sd">    scanned and used to determine the broadcast addresses available.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    addr_list : list of (addr, beacon_port)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="n">get_environment_variables</span><span class="p">()</span>
+    <span class="n">auto_addr_list</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;EPICS_CAS_AUTO_BEACON_ADDR_LIST&#39;</span><span class="p">]</span>
+    <span class="n">addr_list</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;EPICS_CAS_BEACON_ADDR_LIST&#39;</span><span class="p">]</span>
+    <span class="n">beacon_port</span> <span class="o">=</span> <span class="n">env</span><span class="p">[</span><span class="s1">&#39;EPICS_CAS_BEACON_PORT&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">addr</span><span class="p">:</span>
+            <span class="n">addr</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">specified_port</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">specified_port</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">beacon_port</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">addr_list</span> <span class="ow">or</span> <span class="n">auto_addr_list</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s1">&#39;yes&#39;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span>
+                <span class="n">broadcast_address_list_from_interfaces</span><span class="p">()]</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">addr_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)]</span>
+
+
+<span class="k">def</span> <span class="nf">get_netifaces_addresses</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Get a list of addresses + broadcast using netifaces</span>
+
+<span class="sd">    Yields (address, broadcast_address)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">netifaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;netifaces unavailable&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">iface</span> <span class="ow">in</span> <span class="n">netifaces</span><span class="o">.</span><span class="n">interfaces</span><span class="p">():</span>
+        <span class="n">interface</span> <span class="o">=</span> <span class="n">netifaces</span><span class="o">.</span><span class="n">ifaddresses</span><span class="p">(</span><span class="n">iface</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">netifaces</span><span class="o">.</span><span class="n">AF_INET</span> <span class="ow">in</span> <span class="n">interface</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">af_inet_info</span> <span class="ow">in</span> <span class="n">interface</span><span class="p">[</span><span class="n">netifaces</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">]:</span>
+                <span class="n">addr</span> <span class="o">=</span> <span class="n">af_inet_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;addr&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">peer</span> <span class="o">=</span> <span class="n">af_inet_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;peer&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="n">broadcast</span> <span class="o">=</span> <span class="n">af_inet_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;broadcast&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">addr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">broadcast</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">peer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">broadcast</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">broadcast</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">addr</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">addr</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">peer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">peer</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">broadcast_address_list_from_interfaces</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Get a list of broadcast addresses using netifaces</span>
+
+<span class="sd">    If netifaces is unavailable, the standard IPv4 255.255.255.255 broadcast</span>
+<span class="sd">    address is returned.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">netifaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;255.255.255.255&#39;</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">bcast</span> <span class="k">for</span> <span class="n">addr</span><span class="p">,</span> <span class="n">bcast</span> <span class="ow">in</span> <span class="n">get_netifaces_addresses</span><span class="p">()]</span>
+
+
+<span class="k">def</span> <span class="nf">ensure_bytes</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Encode string as bytes with null terminator. Bytes pass through.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">s</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># be sure to include a null terminator</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;expected str or bytes&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">bcast_socket</span><span class="p">(</span><span class="n">socket_module</span><span class="o">=</span><span class="n">socket</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Make a socket and configure it for UDP broadcast.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    socket_module: module, optional</span>
+<span class="sd">        Default is the built-in :mod:`socket` module, but anything with the</span>
+<span class="sd">        same interface may be used, such as :mod:`curio.socket`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">socket</span> <span class="o">=</span> <span class="n">socket_module</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="c1"># for BSD/Darwin only</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEPORT</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="o">...</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">sock</span>
+</pre></div>
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Daniel Allan.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0+untagged.1031.gc909959',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

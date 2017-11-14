@@ -1,182 +1,371 @@
-<!doctype html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>airspeed velocity</title>
-    <script type="text/javascript">
-      function js_load_failure() {
-        window.location = "error.html";
-      }
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="//code.jquery.com/jquery-1.11.0.min.js"
-            onerror="js_load_failure()">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.min.js"
-            onerror="js_load_failure()">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.time.min.js"
-            onerror="js_load_failure()">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.selection.min.js"
-            onerror="js_load_failure()">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="//cdnjs.cloudflare.com/ajax/libs/flot/0.8.2/jquery.flot.categories.min.js"
-            onerror="js_load_failure()">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="flot/jquery.flot.axislabels.js">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="flot/jquery.flot.orderBars.js">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="stupidtable.js">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="jquery.md5.js">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"
-            onerror="js_load_failure()">
-    </script>
-    <link rel="stylesheet"
-          href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css"
-          type="text/css"/>
-    <script language="javascript" type="text/javascript"
-            src="asv.js">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="asv_ui.js">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="summarygrid.js">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="summarylist.js">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="graphdisplay.js">
-    </script>
-    <script language="javascript" type="text/javascript"
-            src="regressions.js">
-    </script>
-    <link href="asv.css" rel="stylesheet" type="text/css"/>
-    <link href="regressions.css" rel="stylesheet" type="text/css"/>
-    <link href="summarylist.css" rel="stylesheet" type="text/css"/>
-    <link rel="shortcut icon" href="swallow.ico"/>
-    <link rel="alternate" type="application/atom+xml" title="Regressions" href="regressions.xml"/>
-  </head>
-  <body>
-    <nav id="nav" class="navbar navbar-left navbar-default navbar-fixed-top" role="navigation">
-      <ul class="nav navbar-nav navbar-left">
-        <li>
-          <p class="navbar-text">
-            <a href="http://github.com/spacetelescope/asv/" class="navbar-link" target="_blank"><img src="swallow.png" width="22" height="22" alt="swallow"></img>airspeed velocity</a>
-            of an unladen
-            <a id="project-name" href="#" class="navbar-link" target="_blank">project</a>
-          </p>
-        </li>
-	<li id="nav-li-" class="active"><a href="#/">Benchmark grid</a></li>
-	<li id="nav-li-summarylist"><a href="#/summarylist">Benchmark list</a></li>
-	<li id="nav-li-regressions"><a href="#/regressions">Regressions</a></li>
-        <li id="nav-li-graphdisplay">
-          <span class="navbar-brand" id="title">
-            benchmark
-          </span>
-        </li>
-      </ul>
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0+untagged.1031.gc909959 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="caproto 0+untagged.1031.gc909959 documentation" href="#"/>
+        <link rel="next" title="Writing Your Own Channel Access Client" href="basics.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> caproto
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1031.gc909959
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="curio-client.html">Asynchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curio-server.html">Asynchronous Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
     </nav>
-    <div id="summarygrid-display" style="position: absolute; left: 0; top: 55px; width: 100%; height: 100%">
-    </div>
-    <div id="summarylist-display" style="width: 100%; height: 100%">
-      <div id="summarylist-navigation" class="asv-navigation" style="position: absolute; left: 0; top: 55px; bottom: 0; width: 200px; overflow-y: scroll">
-      </div>
-      <div id="summarylist-body" style="position: absolute; left: 200px; top: 55px; bottom: 0px; right: 0px; overflow-y: scroll;">
-      </div>
-    </div>
-    <div id="graph-display" style="width: 100%; height: 100%;">
-      <div id="graphdisplay-navigation" class="asv-navigation" style="position: absolute; left: 0; top: 55px; bottom: 0; width: 200px; overflow-y: scroll">
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            commits
-          </div>
-          <div class="panel-body">
-            <input id="range" type="text" class="form-control" size="24" readonly/>
-          </div>
-        </div>
 
-        <div class="panel panel-default">
-          <div class="panel-heading">
-            plot settings
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">caproto</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>caproto: a pure-Python Channel Access protocol library</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="caproto-a-pure-python-channel-access-protocol-library">
+<h1>caproto: a pure-Python Channel Access protocol library<a class="headerlink" href="#caproto-a-pure-python-channel-access-protocol-library" title="Permalink to this headline">¶</a></h1>
+<p>Caproto is a “bring your own I/O” implementation of the
+<a class="reference external" href="http://www.aps.anl.gov/epics/">EPICS</a> Channel Access protocol in pure
+Python.</p>
+<p>This project is inspired by the broad effort in the Python community to write
+<a class="reference external" href="http://sans-io.readthedocs.io/">sans-I/O implementations of network protocols</a>.
+The EPICS (Experimental Physics and Industrial Control System) Channel Access
+protocol is used in laboratories and companies
+<a class="reference external" href="https://en.wikipedia.org/wiki/EPICS#Facilities_using_EPICS">around the world</a>
+to implement distributed control systems for devices such as large telescopes,
+particle accelerators, and synchrotrons. Its
+<a class="reference external" href="http://www.aps.anl.gov/epics/docs/APS2014/01-Introduction-to-EPICS.pdf">roots</a>
+go back to a 1988 meeting funded by the Reagan-era Strategic Defense Initiative
+(“Star Wars”).</p>
+<p>Caproto encodes the Channel Access protocol. It parses and validates incoming
+and outgoing bytes, keeping track the state of an EPICS Client, Server, Virtual
+Circuits, and Channels. But, crucially, it performs no I/O itself: handling
+sockets and transport is completely up the caller. Caproto is a toolkit for
+building programs that speak EPICS.</p>
+<p>The authors pronounce caproto “kah-proto” (not “C.A. proto”). It’s fun to say.</p>
+<div class="section" id="why-do-this">
+<h2>Why do this?<a class="headerlink" href="#why-do-this" title="Permalink to this headline">¶</a></h2>
+<p>The aim is to provide a complete, reusable implementation of the Channel Access
+protocol in Python. Implementing the protocol in Python — instead of wrapping
+the standard C library, <code class="docutils literal"><span class="pre">libca</span></code> — separates message parsing, processing,
+and transport. This enables integration with any way of managing network calls
+in Python, including threads, processes, and various concurrency libraries. It
+gives the developer control over the timing of network calls, with better error
+handling and more control over performance trade-offs. See the
+<a class="reference external" href="http://sans-io.readthedocs.io/">sans-I/O documentation</a> for more on the
+rationale for this design pattern and a list of related projects.</p>
+<p>The codebase itself may serve as useful introduction to Channel Access
+concepts. It has all the advantages of a pure Python library: easy
+introspection, debug logging, and simple installation.</p>
+</div>
+<div class="section" id="vital-statistics">
+<h2>Vital Statistics<a class="headerlink" href="#vital-statistics" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Requirements: Python 3.5+ and (optional) numpy</li>
+<li>License: 3-clause BSD</li>
+</ul>
+</div>
+<div class="section" id="how-do-you-know-it-works">
+<h2>How do you know it works?<a class="headerlink" href="#how-do-you-know-it-works" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>It can talk to libca as a client — for example, reading, writing to, and
+monitoring the simulated motor IOC, motorsim.</li>
+<li>It can talk to libca as a server — for example, responding correctly to
+caget, caput, camonitor.</li>
+<li>The Python module that specifies the byte layout of each command is generated
+from a template, scraping the EPICS documentation itself to reduce
+the potential for bugs introduced by human transcription. (In fact, this
+uncovered some bugs in the documentation. A patch will be submitted
+upstream.)</li>
+<li>A pyepics-like interface built on top of caproto passes the pyepics unit
+tests.</li>
+<li>&gt; 90% of the lines of code are covered by tests.</li>
+</ul>
+</div>
+<div class="section" id="so-should-i-use-it">
+<h2>So should I use it?<a class="headerlink" href="#so-should-i-use-it" title="Permalink to this headline">¶</a></h2>
+<p>That depends. Probably not. It’s a very young project, and the primary author
+(hi!) is fairly new to EPICS. For important work, one of the more battle-tested
+projects linked above would be a better choice.</p>
+<p>But by all means, take it for a test drive. Use it to understand EPICS better
+or to play with the growing family of asynchronous libraries in Python.</p>
+</div>
+<div class="section" id="how-s-the-performance">
+<h2>How’s the performance?<a class="headerlink" href="#how-s-the-performance" title="Permalink to this headline">¶</a></h2>
+<p>Caproto is fast. See its
+<a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">published benchmarks</a>.</p>
+<p>There has been next to no performance tuning at this stage in the development,
+but caproto gets some important basics right, such as reading bytes directly
+between sockets into C structs and numpy arrays with no extra copies. It is
+already faster than pyepics for reading large waveforms. Moreover, the control
+that caproto hands developers to make performance trade-offs should support
+greater optimiziations for use cases beyond a general-purpose Channel Access
+client.</p>
+</div>
+<div class="section" id="acknowledgement">
+<h2>Acknowledgement<a class="headerlink" href="#acknowledgement" title="Permalink to this headline">¶</a></h2>
+<p>The design of this library was modeled on <a class="reference external" href="https://h11.readthedocs.io/">h11</a>,
+to which caproto owes its core design principles and many of its clever tricks.
+h11 is distributed under an MIT license.</p>
+<p>And of course many resources from the EPICS developer community were
+indispensible. See <a class="reference internal" href="references.html"><span class="doc">References</span></a>.</p>
+</div>
+<div class="section" id="contents">
+<h2>Contents<a class="headerlink" href="#contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#channel-access-basics">Channel Access Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#simplify-bookkeeping-with-channels">Simplify Bookkeeping with Channels</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#commands">Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#the-state-machine">The State Machine</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#special-constants">Special Constants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#the-virtualcircuit-object">The VirtualCircuit object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#the-broadcaster-object">The Broadcaster object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#channel-objects">Channel objects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#payload-data-types">Payload Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#exceptions">Exceptions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+</ul>
+</div>
+<p>In addition to its core “sans I/O” protocol library, caproto includes some
+ready-to-use client and server implementations exploring different API choices
+and networking libraries. They are organized into packages by how they handle
+network calls: <code class="xref py py-mod docutils literal"><span class="pre">caproto.threading</span></code>, <code class="xref py py-mod docutils literal"><span class="pre">caproto.asyncio</span></code>,
+<code class="xref py py-mod docutils literal"><span class="pre">caproto.curio</span></code>, and <code class="xref py py-mod docutils literal"><span class="pre">caproto.sync</span></code>. Some of these may grow into
+robust packages; some may be abandoned as learning exercises. Their primary
+function is this time is testing and benchmarking the core protocol code.</p>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="curio-client.html">Asynchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curio-server.html">Asynchronous Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
           </div>
-          <div class="panel-body">
-            <div class="btn-group-vertical" style="width: 100%" data-toggle="buttons">
-              <a id="log-scale" class="btn btn-default btn-xs" role="button"
-                 data-toggle="tooltip" data-placement="right"
-                 title="Use a logarithmic scale on the y-axis">
-                log scale
-              </a>
-              <a id="zoom-y-axis" class="btn btn-default btn-xs" role="button"
-                 data-toggle="tooltip" data-placement="right"
-                 title="Zoom y axis to the range of the data, rather than down to zero.">
-                zoom <i>y</i> axis
-              </a>
-              <a id="reference" class="btn btn-default btn-xs" role="button"
-                 data-toggle="tooltip" data-placement="right"
-                 title="Select a reference point">
-                reference
-              </a>
-              <a id="even-spacing" class="btn btn-default btn-xs" role="button"
-                 data-toggle="tooltip" data-placement="right"
-                 title="Space commits evenly, rather than by revision, along the x-axis">
-                even commit spacing
-              </a>
-              <a id="date-scale" class="btn btn-default btn-xs" role="button"
-                 data-toggle="tooltip" data-placement="right"
-                 title="Space commits by commit date along the x-axis">
-                date scale
-              </a>
-            </div>
-          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="basics.html" class="btn btn-neutral float-right" title="Writing Your Own Channel Access Client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Daniel Allan.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
         </div>
       </div>
-      <div style="position: absolute; left: 220px; top: 60px; bottom: 10px; right: 20px;">
-        <div id="graph">
-          <div style="position: absolute; top: 48px; left: 0; right: 0; bottom: 100px;">
-            <div id="main-graph" style="width: 100%; height: 100%"></div>
-          </div>
-          <div style="position: absolute; height: 100px; left: 0; right: 0; bottom: 0; padding-top: 24px">
-            <div id="overview" style="width: 100%; height: 100%"></div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <div id="regressions-display" style="position: absolute; left: 0; top: 55px; width: 100%; height: 100%">
-      <div id="regressions-body">
-      </div>
-    </div>
+    </section>
 
-    <!-- A modal dialog box for displaying error messages -->
-    <div class="modal fade" id="error" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title alert alert-danger" id="myModalLabel">Error</h4>
-          </div>
-          <div class="modal-body" id="error-message">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-    </div>
+  </div>
+  
 
-  </body>
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0+untagged.1031.gc909959',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
 </html>
