@@ -1,11 +1,11 @@
 digraph {
-	AWAIT_VERSION_RESPONSE [label=AWAIT_VERSION_RESPONSE]
 	DISCONNECTED [label=DISCONNECTED]
 	SEND_VERSION_REQUEST [label=SEND_VERSION_REQUEST]
+	AWAIT_VERSION_RESPONSE [label=AWAIT_VERSION_RESPONSE]
 	CONNECTED [label=CONNECTED]
-	AWAIT_VERSION_RESPONSE -> CONNECTED [label=VersionResponse]
 	SEND_VERSION_REQUEST -> AWAIT_VERSION_RESPONSE [label=VersionRequest]
+	AWAIT_VERSION_RESPONSE -> CONNECTED [label=VersionResponse]
 	SEND_VERSION_REQUEST -> SEND_VERSION_REQUEST [label=VersionResponse]
-	CONNECTED -> CONNECTED [label="HostNameRequest / ClientNameRequest / VersionResponse / EventsOffRequest / VersionRequest / EchoResponse / ErrorResponse / EchoRequest / EventsOnRequest"]
-	AWAIT_VERSION_RESPONSE -> AWAIT_VERSION_RESPONSE [label="HostNameRequest / ClientNameRequest / ErrorResponse / EchoResponse / EchoRequest"]
+	AWAIT_VERSION_RESPONSE -> AWAIT_VERSION_RESPONSE [label="ErrorResponse / EchoResponse / EchoRequest / HostNameRequest / ClientNameRequest"]
+	CONNECTED -> CONNECTED [label="EventsOffRequest / ErrorResponse / VersionResponse / VersionRequest / EchoRequest / EchoResponse / HostNameRequest / EventsOnRequest / ClientNameRequest"]
 }
