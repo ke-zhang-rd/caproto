@@ -7,6 +7,7 @@ digraph {
 	CLOSED [label=CLOSED]
 	CONNECTED -> CLOSED [label=ServerDisconnResponse]
 	CONNECTED -> MUST_CLOSE [label=ClearChannelRequest]
+	CONNECTED -> CLOSED [label=ServerDisconnResponse]
 	SEND_CREATE_CHAN_REQUEST -> AWAIT_CREATE_CHAN_RESPONSE [label=CreateChanRequest]
 	AWAIT_CREATE_CHAN_RESPONSE -> CONNECTED [label=CreateChanResponse]
 	AWAIT_CREATE_CHAN_RESPONSE -> FAILED [label=CreateChFailResponse]
@@ -17,4 +18,5 @@ digraph {
 	CONNECTED -> CONNECTED [label="ReadNotifyRequest / EventAddResponse / ErrorResponse / EventCancelResponse / WriteNotifyRequest / ReadNotifyResponse / EventCancelRequest / AccessRightsResponse / EventAddRequest / WriteNotifyResponse / WriteRequest"]
 	AWAIT_CREATE_CHAN_RESPONSE -> AWAIT_CREATE_CHAN_RESPONSE [label="AccessRightsResponse / ErrorResponse"]
 	SEND_CREATE_CHAN_REQUEST -> SEND_CREATE_CHAN_REQUEST [label=ErrorResponse]
+	CONNECTED -> CONNECTED [label="EventCancelResponse / WriteNotifyResponse / WriteRequest / EventAddResponse / ReadNotifyRequest / ErrorResponse / WriteNotifyRequest / ReadNotifyResponse / EventCancelRequest / AccessRightsResponse / EventAddRequest"]
 }

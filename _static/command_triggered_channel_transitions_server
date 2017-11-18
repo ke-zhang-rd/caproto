@@ -7,7 +7,6 @@ digraph {
 	IDLE [label=IDLE]
 	SEND_CREATE_CHAN_RESPONSE -> CONNECTED [label=CreateChanResponse]
 	SEND_CREATE_CHAN_RESPONSE -> FAILED [label=CreateChFailResponse]
-	CONNECTED -> CLOSED [label=ServerDisconnResponse]
 	CONNECTED -> MUST_CLOSE [label=ClearChannelRequest]
 	MUST_CLOSE -> CLOSED [label=ClearChannelResponse]
 	MUST_CLOSE -> CLOSED [label=ServerDisconnResponse]
