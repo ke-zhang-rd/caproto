@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._dbr &mdash; caproto 0+untagged.1065.g434b84e documentation</title>
+  <title>caproto._dbr &mdash; caproto 0+untagged.1096.ga68d241 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1065.g434b84e documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.1096.ga68d241 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.1065.g434b84e
+                0+untagged.1096.ga68d241
               </div>
             
           
@@ -410,7 +410,8 @@
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># TODO</span>
-        <span class="k">return</span>  <span class="c1"># array.array()</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;the non-numpy version has not been &quot;</span>
+                                  <span class="s2">&quot;written yet&quot;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">DbrTypeBase</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">BigEndianStructure</span><span class="p">):</span>
@@ -945,7 +946,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1065.g434b84e',
+            VERSION:'0+untagged.1096.ga68d241',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

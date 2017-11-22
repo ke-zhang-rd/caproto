@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._broadcaster &mdash; caproto 0+untagged.1065.g434b84e documentation</title>
+  <title>caproto._broadcaster &mdash; caproto 0+untagged.1096.ga68d241 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1065.g434b84e documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.1096.ga68d241 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.1065.g434b84e
+                0+untagged.1096.ga68d241
               </div>
             
           
@@ -305,12 +305,8 @@
                 <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
                 <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;A broadcasted SearchResponse must be preceded by a &quot;</span>
                           <span class="s2">&quot;VersionResponse in the same datagram.&quot;</span><span class="p">)</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;No SearchRequest we have seen has a cid matching &quot;</span>
-                          <span class="s2">&quot;this response: </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
         <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 
     <span class="c1">### CONVENIENCE METHODS ###</span>
@@ -408,7 +404,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1065.g434b84e',
+            VERSION:'0+untagged.1096.ga68d241',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
