@@ -343,12 +343,12 @@ broadcast (UDP datagram), so we pass them to <a class="reference internal" href=
 <span class="gh">Out[25]: </span><span class="go">VersionResponse(version=13)</span>
 
 <span class="gp">In [26]: </span><span class="n">search_response</span>
-<span class="go">                                     Out[26]: SearchResponse(port=41627, ip=&#39;255.255.255.255&#39;, cid=0, version=13)</span>
+<span class="go">                                     Out[26]: SearchResponse(port=46375, ip=&#39;255.255.255.255&#39;, cid=0, version=13)</span>
 
 <span class="gp">In [27]: </span><span class="n">address</span> <span class="o">=</span> <span class="n">caproto</span><span class="o">.</span><span class="n">extract_address</span><span class="p">(</span><span class="n">search_response</span><span class="p">)</span>
 
 <span class="gp">In [28]: </span><span class="n">address</span>
-<span class="gh">Out[28]: </span><span class="go">(&#39;127.0.0.1&#39;, 41627)</span>
+<span class="gh">Out[28]: </span><span class="go">(&#39;127.0.0.1&#39;, 46375)</span>
 </pre></div>
 </div>
 <p>Now we have the address of a server that has the channel we’re interested in.
@@ -416,7 +416,7 @@ level.)</p>
 <span class="gp">In [41]: </span><span class="n">access_response</span><span class="p">,</span> <span class="n">create_chan_response</span>
 <span class="gh">Out[41]: </span><span class="go"></span>
 <span class="go">(AccessRightsResponse(cid=1, access_rights=&lt;AccessRights.READ_WRITE: 3&gt;),</span>
-<span class="go"> CreateChanResponse(data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, cid=1, sid=12))</span>
+<span class="go"> CreateChanResponse(data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, cid=1, sid=13))</span>
 </pre></div>
 </div>
 <p>Success! We now have a connection to the <code class="docutils literal"><span class="pre">XF:31IDA-OP{Tbl-Ax:X1}Mtr.VAL</span></code>
@@ -504,7 +504,7 @@ the subscription:</p>
 <span class="gp">   ....: </span>
 
 <span class="gp">In [51]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[51]: </span><span class="go">deque([EventCancelResponse(data_type=&lt;ChannelType.DOUBLE: 6&gt;, sid=12, subscriptionid=0)])</span>
+<span class="gh">Out[51]: </span><span class="go">deque([EventCancelResponse(data_type=&lt;ChannelType.DOUBLE: 6&gt;, sid=13, subscriptionid=0)])</span>
 </pre></div>
 </div>
 </div>
@@ -514,7 +514,7 @@ the subscription:</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [52]: </span><span class="n">send</span><span class="p">(</span><span class="n">caproto</span><span class="o">.</span><span class="n">ClearChannelRequest</span><span class="p">(</span><span class="n">sid</span><span class="p">,</span> <span class="n">cid</span><span class="p">))</span>
 
 <span class="gp">In [53]: </span><span class="n">recv</span><span class="p">()</span>
-<span class="gh">Out[53]: </span><span class="go">deque([ClearChannelResponse(sid=12, cid=1)])</span>
+<span class="gh">Out[53]: </span><span class="go">deque([ClearChannelResponse(sid=13, cid=1)])</span>
 </pre></div>
 </div>
 <p>If we are done with the circuit, close the socket too.</p>
