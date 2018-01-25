@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0+untagged.1129.ga89e955 documentation</title>
+  <title>caproto._commands &mdash; caproto 0+untagged.1132.g9895b0b documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1129.ga89e955 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.1132.g9895b0b documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.1129.ga89e955
+                0+untagged.1132.g9895b0b
               </div>
             
           
@@ -221,6 +221,7 @@
                    <span class="n">array_type_code</span><span class="p">,</span> <span class="n">AccessRights</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_dbr</span> <span class="k">as</span> <span class="n">dbr</span>
+<span class="kn">from</span> <span class="nn">._status</span> <span class="k">import</span> <span class="n">eca_value_to_status</span>
 <span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">REQUEST</span><span class="p">,</span> <span class="n">RESPONSE</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span>
                      <span class="n">CaprotoTypeError</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span>
                      <span class="n">CaprotoNotImplementedError</span><span class="p">,</span>
@@ -1117,7 +1118,6 @@
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">ChannelType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">))</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
-    <span class="n">status_code</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">subscriptionid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -1127,6 +1127,10 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">extract_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">eca_value_to_status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1360,7 +1364,6 @@
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">cid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
-    <span class="n">status_code</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">error_message</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1371,6 +1374,10 @@
     <span class="k">def</span> <span class="nf">original_request</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">req_bytes</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="n">_MessageHeaderSize</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">MessageHeader</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="n">req_bytes</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">eca_value_to_status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">]</span>
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1517,9 +1524,12 @@
     <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">extract_metadata</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">eca_value_to_status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">]</span>
+
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">ChannelType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">))</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">ioid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
 
 
@@ -1703,8 +1713,11 @@
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">ChannelType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">))</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
-    <span class="n">status</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
-    <span class="n">ioid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span></div>
+    <span class="n">ioid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">status</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">eca_value_to_status</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="ClientNameRequest"><a class="viewcode-back" href="../../api.html#caproto.ClientNameRequest">[docs]</a><span class="k">class</span> <span class="nc">ClientNameRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
@@ -1870,7 +1883,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1129.ga89e955',
+            VERSION:'0+untagged.1132.g9895b0b',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
