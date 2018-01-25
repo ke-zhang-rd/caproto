@@ -5,6 +5,8 @@ digraph {
 	AWAIT_VERSION_RESPONSE [label=AWAIT_VERSION_RESPONSE]
 	SEND_VERSION_REQUEST -> AWAIT_VERSION_RESPONSE [label=VersionRequest]
 	AWAIT_VERSION_RESPONSE -> CONNECTED [label=VersionResponse]
+	SEND_VERSION_REQUEST -> AWAIT_VERSION_RESPONSE [label=VersionRequest]
+	AWAIT_VERSION_RESPONSE -> AWAIT_VERSION_RESPONSE [label="ClientNameRequest / ErrorResponse / EchoResponse / EchoRequest / HostNameRequest"]
 	SEND_VERSION_REQUEST -> SEND_VERSION_REQUEST [label=VersionResponse]
 	AWAIT_VERSION_RESPONSE -> AWAIT_VERSION_RESPONSE [label="ClientNameRequest / ErrorResponse / EchoResponse / EchoRequest / HostNameRequest"]
 	CONNECTED -> CONNECTED [label="ClientNameRequest / VersionResponse / ErrorResponse / EchoResponse / EventsOffRequest / VersionRequest / EchoRequest / HostNameRequest / EventsOnRequest"]
