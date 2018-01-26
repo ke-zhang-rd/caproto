@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Input-Output Controllers &mdash; caproto 0+untagged.1173.g99674cf documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="caproto 0+untagged.1173.g99674cf documentation" href="index.html"/>
+        <link rel="next" title="API Documentation" href="api.html"/>
+        <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> caproto
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0+untagged.1173.g99674cf
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Input-Output Controllers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#simple-ioc">Simple IOC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#write-to-a-file-when-a-pv-is-written-to">Write to a File When a PV is Written To</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#update-tallies-when-each-pv-is-read">Update Tallies When Each PV is Read</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#macros-for-pv-names">Macros for PV names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#inline-style-read-and-write-customization">“Inline” Style Read and Write Customization</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="curio-client.html">Asynchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="curio-server.html">Asynchronous Server</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">caproto</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Input-Output Controllers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/iocs.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="input-output-controllers">
+<h1>Input-Output Controllers<a class="headerlink" href="#input-output-controllers" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="simple-ioc">
+<h2>Simple IOC<a class="headerlink" href="#simple-ioc" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+
+
+<span class="k">class</span> <span class="nc">SimpleIOC</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+    <span class="s2">&quot;An IOC with two simple read/writable PVs&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># usage: simple_ioc.py &lt;PREFIX&gt;</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">curio</span>
+    <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
+
+    <span class="c1"># Instantiate the IOC, assigning a prefix for the PV names.</span>
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">SimpleIOC</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+    
+    <span class="c1"># Run IOC using curio.</span>
+    <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ simple_ioc.py example1:
+PVs: <span class="o">[</span><span class="s1">&#39;example1:A&#39;</span>, <span class="s1">&#39;example1:B&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Now there are simple read/writable PVs named ‘example1:A’ and ‘example1:B’.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">get_pv</span>
+
+<span class="gp">In [2]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:A&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="gh">Out[2]: </span><span class="go">array([1], dtype=int32)</span>
+
+<span class="gp">In [3]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:B&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">                                Out[3]: array([2], dtype=int32)</span>
+</pre></div>
+</div>
+<p>To run a second instance of the same IOC with a different prefix:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ simple_ioc.py example2:
+PVs: <span class="o">[</span><span class="s1">&#39;example2:A&#39;</span>, <span class="s1">&#39;example2:B&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="write-to-a-file-when-a-pv-is-written-to">
+<h2>Write to a File When a PV is Written To<a class="headerlink" href="#write-to-a-file-when-a-pv-is-written-to" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+
+
+<span class="k">class</span> <span class="nc">CustomWrite</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    When a PV is written to, write the new value into a file as a string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">DIRECTORY</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="s1">&#39;/tmp&#39;</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">my_write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># Compose the filename based on whichever PV this is.</span>
+        <span class="n">pv_name</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">pvspec</span><span class="o">.</span><span class="n">attr</span>  <span class="c1"># &#39;A&#39; or &#39;B&#39;, for this IOC</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DIRECTORY</span> <span class="o">/</span> <span class="n">pv_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">put</span><span class="o">=</span><span class="n">my_write</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">put</span><span class="o">=</span><span class="n">my_write</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># usage: custom_write.py &lt;PREFIX&gt;</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">curio</span>
+    <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
+
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">CustomWrite</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+    <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ custom_write.py example3:
+PVs: <span class="o">[</span><span class="s1">&#39;example3:A&#39;</span>, <span class="s1">&#39;example3:B&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="update-tallies-when-each-pv-is-read">
+<h2>Update Tallies When Each PV is Read<a class="headerlink" href="#update-tallies-when-each-pv-is-read" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+
+
+<span class="k">class</span> <span class="nc">ReadingCounter</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Count the number of times that a PV is read.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">my_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="n">pv_name</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">pvspec</span><span class="o">.</span><span class="n">attr</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">pv_name</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;tallies:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="n">A</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">get</span><span class="o">=</span><span class="n">my_read</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">get</span><span class="o">=</span><span class="n">my_read</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># usage: reading_counter.py &lt;PREFIX&gt;</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">curio</span>
+    <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
+
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">ReadingCounter</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+    <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ reading_counter.py example4:
+PVs: <span class="o">[</span><span class="s1">&#39;example4:A&#39;</span>, <span class="s1">&#39;example4:B&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="macros-for-pv-names">
+<h2>Macros for PV names<a class="headerlink" href="#macros-for-pv-names" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+
+
+<span class="k">class</span> <span class="nc">MacroifiedNames</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">placeholder1</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{beamline}</span><span class="s1">:</span><span class="si">{thing}</span><span class="s1">.VAL&#39;</span><span class="p">)</span>
+    <span class="n">placeholder2</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{beamline}</span><span class="s1">:</span><span class="si">{thing}</span><span class="s1">.RBV&#39;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># usage: macros.py &lt;PREFIX&gt; &lt;BEAMLINE&gt; &lt;THING&gt;</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">curio</span>
+    <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
+
+    <span class="n">macros</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;beamline&#39;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;thing&#39;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]}</span>
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">MacroifiedNames</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+    <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ macros.py example5: XF11ID detector
+PVs: <span class="o">[</span><span class="s1">&#39;example5:XF11ID:detector.VAL&#39;</span>, <span class="s1">&#39;example5:XF11ID:detector.RBV&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Observe that the command line arguments fill in the PV names.</p>
+</div>
+<div class="section" id="inline-style-read-and-write-customization">
+<h2>“Inline” Style Read and Write Customization<a class="headerlink" href="#inline-style-read-and-write-customization" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+
+<span class="k">class</span> <span class="nc">InlineStyleIOC</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+    <span class="s2">&quot;An IOC with a read-only PV and a read-write PV with inline customization&quot;</span>
+    <span class="nd">@pvproperty</span>  <span class="c1"># default dtype is int</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">random_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="nd">@pvproperty</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">random_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="s1">&#39;abc&#39;</span><span class="p">)</span>
+
+    <span class="nd">@pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;c&#39;</span><span class="p">])</span>  <span class="c1"># initializes value and, implicitly, dtype</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">A</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;reading A&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="nd">@A</span><span class="o">.</span><span class="n">putter</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">A</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;writing to A the value&#39;</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># usage: inline_style.py &lt;PREFIX&gt;</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+    <span class="kn">import</span> <span class="nn">curio</span>
+    <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
+
+    <span class="c1"># Instantiate the IOC, assigning a prefix for the PV names.</span>
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">InlineStyleIOC</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+    
+    <span class="c1"># Run IOC using curio.</span>
+    <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ inline_style.py example6:
+PVs: <span class="o">[</span><span class="s1">&#39;example6:random_int&#39;</span>, <span class="s1">&#39;example6:random_str&#39;</span>, <span class="s1">&#39;example6:A&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get example6:random_int
+example6:random                           <span class="m">87</span>
+$ caproto-get example6:random_int
+example6:random                           <span class="m">92</span>
+$ caproto-get example6:random_str
+example6:random_str                       b<span class="s1">&#39;b&#39;</span>
+$ caproto-get example6:random_str
+example6:random_str                       b<span class="s1">&#39;a&#39;</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api.html" class="btn btn-neutral float-right" title="API Documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="basics.html" class="btn btn-neutral" title="Writing Your Own Channel Access Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Daniel Allan.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0+untagged.1173.g99674cf',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

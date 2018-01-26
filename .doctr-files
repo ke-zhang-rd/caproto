@@ -13,6 +13,7 @@
 ./_sources/curio-client.rst.txt
 ./_sources/curio-server.rst.txt
 ./_sources/index.rst.txt
+./_sources/iocs.rst.txt
 ./_sources/references.rst.txt
 ./_sources/release-notes.rst.txt
 ./_sources/threading-client.rst.txt
@@ -65,6 +66,7 @@
 ./curio-server.html
 ./genindex.html
 ./index.html
+./iocs.html
 ./objects.inv
 ./references.html
 ./release-notes.html
