@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0+untagged.1132.g9895b0b documentation</title>
+  <title>caproto._circuit &mdash; caproto 0+untagged.1160.gc5d2a90 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1132.g9895b0b documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.1160.gc5d2a90 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.1132.g9895b0b
+                0+untagged.1160.gc5d2a90
               </div>
             
           
@@ -224,7 +224,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map cid to Channel</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;[</span><span class="si">{}</span><span class="s2"> circuit]&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">abbrev</span><span class="p">))</span>
+        <span class="n">logger_name</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{abbrev}</span><span class="s2">.</span><span class="si">{address[0]}</span><span class="s2">:</span><span class="si">{address[1]}</span><span class="s2">.</span><span class="si">{priority}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">CircuitState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map sid to Channel</span>
@@ -770,7 +771,10 @@
 <span class="sd">        to : number</span>
 <span class="sd">            Default is 0.</span>
 <span class="sd">        mask :</span>
-<span class="sd">            Default is None.</span>
+<span class="sd">            Default is None, which resolves to:</span>
+<span class="sd">            ``(SubscriptionType.DBE_VALUE | ``</span>
+<span class="sd">            `` SubscriptionType.DBE_ALARM | ``</span>
+<span class="sd">            `` SubscriptionType.DBE_PROPERTY)``</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1041,7 +1045,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1132.g9895b0b',
+            VERSION:'0+untagged.1160.gc5d2a90',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

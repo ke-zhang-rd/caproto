@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._broadcaster &mdash; caproto 0+untagged.1132.g9895b0b documentation</title>
+  <title>caproto._broadcaster &mdash; caproto 0+untagged.1160.gc5d2a90 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1132.g9895b0b documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.1160.gc5d2a90 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.1132.g9895b0b
+                0+untagged.1160.gc5d2a90
               </div>
             
           
@@ -171,7 +171,7 @@
 <span class="kn">import</span> <span class="nn">socket</span>
 
 <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">,</span> <span class="n">MAX_ID</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">LocalProtocolError</span>
+<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">LocalProtocolError</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._state</span> <span class="k">import</span> <span class="n">get_exception</span>
 <span class="kn">from</span> <span class="nn">._commands</span> <span class="k">import</span> <span class="p">(</span><span class="n">RepeaterConfirmResponse</span><span class="p">,</span> <span class="n">RepeaterRegisterRequest</span><span class="p">,</span>
                         <span class="n">SearchRequest</span><span class="p">,</span> <span class="n">SearchResponse</span><span class="p">,</span> <span class="n">VersionRequest</span><span class="p">,</span>
@@ -200,8 +200,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">our_role</span> <span class="o">=</span> <span class="n">our_role</span>
         <span class="k">if</span> <span class="n">our_role</span> <span class="ow">is</span> <span class="n">CLIENT</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span> <span class="o">=</span> <span class="n">SERVER</span>
+            <span class="n">abbrev</span> <span class="o">=</span> <span class="s1">&#39;cli&#39;</span>  <span class="c1"># just for logger</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span> <span class="o">=</span> <span class="n">CLIENT</span>
+            <span class="n">abbrev</span> <span class="o">=</span> <span class="s1">&#39;srv&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map search id (cid) to name</span>
         <span class="c1"># Unlike VirtualCircuit and Channel, there is very little state to</span>
@@ -209,7 +211,7 @@
         <span class="c1"># one flag to check whether we have yet registered with a repeater.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_search_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">logger_name</span> <span class="o">=</span> <span class="s2">&quot;caproto.Broadcaster&quot;</span>
+        <span class="n">logger_name</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{abbrev}</span><span class="s2">.bcast&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Broadcaster.send"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">commands</span><span class="p">):</span>
@@ -256,8 +258,8 @@
 <span class="sd">        -------</span>
 <span class="sd">        commands : list</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received datagram from </span><span class="si">%r</span><span class="s2"> with </span><span class="si">%d</span><span class="s2"> bytes.&quot;</span><span class="p">,</span>
-                      <span class="n">address</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">byteslike</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received datagram from </span><span class="si">%r</span><span class="s2"> with </span><span class="si">%d</span><span class="s2"> bytes.&quot;</span><span class="p">,</span>
+                       <span class="n">address</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">byteslike</span><span class="p">))</span>
         <span class="n">commands</span> <span class="o">=</span> <span class="n">read_datagram</span><span class="p">(</span><span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">commands</span></div>
 
@@ -404,7 +406,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1132.g9895b0b',
+            VERSION:'0+untagged.1160.gc5d2a90',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
