@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0+untagged.1173.g99674cf documentation</title>
+  <title>caproto._commands &mdash; caproto 0+untagged.1174.g5455541 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1173.g99674cf documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.1174.g5455541 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.1173.g99674cf
+                0+untagged.1174.g5455541
               </div>
             
           
@@ -170,7 +170,7 @@
 <span></span><span class="c1"># This module contains high-level &quot;command&quot; objects, one for each CA command.</span>
 <span class="c1"># A command wraps together a ``MessageHeader`` from _headers.py with a payload</span>
 <span class="c1"># of raw bytes (if applicable). It provides a more user-friendly __init__ that</span>
-<span class="c1"># accepts standard Python types and handles details like type conversation and</span>
+<span class="c1"># accepts standard Python types and handles details like type conversion and</span>
 <span class="c1"># bit-padding. For every argument to the __init__ there is a corresponding</span>
 <span class="c1"># property to allow high-level introspection of a command. There are also</span>
 <span class="c1"># ``header`` and ``payload`` attributes for lower-level introspection. Finally,</span>
@@ -181,7 +181,7 @@
 <span class="c1"># 1. For sending: by passing user-friendly inputs to ``__init__``.</span>
 <span class="c1"># 2. For receiving: by passing a datagram or bytestream to the functions</span>
 <span class="c1">#    ``read_datagram`` and `read_bytestream`` respectively. These identify the</span>
-<span class="c1">#    command type and instiate the appropriate class from bytes using</span>
+<span class="c1">#    command type and instantiate the appropriate class from bytes using</span>
 <span class="c1">#    ``__new__``.</span>
 <span class="c1">#</span>
 <span class="c1"># (1) is typically done by the user. (2) is typically done by calling the</span>
@@ -1884,7 +1884,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1173.g99674cf',
+            VERSION:'0+untagged.1174.g5455541',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0+untagged.1173.g99674cf documentation</title>
+  <title>caproto._circuit &mdash; caproto 0+untagged.1174.g5455541 documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1173.g99674cf documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.1174.g5455541 documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.1173.g99674cf
+                0+untagged.1174.g5455541
               </div>
             
           
@@ -169,9 +169,12 @@
   <h1>Source code for caproto._circuit</h1><div class="highlight"><pre>
 <span></span><span class="c1"># This module defines classes that encapsulate key abstractions in</span>
 <span class="c1"># Channel Access: Channels and VirtualCircuits. Each VirtualCircuit is a</span>
-<span class="c1"># companion to a (user-managed) TCP socket, updating its state in response to</span>
-<span class="c1"># incoming and outgoing TCP bytestreams. Each Channel belongs to a circuit, and</span>
-<span class="c1"># tracks state particular to that Channel.</span>
+<span class="c1"># companion to a TCP socket managed by a higher-level client or server</span>
+<span class="c1"># implementation, updating its state in response to incoming and outgoing TCP</span>
+<span class="c1"># bytestreams. Each Channel belongs to a circuit, and tracks state particular</span>
+<span class="c1"># to that Channel. A ClientChannel provides convenience methods for composing</span>
+<span class="c1"># Requests; a ServerChannel provides convenience methods for composing</span>
+<span class="c1"># Responses.</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">getpass</span>
@@ -208,6 +211,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
+<span class="sd">    our_role : CLIENT or SERVER</span>
 <span class="sd">    address : tuple</span>
 <span class="sd">        ``(host, port)`` as a string and an integer respectively</span>
 <span class="sd">    priority : integer or None</span>
@@ -1046,7 +1050,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1173.g99674cf',
+            VERSION:'0+untagged.1174.g5455541',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
