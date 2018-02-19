@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0+untagged.1205.gc188c69 documentation</title>
+  <title>caproto._circuit &mdash; caproto 0+untagged.1236.g8d9ebfe documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1205.gc188c69 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.1236.g8d9ebfe documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.1205.gc188c69
+                0+untagged.1236.g8d9ebfe
               </div>
             
           
@@ -285,8 +285,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Serializing </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
             <span class="n">buffers_to_send</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">memoryview</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">header</span><span class="p">))</span>
-            <span class="n">buffers_to_send</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">buffers</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">buffers_to_send</span></div>
+            <span class="n">buffers_to_send</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">buffers</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">buffers_to_send</span>
 
 <div class="viewcode-block" id="VirtualCircuit.recv"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.recv">[docs]</a>    <span class="k">def</span> <span class="nf">recv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -327,8 +327,8 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> bytes are cached. Need more bytes to parse &quot;</span>
                                <span class="s2">&quot;next command.&quot;</span><span class="p">,</span> <span class="n">len_data</span><span class="p">)</span>
-                <span class="k">break</span>
-        <span class="k">return</span> <span class="n">commands</span><span class="p">,</span> <span class="n">num_bytes_needed</span></div>
+                <span class="k">break</span></div>
+        <span class="k">return</span> <span class="n">commands</span><span class="p">,</span> <span class="n">num_bytes_needed</span>
 
 <div class="viewcode-block" id="VirtualCircuit.process_command"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.process_command">[docs]</a>    <span class="k">def</span> <span class="nf">process_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -336,8 +336,8 @@
 
 <span class="sd">        Received commands should be passed through here before any additional</span>
 <span class="sd">        processing by a server or client layer.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span></div>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_process_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -491,8 +491,8 @@
 <span class="sd">        Notify all channels on this circuit that they are disconnected.</span>
 
 <span class="sd">        Clients should call this method when a TCP connection is lost.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">DISCONNECTED</span></div>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+        <span class="k">return</span> <span class="n">DISCONNECTED</span>
 
 <div class="viewcode-block" id="VirtualCircuit.new_channel_id"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.new_channel_id">[docs]</a>    <span class="k">def</span> <span class="nf">new_channel_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s2">&quot;Return a valid value for a cid or sid.&quot;</span>
@@ -503,8 +503,8 @@
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MAX_ID</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_channel_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="k">continue</span>
-            <span class="k">return</span> <span class="n">i</span></div>
+                <span class="k">continue</span></div>
+            <span class="k">return</span> <span class="n">i</span>
 
 <div class="viewcode-block" id="VirtualCircuit.new_subscriptionid"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.new_subscriptionid">[docs]</a>    <span class="k">def</span> <span class="nf">new_subscriptionid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -518,8 +518,8 @@
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MAX_ID</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_sub_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="k">continue</span>
-            <span class="k">return</span> <span class="n">i</span></div>
+                <span class="k">continue</span></div>
+            <span class="k">return</span> <span class="n">i</span>
 
 <div class="viewcode-block" id="VirtualCircuit.new_ioid"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.new_ioid">[docs]</a>    <span class="k">def</span> <span class="nf">new_ioid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -533,8 +533,8 @@
                 <span class="k">continue</span>
             <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="n">MAX_ID</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_ioid_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-                <span class="k">continue</span>
-            <span class="k">return</span> <span class="n">i</span></div></div>
+                <span class="k">continue</span></div></div>
+            <span class="k">return</span> <span class="n">i</span>
 
 
 <span class="k">class</span> <span class="nc">_BaseChannel</span><span class="p">:</span>
@@ -638,8 +638,8 @@
 <span class="sd">        VersionRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">VersionRequest</span><span class="p">(</span><span class="n">version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">,</span>
-                                 <span class="n">priority</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+                                 <span class="n">priority</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ClientChannel.host_name"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.host_name">[docs]</a>    <span class="k">def</span> <span class="nf">host_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -656,8 +656,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">host_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">host_name</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">HostNameRequest</span><span class="p">(</span><span class="n">host_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">HostNameRequest</span><span class="p">(</span><span class="n">host_name</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ClientChannel.client_name"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.client_name">[docs]</a>    <span class="k">def</span> <span class="nf">client_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -674,8 +674,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">client_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">client_name</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">()</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">ClientNameRequest</span><span class="p">(</span><span class="n">client_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">ClientNameRequest</span><span class="p">(</span><span class="n">client_name</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ClientChannel.create"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -686,8 +686,8 @@
 <span class="sd">        CreateChanRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">CreateChanRequest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span>
-                                    <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ClientChannel.disconnect"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -697,8 +697,8 @@
 <span class="sd">        -------</span>
 <span class="sd">        ClearChannelRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">ClearChannelRequest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">ClearChannelRequest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ClientChannel.read"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -721,8 +721,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">ioid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_ioid</span><span class="p">()</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">ReadNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">ReadNotifyRequest</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ClientChannel.write"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -751,8 +751,8 @@
             <span class="n">data_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">ioid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_ioid</span><span class="p">()</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">WriteNotifyRequest</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
-                                     <span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+                                     <span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ClientChannel.subscribe"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
                   <span class="n">to</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -792,8 +792,8 @@
                     <span class="n">SubscriptionType</span><span class="o">.</span><span class="n">DBE_PROPERTY</span><span class="p">)</span>
         <span class="n">subscriptionid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_subscriptionid</span><span class="p">()</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">EventAddRequest</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
-                                  <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+                                  <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ClientChannel.unsubscribe"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -818,8 +818,8 @@
             <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s2">&quot;This subscription is for a different &quot;</span>
                                     <span class="s2">&quot;Channel.&quot;</span><span class="p">)</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">EventCancelRequest</span><span class="p">(</span><span class="n">event_add</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span>
-                                     <span class="n">subscriptionid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div></div>
+                                     <span class="n">subscriptionid</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 
 <div class="viewcode-block" id="ServerChannel"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel">[docs]</a><span class="k">class</span> <span class="nc">ServerChannel</span><span class="p">(</span><span class="n">_BaseChannel</span><span class="p">):</span>
@@ -843,8 +843,8 @@
 <span class="sd">        -------</span>
 <span class="sd">        VersionResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">VersionResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">VersionResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ServerChannel.create"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">native_data_type</span><span class="p">,</span> <span class="n">native_data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -864,8 +864,8 @@
 <span class="sd">        CreateChanResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">CreateChanResponse</span><span class="p">(</span><span class="n">native_data_type</span><span class="p">,</span> <span class="n">native_data_count</span><span class="p">,</span>
-                                     <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="n">sid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+                                     <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="n">sid</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ServerChannel.create_fail"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.create_fail">[docs]</a>    <span class="k">def</span> <span class="nf">create_fail</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -875,8 +875,8 @@
 <span class="sd">        -------</span>
 <span class="sd">        CreateChFailResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">CreateChFailResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">CreateChFailResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ServerChannel.read"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
              <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -906,8 +906,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">ReadNotifyResponse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
-                                     <span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+                                     <span class="n">ioid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ServerChannel.write"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -932,8 +932,8 @@
 <span class="sd">        WriteNotifyResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">WriteNotifyResponse</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">WriteNotifyResponse</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ServerChannel.subscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -964,8 +964,8 @@
         <span class="c1"># TODO It&#39;s unclear what the status_code means here.</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">EventAddResponse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span>
-                                   <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+                                   <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ServerChannel.unsubscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -984,8 +984,8 @@
 <span class="sd">        EventCancelResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">EventCancelResponse</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">EventCancelResponse</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="ServerChannel.disconnect"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -995,8 +995,8 @@
 <span class="sd">        -------</span>
 <span class="sd">        ServerDisconnResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">ServerDisconnResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">command</span></div></div>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">ServerDisconnResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 
 <span class="k">def</span> <span class="nf">extract_address</span><span class="p">(</span><span class="n">search_response</span><span class="p">):</span>
@@ -1050,7 +1050,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1205.gc188c69',
+            VERSION:'0+untagged.1236.g8d9ebfe',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

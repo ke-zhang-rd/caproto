@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Input-Output Controllers &mdash; caproto 0+untagged.1205.gc188c69 documentation</title>
+  <title>Input-Output Controllers &mdash; caproto 0+untagged.1236.g8d9ebfe documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.1205.gc188c69 documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.1236.g8d9ebfe documentation" href="index.html"/>
         <link rel="next" title="API Documentation" href="api.html"/>
         <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.1205.gc188c69
+                0+untagged.1236.g8d9ebfe
               </div>
             
           
@@ -178,7 +178,7 @@
 <h1>Input-Output Controllers<a class="headerlink" href="#input-output-controllers" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="simple-ioc">
 <h2>Simple IOC<a class="headerlink" href="#simple-ioc" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
 
 
@@ -189,42 +189,127 @@
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="c1"># usage: simple_ioc.py &lt;PREFIX&gt;</span>
+    <span class="c1"># usage: simple.py [PREFIX]</span>
     <span class="kn">import</span> <span class="nn">sys</span>
     <span class="kn">import</span> <span class="nn">curio</span>
     <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
 
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;simple:&#39;</span>
+
     <span class="c1"># Instantiate the IOC, assigning a prefix for the PV names.</span>
-    <span class="n">ioc</span> <span class="o">=</span> <span class="n">SimpleIOC</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">SimpleIOC</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
-    
+
     <span class="c1"># Run IOC using curio.</span>
     <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ simple_ioc.py example1:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ simple.py example1:
 PVs: <span class="o">[</span><span class="s1">&#39;example1:A&#39;</span>, <span class="s1">&#39;example1:B&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 <p>Now there are simple read/writable PVs named ‘example1:A’ and ‘example1:B’.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">get_pv</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">get_pv</span>
 
 <span class="gp">In [2]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:A&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-<span class="gh">Out[2]: </span><span class="go">array([1], dtype=int32)</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">TimeoutError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-2-c392af11430d&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:A&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">get_pv</span><span class="nt">(pvname, *args, **kwargs)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1449</span>         <span class="n">_dflt_context</span> <span class="o">=</span> <span class="n">PVContext</span><span class="p">()</span>
+<span class="g g-Whitespace">   </span><span class="mi">1450</span> 
+<span class="ne">-&gt; </span><span class="mi">1451</span>     <span class="k">return</span> <span class="n">_dflt_context</span><span class="o">.</span><span class="n">get_pv</span><span class="p">(</span><span class="n">pvname</span><span class="p">)</span>
+<span class="g g-Whitespace">   </span><span class="mi">1452</span> 
+<span class="g g-Whitespace">   </span><span class="mi">1453</span> 
+
+<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">get_pv</span><span class="nt">(self, pvname, *args, **kwargs)</span>
+<span class="g g-Whitespace">    </span><span class="mi">755</span>     <span class="k">def</span> <span class="nf">get_pv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pvname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">756</span>         <span class="c1"># TODO add PV cache to this class</span>
+<span class="ne">--&gt; </span><span class="mi">757</span>         <span class="k">return</span> <span class="n">PV</span><span class="p">(</span><span class="n">pvname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">758</span> 
+<span class="g g-Whitespace">    </span><span class="mi">759</span> 
+
+<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">__init__</span><span class="nt">(self, pvname, callback, form, verbose, auto_monitor, count, connection_callback, connection_timeout, context)</span>
+<span class="g g-Whitespace">    </span><span class="mi">840</span>         <span class="c1"># DIFF</span>
+<span class="g g-Whitespace">    </span><span class="mi">841</span>         <span class="c1"># not handling lazy connecting, pyepics is</span>
+<span class="ne">--&gt; </span><span class="mi">842</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_context</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pvname</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">843</span>         <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_connection</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">844</span> 
+
+<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">search</span><span class="nt">(self, name)</span>
+<span class="g g-Whitespace">    </span><span class="mi">350</span>     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<span class="g g-Whitespace">    </span><span class="mi">351</span>         <span class="s2">&quot;Generate, process, and the transport a search request.&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">352</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+<span class="g g-Whitespace">    </span><span class="mi">353</span> 
+<span class="g g-Whitespace">    </span><span class="mi">354</span>     <span class="k">def</span> <span class="nf">get_circuit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+
+<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">search</span><span class="nt">(self, name, wait, timeout)</span>
+<span class="g g-Whitespace">    </span><span class="mi">283</span>             <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
+<span class="g g-Whitespace">    </span><span class="mi">284</span>                 <span class="k">raise</span> <span class="n">TimeoutError</span><span class="p">(</span><span class="s2">&quot;No search result received for {}&quot;</span>
+<span class="ne">--&gt; </span><span class="mi">285</span>                                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
+<span class="g g-Whitespace">    </span><span class="mi">286</span>             <span class="n">address</span><span class="p">,</span> <span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+<span class="g g-Whitespace">    </span><span class="mi">287</span>             <span class="k">return</span> <span class="n">address</span>
+
+<span class="ne">TimeoutError</span>: No search result received for example1:A
 
 <span class="gp">In [3]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:B&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-<span class="go">                                Out[3]: array([2], dtype=int32)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ---------------------------------------------------------------------------</span>
+<span class="go">TimeoutError                              Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-3-d942c0c2e3b2&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 get_pv(&#39;example1:B&#39;).get()</span>
+
+<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in get_pv(pvname, *args, **kwargs)</span>
+<span class="go">   1449         _dflt_context = PVContext()</span>
+<span class="go">   1450 </span>
+<span class="go">-&gt; 1451     return _dflt_context.get_pv(pvname)</span>
+<span class="go">   1452 </span>
+<span class="go">   1453 </span>
+
+<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in get_pv(self, pvname, *args, **kwargs)</span>
+<span class="go">    755     def get_pv(self, pvname, *args, **kwargs):</span>
+<span class="go">    756         # TODO add PV cache to this class</span>
+<span class="go">--&gt; 757         return PV(pvname, *args, context=self, **kwargs)</span>
+<span class="go">    758 </span>
+<span class="go">    759 </span>
+
+<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in __init__(self, pvname, callback, form, verbose, auto_monitor, count, connection_callback, connection_timeout, context)</span>
+<span class="go">    840         # DIFF</span>
+<span class="go">    841         # not handling lazy connecting, pyepics is</span>
+<span class="go">--&gt; 842         self._context.search(self.pvname)</span>
+<span class="go">    843         self.wait_for_connection(form=form, count=count)</span>
+<span class="go">    844 </span>
+
+<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in search(self, name)</span>
+<span class="go">    350     def search(self, name):</span>
+<span class="go">    351         &quot;Generate, process, and the transport a search request.&quot;</span>
+<span class="go">--&gt; 352         return self.broadcaster.search(name)</span>
+<span class="go">    353 </span>
+<span class="go">    354     def get_circuit(self, address, priority):</span>
+
+<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in search(self, name, wait, timeout)</span>
+<span class="go">    283             if not done:</span>
+<span class="go">    284                 raise TimeoutError(&quot;No search result received for {}&quot;</span>
+<span class="go">--&gt; 285                                    &quot;&quot;.format(name))</span>
+<span class="go">    286             address, timestamp = self.search_results[name]</span>
+<span class="go">    287             return address</span>
+
+<span class="go">TimeoutError: No search result received for example1:B</span>
 </pre></div>
 </div>
 <p>To run a second instance of the same IOC with a different prefix:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ simple_ioc.py example2:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ simple_ioc.py example2:
 PVs: <span class="o">[</span><span class="s1">&#39;example2:A&#39;</span>, <span class="s1">&#39;example2:B&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="write-to-a-file-when-a-pv-is-written-to">
 <h2>Write to a File When a PV is Written To<a class="headerlink" href="#write-to-a-file-when-a-pv-is-written-to" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 
@@ -240,6 +325,7 @@ PVs: <span class="o">[</span><span class="s1">&#39;example2:A&#39;</span>, <span
         <span class="n">pv_name</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">pvspec</span><span class="o">.</span><span class="n">attr</span>  <span class="c1"># &#39;A&#39; or &#39;B&#39;, for this IOC</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DIRECTORY</span> <span class="o">/</span> <span class="n">pv_name</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Wrote </span><span class="si">{value}</span><span class="s1"> to {self.DIRECTORY / pv_name}&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">value</span>
 
     <span class="n">A</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">put</span><span class="o">=</span><span class="n">my_write</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -247,24 +333,29 @@ PVs: <span class="o">[</span><span class="s1">&#39;example2:A&#39;</span>, <span
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
-    <span class="c1"># usage: custom_write.py &lt;PREFIX&gt;</span>
+    <span class="c1"># usage: custom_write.py [PREFIX]</span>
     <span class="kn">import</span> <span class="nn">sys</span>
     <span class="kn">import</span> <span class="nn">curio</span>
     <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
 
-    <span class="n">ioc</span> <span class="o">=</span> <span class="n">CustomWrite</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;custom_write:&#39;</span>
+
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">CustomWrite</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
     <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ custom_write.py example3:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ custom_write.py example3:
 PVs: <span class="o">[</span><span class="s1">&#39;example3:A&#39;</span>, <span class="s1">&#39;example3:B&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="update-tallies-when-each-pv-is-read">
 <h2>Update Tallies When Each PV is Read<a class="headerlink" href="#update-tallies-when-each-pv-is-read" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 
@@ -281,6 +372,7 @@ PVs: <span class="o">[</span><span class="s1">&#39;example3:A&#39;</span>, <span
         <span class="n">pv_name</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">pvspec</span><span class="o">.</span><span class="n">attr</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">pv_name</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;tallies:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">instance</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="p">[</span><span class="n">pv_name</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">value</span>
 
     <span class="n">A</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">get</span><span class="o">=</span><span class="n">my_read</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -293,25 +385,30 @@ PVs: <span class="o">[</span><span class="s1">&#39;example3:A&#39;</span>, <span
     <span class="kn">import</span> <span class="nn">curio</span>
     <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
 
-    <span class="n">ioc</span> <span class="o">=</span> <span class="n">ReadingCounter</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;reading_counter:&#39;</span>
+
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">ReadingCounter</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
     <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ reading_counter.py example4:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ reading_counter.py example4:
 PVs: <span class="o">[</span><span class="s1">&#39;example4:A&#39;</span>, <span class="s1">&#39;example4:B&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="macros-for-pv-names">
 <h2>Macros for PV names<a class="headerlink" href="#macros-for-pv-names" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
 
 
 <span class="k">class</span> <span class="nc">MacroifiedNames</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    </span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">placeholder1</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{beamline}</span><span class="s1">:</span><span class="si">{thing}</span><span class="s1">.VAL&#39;</span><span class="p">)</span>
     <span class="n">placeholder2</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{beamline}</span><span class="s1">:</span><span class="si">{thing}</span><span class="s1">.RBV&#39;</span><span class="p">)</span>
@@ -323,13 +420,28 @@ PVs: <span class="o">[</span><span class="s1">&#39;example4:A&#39;</span>, <span
     <span class="kn">import</span> <span class="nn">curio</span>
     <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
 
-    <span class="n">macros</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;beamline&#39;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;thing&#39;</span><span class="p">:</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]}</span>
-    <span class="n">ioc</span> <span class="o">=</span> <span class="n">MacroifiedNames</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="s1">&#39;prefix:&#39;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">beamline</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">beamline</span> <span class="o">=</span> <span class="s1">&#39;my_beamline&#39;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">thing</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">thing</span> <span class="o">=</span> <span class="s1">&#39;thing&#39;</span>
+
+    <span class="n">macros</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;beamline&#39;</span><span class="p">:</span> <span class="n">beamline</span><span class="p">,</span> <span class="s1">&#39;thing&#39;</span><span class="p">:</span> <span class="n">thing</span><span class="p">}</span>
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">MacroifiedNames</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">,</span> <span class="n">macros</span><span class="o">=</span><span class="n">macros</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
     <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ macros.py example5: XF11ID detector
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ macros.py example5: XF11ID detector
 PVs: <span class="o">[</span><span class="s1">&#39;example5:XF11ID:detector.VAL&#39;</span>, <span class="s1">&#39;example5:XF11ID:detector.RBV&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
@@ -337,7 +449,7 @@ PVs: <span class="o">[</span><span class="s1">&#39;example5:XF11ID:detector.VAL&
 </div>
 <div class="section" id="inline-style-read-and-write-customization">
 <h2>“Inline” Style Read and Write Customization<a class="headerlink" href="#inline-style-read-and-write-customization" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
@@ -369,19 +481,24 @@ PVs: <span class="o">[</span><span class="s1">&#39;example5:XF11ID:detector.VAL&
     <span class="kn">import</span> <span class="nn">curio</span>
     <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
 
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+        <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;inline_style:&#39;</span>
+
     <span class="c1"># Instantiate the IOC, assigning a prefix for the PV names.</span>
-    <span class="n">ioc</span> <span class="o">=</span> <span class="n">InlineStyleIOC</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">InlineStyleIOC</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
     
     <span class="c1"># Run IOC using curio.</span>
     <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
 </pre></div>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ inline_style.py example6:
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ inline_style.py example6:
 PVs: <span class="o">[</span><span class="s1">&#39;example6:random_int&#39;</span>, <span class="s1">&#39;example6:random_str&#39;</span>, <span class="s1">&#39;example6:A&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get example6:random_int
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get example6:random_int
 example6:random                           <span class="m">87</span>
 $ caproto-get example6:random_int
 example6:random                           <span class="m">92</span>
@@ -438,7 +555,7 @@ example6:random_str                       b<span class="s1">&#39;a&#39;</span>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.1205.gc188c69',
+            VERSION:'0+untagged.1236.g8d9ebfe',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
