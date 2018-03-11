@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Input-Output Controllers &mdash; caproto 0+untagged.1244.gb42b828 documentation</title>
+  <title>Input-Output Controllers &mdash; caproto 0+untagged.1287.g1f22e8f documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="genindex.html"/>
         <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.1244.gb42b828 documentation" href="index.html"/>
+    <link rel="top" title="caproto 0+untagged.1287.g1f22e8f documentation" href="index.html"/>
         <link rel="next" title="API Documentation" href="api.html"/>
         <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html"/> 
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0+untagged.1244.gb42b828
+                0+untagged.1287.g1f22e8f
               </div>
             
           
@@ -179,10 +179,10 @@
 <div class="section" id="simple-ioc">
 <h2>Simple IOC<a class="headerlink" href="#simple-ioc" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
-<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span>
 
 
-<span class="k">class</span> <span class="nc">SimpleIOC</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">SimpleIOC</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
     <span class="s2">&quot;An IOC with two simple read/writable PVs&quot;</span>
     <span class="n">A</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     <span class="n">B</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -310,11 +310,11 @@ PVs: <span class="o">[</span><span class="s1">&#39;example2:A&#39;</span>, <span
 <div class="section" id="write-to-a-file-when-a-pv-is-written-to">
 <h2>Write to a File When a PV is Written To<a class="headerlink" href="#write-to-a-file-when-a-pv-is-written-to" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
-<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span>
 <span class="kn">import</span> <span class="nn">pathlib</span>
 
 
-<span class="k">class</span> <span class="nc">CustomWrite</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">CustomWrite</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    When a PV is written to, write the new value into a file as a string.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -356,11 +356,11 @@ PVs: <span class="o">[</span><span class="s1">&#39;example3:A&#39;</span>, <span
 <div class="section" id="update-tallies-when-each-pv-is-read">
 <h2>Update Tallies When Each PV is Read<a class="headerlink" href="#update-tallies-when-each-pv-is-read" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
-<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 
 
-<span class="k">class</span> <span class="nc">ReadingCounter</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ReadingCounter</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Count the number of times that a PV is read.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -403,10 +403,10 @@ PVs: <span class="o">[</span><span class="s1">&#39;example4:A&#39;</span>, <span
 <div class="section" id="macros-for-pv-names">
 <h2>Macros for PV names<a class="headerlink" href="#macros-for-pv-names" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
-<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span>
 
 
-<span class="k">class</span> <span class="nc">MacroifiedNames</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">MacroifiedNames</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -450,11 +450,11 @@ PVs: <span class="o">[</span><span class="s1">&#39;example5:XF11ID:detector.VAL&
 <div class="section" id="inline-style-read-and-write-customization">
 <h2>“Inline” Style Read and Write Customization<a class="headerlink" href="#inline-style-read-and-write-customization" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
-<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroupBase</span>
+<span class="kn">from</span> <span class="nn">caproto.curio.high_level_server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
 
-<span class="k">class</span> <span class="nc">InlineStyleIOC</span><span class="p">(</span><span class="n">PVGroupBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">InlineStyleIOC</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
     <span class="s2">&quot;An IOC with a read-only PV and a read-write PV with inline customization&quot;</span>
     <span class="nd">@pvproperty</span>  <span class="c1"># default dtype is int</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">random_int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
@@ -489,7 +489,7 @@ PVs: <span class="o">[</span><span class="s1">&#39;example5:XF11ID:detector.VAL&
     <span class="c1"># Instantiate the IOC, assigning a prefix for the PV names.</span>
     <span class="n">ioc</span> <span class="o">=</span> <span class="n">InlineStyleIOC</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
-    
+
     <span class="c1"># Run IOC using curio.</span>
     <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
 </pre></div>
@@ -555,7 +555,7 @@ example6:random_str                       b<span class="s1">&#39;a&#39;</span>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.1244.gb42b828',
+            VERSION:'0+untagged.1287.g1f22e8f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,

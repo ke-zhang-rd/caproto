@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0+untagged.1244.gb42b828 documentation</title>
+  <title>caproto._utils &mdash; caproto 0+untagged.1287.g1f22e8f documentation</title>
   
 
   
@@ -35,7 +35,7 @@
         <link rel="index" title="Index"
               href="../../genindex.html"/>
         <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1244.gb42b828 documentation" href="../../index.html"/>
+    <link rel="top" title="caproto 0+untagged.1287.g1f22e8f documentation" href="../../index.html"/>
         <link rel="up" title="Module code" href="../index.html"/> 
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0+untagged.1244.gb42b828
+                0+untagged.1287.g1f22e8f
               </div>
             
           
@@ -170,15 +170,18 @@
 <span></span><span class="c1"># This module includes all exceptions raised by caproto, sentinel objects used</span>
 <span class="c1"># throughout the package (see detailed comment below), various network-related</span>
 <span class="c1"># helper functions, and other miscellaneous utilities.</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">enum</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">netifaces</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">netifaces</span> <span class="o">=</span> <span class="kc">None</span>
+
 
 <span class="c1"># This module defines sentinels used in the state machine and elsewhere, such</span>
 <span class="c1"># as NEED_DATA, CLIENT, SERVER, AWAITING_SEARCH_RESPONSE, etc.</span>
@@ -198,6 +201,7 @@
 <span class="k">class</span> <span class="nc">_SentinelBase</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>
+
 
 <span class="k">def</span> <span class="nf">make_sentinel</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
     <span class="bp">cls</span> <span class="o">=</span> <span class="n">_SentinelBase</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">_SentinelBase</span><span class="p">,),</span> <span class="p">{})</span>
@@ -263,6 +267,7 @@
 
 <span class="k">class</span> <span class="nc">CaprotoRuntimeError</span><span class="p">(</span><span class="ne">RuntimeError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
     <span class="o">...</span>
+
 
 <span class="k">class</span> <span class="nc">ErrorResponseReceived</span><span class="p">(</span><span class="n">CaprotoError</span><span class="p">):</span>
     <span class="o">...</span>
@@ -484,6 +489,82 @@
 
     <span class="c1"># all done</span>
     <span class="n">os</span><span class="o">.</span><span class="n">_exit</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">EX_OK</span><span class="p">)</span>
+
+
+<span class="n">RecordAndField</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;RecordAndField&#39;</span><span class="p">,</span>
+                            <span class="p">[</span><span class="s1">&#39;record_dot_field&#39;</span><span class="p">,</span> <span class="s1">&#39;record&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;field&#39;</span><span class="p">,</span> <span class="s1">&#39;modifiers&#39;</span><span class="p">])</span>
+
+
+<span class="k">class</span> <span class="nc">RecordModifiers</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Flag</span><span class="p">):</span>
+    <span class="n">long_string</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">filtered</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">filter_timestamp</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">filter_deadband</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">filter_array</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">filter_synchronize</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+
+
+<span class="n">RecordModifier</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;RecordModifier&#39;</span><span class="p">,</span>
+                            <span class="p">[</span><span class="s1">&#39;modifiers&#39;</span><span class="p">,</span> <span class="s1">&#39;filter_&#39;</span><span class="p">])</span>
+
+
+<span class="k">def</span> <span class="nf">parse_record_field</span><span class="p">(</span><span class="n">pvname</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Parse a record[.FIELD][{FILTER}]</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    RecordAndField(record_dot_field, record, field, modifiers)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="s1">&#39;.&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pvname</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">RecordAndField</span><span class="p">(</span><span class="n">pvname</span><span class="p">,</span> <span class="n">pvname</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="n">record</span><span class="p">,</span> <span class="n">field</span> <span class="o">=</span> <span class="n">pvname</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">):</span>
+        <span class="n">field</span><span class="p">,</span> <span class="n">filter_</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">field</span>
+        <span class="n">modifiers</span> <span class="o">=</span> <span class="n">RecordModifiers</span><span class="o">.</span><span class="n">filtered</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">field</span><span class="p">:</span>
+        <span class="c1"># valid case of &quot;{record}.&quot;</span>
+        <span class="k">return</span> <span class="n">RecordAndField</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s1">&#39;{&#39;</span> <span class="ow">in</span> <span class="n">field</span><span class="p">:</span>
+            <span class="n">field</span><span class="p">,</span> <span class="n">filter_</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;{&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">filter_</span> <span class="o">=</span> <span class="s1">&#39;{&#39;</span> <span class="o">+</span> <span class="n">filter_</span>
+            <span class="n">modifiers</span> <span class="o">=</span> <span class="n">RecordModifiers</span><span class="o">.</span><span class="n">filtered</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filter_</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">modifiers</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">field</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">modifiers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">modifiers</span> <span class="o">|=</span> <span class="n">RecordModifiers</span><span class="o">.</span><span class="n">long_string</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">modifiers</span> <span class="o">=</span> <span class="n">RecordModifiers</span><span class="o">.</span><span class="n">long_string</span>
+            <span class="n">field</span> <span class="o">=</span> <span class="n">field</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s1">&#39;$&#39;</span><span class="p">)</span>
+
+    <span class="c1"># NOTE: VAL is equated to &#39;record&#39; at a higher level than this.</span>
+    <span class="k">if</span> <span class="n">field</span><span class="p">:</span>
+        <span class="n">record_field</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;</span><span class="si">{record}</span><span class="s1">.</span><span class="si">{field}</span><span class="s1">&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">record_field</span> <span class="o">=</span> <span class="n">record</span>
+
+    <span class="k">if</span> <span class="n">modifiers</span><span class="p">:</span>
+        <span class="n">modifiers</span> <span class="o">=</span> <span class="n">RecordModifier</span><span class="p">(</span><span class="n">modifiers</span><span class="p">,</span> <span class="n">filter_</span><span class="o">=</span><span class="n">filter_</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">RecordAndField</span><span class="p">(</span><span class="n">record_field</span><span class="p">,</span> <span class="n">record</span><span class="p">,</span> <span class="n">field</span><span class="p">,</span> <span class="n">modifiers</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">evaluate_channel_filter</span><span class="p">(</span><span class="n">filter_text</span><span class="p">):</span>
+    <span class="s1">&#39;Evaluate JSON-based channel filter into easy Python type&#39;</span>
+
+    <span class="n">filter_</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">filter_text</span><span class="p">)</span>
+
+    <span class="n">valid_filters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ts&#39;</span><span class="p">,</span> <span class="s1">&#39;arr&#39;</span><span class="p">,</span> <span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="s1">&#39;dbnd&#39;</span><span class="p">}</span>
+    <span class="n">filter_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">filter_</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">invalid_keys</span> <span class="o">=</span> <span class="n">filter_keys</span> <span class="o">-</span> <span class="n">valid_filters</span>
+    <span class="k">if</span> <span class="n">invalid_keys</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Unsupported filters: </span><span class="si">{invalid_keys}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># TODO: parse/validate filters into python types?</span>
+    <span class="k">return</span> <span class="n">filter_</span>
 </pre></div>
 
            </div>
@@ -520,7 +601,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1244.gb42b828',
+            VERSION:'0+untagged.1287.g1f22e8f',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
