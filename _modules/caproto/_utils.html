@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0+untagged.1318.g055b709 documentation</title>
+  <title>caproto._utils &mdash; caproto 0+untagged.1475.gf8800d6 documentation</title>
   
 
   
@@ -25,25 +25,17 @@
   
 
   
-  
     <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1318.g055b709 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -65,7 +57,7 @@
             
             
               <div class="version">
-                0+untagged.1318.g055b709
+                0+untagged.1475.gf8800d6
               </div>
             
           
@@ -114,7 +106,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">caproto</a>
@@ -122,9 +114,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -154,8 +147,6 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
-        
       </li>
     
   </ul>
@@ -170,6 +161,7 @@
 <span></span><span class="c1"># This module includes all exceptions raised by caproto, sentinel objects used</span>
 <span class="c1"># throughout the package (see detailed comment below), various network-related</span>
 <span class="c1"># helper functions, and other miscellaneous utilities.</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">sys</span>
@@ -391,7 +383,8 @@
         <span class="c1"># be sure to include a null terminator</span>
         <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">encode</span><span class="p">()</span> <span class="o">+</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;expected str or bytes&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;expected str or bytes, got </span><span class="si">{s!r}</span><span class="s2"> of type &quot;</span>
+                               <span class="n">f</span><span class="s2">&quot;{type(s)}&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">bcast_socket</span><span class="p">(</span><span class="n">socket_module</span><span class="o">=</span><span class="n">socket</span><span class="p">):</span>
@@ -451,6 +444,75 @@
         <span class="k">if</span> <span class="n">total_sent</span> <span class="o">==</span> <span class="n">total_size</span><span class="p">:</span>
             <span class="k">break</span>
         <span class="n">buffers</span> <span class="o">=</span> <span class="n">buffer_list_slice</span><span class="p">(</span><span class="o">*</span><span class="n">buffers</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="n">sent</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">SendAllRetry</span><span class="p">(</span><span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">def</span> <span class="nf">send_all</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">,</span> <span class="n">send_func</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Incrementally slice a list of buffers, and send it using `send_func`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    buffers_to_send : (buffer1, buffer2, ...)</span>
+<span class="sd">        Buffers are expected to be memoryviews or similar</span>
+<span class="sd">    send_func : callable</span>
+<span class="sd">        Function to call with list of buffers to send</span>
+<span class="sd">        Expected to return number of bytes sent or raise SendAllRetry otherwise</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">buffers_to_send</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">incremental_buffer_list_slice</span><span class="p">(</span><span class="o">*</span><span class="n">buffers_to_send</span><span class="p">)</span>
+
+    <span class="c1"># prime the generator</span>
+    <span class="n">gen</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">buffers_to_send</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sent</span> <span class="o">=</span> <span class="n">send_func</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">SendAllRetry</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sent</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="c1"># finished sending</span>
+            <span class="k">break</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">async_send_all</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">,</span> <span class="n">async_send_func</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Incrementally slice a list of buffers, and send it using `send_func`</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    buffers_to_send : (buffer1, buffer2, ...)</span>
+<span class="sd">        Buffers are expected to be memoryviews or similar</span>
+<span class="sd">    async_send_func : callable</span>
+<span class="sd">        Async function to call with list of buffers to send</span>
+<span class="sd">        Expected to return number of bytes sent or raise SendAllRetry otherwise</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">buffers_to_send</span><span class="p">:</span>
+        <span class="k">return</span>
+
+    <span class="n">gen</span> <span class="o">=</span> <span class="n">incremental_buffer_list_slice</span><span class="p">(</span><span class="o">*</span><span class="n">buffers_to_send</span><span class="p">)</span>
+    <span class="c1"># prime the generator</span>
+    <span class="n">gen</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+    <span class="k">while</span> <span class="n">buffers_to_send</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">sent</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_send_func</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">SendAllRetry</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">gen</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">sent</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="c1"># finished sending</span>
+            <span class="k">break</span>
 
 
 <span class="k">def</span> <span class="nf">spawn_daemon</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -565,12 +627,34 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Unsupported filters: </span><span class="si">{invalid_keys}</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="c1"># TODO: parse/validate filters into python types?</span>
     <span class="k">return</span> <span class="n">filter_</span>
+
+
+<span class="k">def</span> <span class="nf">batch_requests</span><span class="p">(</span><span class="n">request_iter</span><span class="p">,</span> <span class="n">max_length</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Batch a set of items with length, thresholded on sum of item length</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    batch : collections.deque</span>
+<span class="sd">        Batch of items from request_iter, where:</span>
+<span class="sd">            sum(len(b) for b in batch) &lt; max_length</span>
+<span class="sd">        NOTE: instance of deque is reused, cleared at each iteration</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">batch</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">request_iter</span><span class="p">:</span>
+        <span class="n">_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">size</span> <span class="o">+</span> <span class="n">_len</span> <span class="o">&gt;</span> <span class="n">max_length</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">batch</span>
+            <span class="n">batch</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">batch</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">+=</span> <span class="n">_len</span>
+    <span class="k">if</span> <span class="n">batch</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">batch</span>
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -583,7 +667,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -601,7 +685,8 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1318.g055b709',
+            VERSION:'0+untagged.1475.gf8800d6',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -620,14 +705,13 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

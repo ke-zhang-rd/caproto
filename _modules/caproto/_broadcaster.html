@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._broadcaster &mdash; caproto 0+untagged.1318.g055b709 documentation</title>
+  <title>caproto._broadcaster &mdash; caproto 0+untagged.1475.gf8800d6 documentation</title>
   
 
   
@@ -25,25 +25,17 @@
   
 
   
-  
     <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="../../genindex.html"/>
-        <link rel="search" title="Search" href="../../search.html"/>
-    <link rel="top" title="caproto 0+untagged.1318.g055b709 documentation" href="../../index.html"/>
-        <link rel="up" title="Module code" href="../index.html"/> 
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -65,7 +57,7 @@
             
             
               <div class="version">
-                0+untagged.1318.g055b709
+                0+untagged.1475.gf8800d6
               </div>
             
           
@@ -114,7 +106,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../../index.html">caproto</a>
@@ -122,9 +114,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -154,8 +147,6 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
-        
       </li>
     
   </ul>
@@ -172,14 +163,14 @@
 <span class="c1"># UDP socket provided by a client or server implementation.</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">socket</span>
 
 <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">,</span> <span class="n">MAX_ID</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">LocalProtocolError</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">DISCONNECTED</span><span class="p">,</span> <span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span>
+                     <span class="n">LocalProtocolError</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._state</span> <span class="k">import</span> <span class="n">get_exception</span>
 <span class="kn">from</span> <span class="nn">._commands</span> <span class="k">import</span> <span class="p">(</span><span class="n">RepeaterConfirmResponse</span><span class="p">,</span> <span class="n">RepeaterRegisterRequest</span><span class="p">,</span>
                         <span class="n">SearchRequest</span><span class="p">,</span> <span class="n">SearchResponse</span><span class="p">,</span> <span class="n">VersionRequest</span><span class="p">,</span>
-                        <span class="n">VersionResponse</span><span class="p">,</span> <span class="n">read_datagram</span><span class="p">,</span>
+                        <span class="n">read_datagram</span><span class="p">,</span>
                         <span class="p">)</span>
 
 
@@ -301,7 +292,8 @@
               <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_attempted_registration</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">LocalProtocolError</span><span class="p">(</span><span class="s2">&quot;Client must send a &quot;</span>
                                      <span class="s2">&quot;RegisterRepeaterRequest before any &quot;</span>
-                                     <span class="s2">&quot;other commands&quot;</span><span class="p">)</span>
+                                     <span class="s2">&quot;other commands (saw: </span><span class="si">{}</span><span class="s2">)&quot;</span>
+                                     <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">command</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">SearchRequest</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">VersionRequest</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
                 <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
@@ -309,10 +301,12 @@
                           <span class="s2">&quot;VersionResponse in the same datagram.&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">]</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">name</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">SearchResponse</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">VersionResponse</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span> <span class="n">history</span><span class="p">):</span>
-                <span class="n">err</span> <span class="o">=</span> <span class="n">get_exception</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">our_role</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;A broadcasted SearchResponse must be preceded by a &quot;</span>
-                          <span class="s2">&quot;VersionResponse in the same datagram.&quot;</span><span class="p">)</span>
+            <span class="c1"># TODO Do all versions of Rsrv respect this? Unclear why softIoc</span>
+            <span class="c1"># seems to sometimes violate this part of the protocol.</span>
+            <span class="c1"># if VersionResponse not in map(type, history):</span>
+            <span class="c1">#     err = get_exception(self.our_role, command)</span>
+            <span class="c1">#     raise err(&quot;A broadcasted SearchResponse must be preceded by a &quot;</span>
+            <span class="c1">#               &quot;VersionResponse in the same datagram.&quot;)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
@@ -351,23 +345,29 @@
                     <span class="n">SearchRequest</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">commands</span></div>
 
-<div class="viewcode-block" id="Broadcaster.register"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Broadcaster.register"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.register">[docs]</a>    <span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ip</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`RepeaterRegisterRequest`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        ip : string, optional</span>
-<span class="sd">            Our IP address. Defaults is output of ``socket.gethostbyname``.</span>
+<span class="sd">            Our IP address. Defaults is &#39;0.0.0.0&#39;, which ends up being</span>
+<span class="sd">            converted by the repeater to the IP from which it receives the</span>
+<span class="sd">            packet.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        RepeaterRegisterRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">ip</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">hostname</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
-            <span class="n">ip</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostbyname</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="s1">&#39;0.0.0.0&#39;</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">RepeaterRegisterRequest</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+
+        <span class="c1"># NOTE: consider this enough for a registration attempt.</span>
+        <span class="c1"># TODO this is required for moving forward with the threading client,</span>
+        <span class="c1"># and may be implemented better in the future</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_attempted_registration</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
     <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -384,9 +384,7 @@
 </pre></div>
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -399,7 +397,7 @@
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -417,7 +415,8 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1318.g055b709',
+            VERSION:'0+untagged.1475.gf8800d6',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -436,14 +435,13 @@
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

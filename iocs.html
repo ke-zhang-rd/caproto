@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Input-Output Controllers &mdash; caproto 0+untagged.1318.g055b709 documentation</title>
+  <title>Input-Output Controllers &mdash; caproto 0+untagged.1475.gf8800d6 documentation</title>
   
 
   
@@ -25,26 +25,19 @@
   
 
   
-  
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.1318.g055b709 documentation" href="index.html"/>
-        <link rel="next" title="API Documentation" href="api.html"/>
-        <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html"/> 
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Documentation" href="api.html" />
+    <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -66,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1318.g055b709
+                0+untagged.1475.gf8800d6
               </div>
             
           
@@ -122,7 +115,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">caproto</a>
@@ -130,9 +123,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -213,92 +207,28 @@ PVs: <span class="o">[</span><span class="s1">&#39;example1:A&#39;</span>, <span
 </div>
 <p>Now there are simple read/writable PVs named ‘example1:A’ and ‘example1:B’.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">get_pv</span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-1-5c14b2fde07a&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">get_pv</span>
+
+<span class="ne">ImportError</span>: cannot import name &#39;get_pv&#39;
 
 <span class="gp">In [2]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:A&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-<span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">TimeoutError</span><span class="g g-Whitespace">                              </span>Traceback (most recent call last)
-<span class="nn">&lt;ipython-input-2-c392af11430d&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:A&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                   ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
+<span class="go">&lt;ipython-input-2-c392af11430d&gt; in &lt;module&gt;()</span>
+<span class="go">----&gt; 1 get_pv(&#39;example1:A&#39;).get()</span>
 
-<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">get_pv</span><span class="nt">(pvname, *args, **kwargs)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1451</span>         <span class="n">_dflt_context</span> <span class="o">=</span> <span class="n">PVContext</span><span class="p">()</span>
-<span class="g g-Whitespace">   </span><span class="mi">1452</span> 
-<span class="ne">-&gt; </span><span class="mi">1453</span>     <span class="k">return</span> <span class="n">_dflt_context</span><span class="o">.</span><span class="n">get_pv</span><span class="p">(</span><span class="n">pvname</span><span class="p">)</span>
-<span class="g g-Whitespace">   </span><span class="mi">1454</span> 
-<span class="g g-Whitespace">   </span><span class="mi">1455</span> 
-
-<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">get_pv</span><span class="nt">(self, pvname, *args, **kwargs)</span>
-<span class="g g-Whitespace">    </span><span class="mi">757</span>     <span class="k">def</span> <span class="nf">get_pv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pvname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">758</span>         <span class="c1"># TODO add PV cache to this class</span>
-<span class="ne">--&gt; </span><span class="mi">759</span>         <span class="k">return</span> <span class="n">PV</span><span class="p">(</span><span class="n">pvname</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">760</span> 
-<span class="g g-Whitespace">    </span><span class="mi">761</span> 
-
-<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">__init__</span><span class="nt">(self, pvname, callback, form, verbose, auto_monitor, count, connection_callback, connection_timeout, context)</span>
-<span class="g g-Whitespace">    </span><span class="mi">842</span>         <span class="c1"># DIFF</span>
-<span class="g g-Whitespace">    </span><span class="mi">843</span>         <span class="c1"># not handling lazy connecting, pyepics is</span>
-<span class="ne">--&gt; </span><span class="mi">844</span>         <span class="bp">self</span><span class="o">.</span><span class="n">_context</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pvname</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">845</span>         <span class="bp">self</span><span class="o">.</span><span class="n">wait_for_connection</span><span class="p">(</span><span class="n">form</span><span class="o">=</span><span class="n">form</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">846</span> 
-
-<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">search</span><span class="nt">(self, name)</span>
-<span class="g g-Whitespace">    </span><span class="mi">352</span>     <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-<span class="g g-Whitespace">    </span><span class="mi">353</span>         <span class="s2">&quot;Generate, process, and the transport a search request.&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">354</span>         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
-<span class="g g-Whitespace">    </span><span class="mi">355</span> 
-<span class="g g-Whitespace">    </span><span class="mi">356</span>     <span class="k">def</span> <span class="nf">get_circuit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
-
-<span class="nn">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py</span> in <span class="ni">search</span><span class="nt">(self, name, wait, timeout)</span>
-<span class="g g-Whitespace">    </span><span class="mi">283</span>             <span class="k">if</span> <span class="ow">not</span> <span class="n">done</span><span class="p">:</span>
-<span class="g g-Whitespace">    </span><span class="mi">284</span>                 <span class="k">raise</span> <span class="n">TimeoutError</span><span class="p">(</span><span class="s2">&quot;No search result received for {}&quot;</span>
-<span class="ne">--&gt; </span><span class="mi">285</span>                                    <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="p">))</span>
-<span class="g g-Whitespace">    </span><span class="mi">286</span>             <span class="n">address</span><span class="p">,</span> <span class="n">timestamp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
-<span class="g g-Whitespace">    </span><span class="mi">287</span>             <span class="k">return</span> <span class="n">address</span>
-
-<span class="ne">TimeoutError</span>: No search result received for example1:A
+<span class="go">NameError: name &#39;get_pv&#39; is not defined</span>
 
 <span class="gp">In [3]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:B&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            ---------------------------------------------------------------------------</span>
-<span class="go">TimeoutError                              Traceback (most recent call last)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ---------------------------------------------------------------------------</span>
+<span class="go">NameError                                 Traceback (most recent call last)</span>
 <span class="go">&lt;ipython-input-3-d942c0c2e3b2&gt; in &lt;module&gt;()</span>
 <span class="go">----&gt; 1 get_pv(&#39;example1:B&#39;).get()</span>
 
-<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in get_pv(pvname, *args, **kwargs)</span>
-<span class="go">   1451         _dflt_context = PVContext()</span>
-<span class="go">   1452 </span>
-<span class="go">-&gt; 1453     return _dflt_context.get_pv(pvname)</span>
-<span class="go">   1454 </span>
-<span class="go">   1455 </span>
-
-<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in get_pv(self, pvname, *args, **kwargs)</span>
-<span class="go">    757     def get_pv(self, pvname, *args, **kwargs):</span>
-<span class="go">    758         # TODO add PV cache to this class</span>
-<span class="go">--&gt; 759         return PV(pvname, *args, context=self, **kwargs)</span>
-<span class="go">    760 </span>
-<span class="go">    761 </span>
-
-<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in __init__(self, pvname, callback, form, verbose, auto_monitor, count, connection_callback, connection_timeout, context)</span>
-<span class="go">    842         # DIFF</span>
-<span class="go">    843         # not handling lazy connecting, pyepics is</span>
-<span class="go">--&gt; 844         self._context.search(self.pvname)</span>
-<span class="go">    845         self.wait_for_connection(form=form, count=count)</span>
-<span class="go">    846 </span>
-
-<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in search(self, name)</span>
-<span class="go">    352     def search(self, name):</span>
-<span class="go">    353         &quot;Generate, process, and the transport a search request.&quot;</span>
-<span class="go">--&gt; 354         return self.broadcaster.search(name)</span>
-<span class="go">    355 </span>
-<span class="go">    356     def get_circuit(self, address, priority):</span>
-
-<span class="go">~/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py in search(self, name, wait, timeout)</span>
-<span class="go">    283             if not done:</span>
-<span class="go">    284                 raise TimeoutError(&quot;No search result received for {}&quot;</span>
-<span class="go">--&gt; 285                                    &quot;&quot;.format(name))</span>
-<span class="go">    286             address, timestamp = self.search_results[name]</span>
-<span class="go">    287             return address</span>
-
-<span class="go">TimeoutError: No search result received for example1:B</span>
+<span class="go">NameError: name &#39;get_pv&#39; is not defined</span>
 </pre></div>
 </div>
 <p>To run a second instance of the same IOC with a different prefix:</p>
@@ -513,9 +443,7 @@ example6:random_str                       b<span class="s1">&#39;a&#39;</span>
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -537,7 +465,7 @@ example6:random_str                       b<span class="s1">&#39;a&#39;</span>
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -555,7 +483,8 @@ example6:random_str                       b<span class="s1">&#39;a&#39;</span>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.1318.g055b709',
+            VERSION:'0+untagged.1475.gf8800d6',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -574,14 +503,13 @@ example6:random_str                       b<span class="s1">&#39;a&#39;</span>
     <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>

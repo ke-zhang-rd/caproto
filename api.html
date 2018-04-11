@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.1318.g055b709 documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.1475.gf8800d6 documentation</title>
   
 
   
@@ -25,26 +25,19 @@
   
 
   
-  
     <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  
-
-  
-
-  
-        <link rel="index" title="Index"
-              href="genindex.html"/>
-        <link rel="search" title="Search" href="search.html"/>
-    <link rel="top" title="caproto 0+untagged.1318.g055b709 documentation" href="index.html"/>
-        <link rel="next" title="References" href="references.html"/>
-        <link rel="prev" title="Input-Output Controllers" href="iocs.html"/> 
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="References" href="references.html" />
+    <link rel="prev" title="Input-Output Controllers" href="iocs.html" /> 
 
   
   <script src="_static/js/modernizr.min.js"></script>
 
 </head>
 
-<body class="wy-body-for-nav" role="document">
+<body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
@@ -66,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1318.g055b709
+                0+untagged.1475.gf8800d6
               </div>
             
           
@@ -125,7 +118,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+      <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">caproto</a>
@@ -133,9 +126,10 @@
       </nav>
 
 
-      
       <div class="wy-nav-content">
+        
         <div class="rst-content">
+        
           
 
 
@@ -405,7 +399,7 @@ this response with the original request.</p>
 
 <dl class="class">
 <dt id="caproto.RepeaterRegisterRequest">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">RepeaterRegisterRequest</code><span class="sig-paren">(</span><em>client_address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#RepeaterRegisterRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.RepeaterRegisterRequest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">RepeaterRegisterRequest</code><span class="sig-paren">(</span><em>client_address='0.0.0.0'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#RepeaterRegisterRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.RepeaterRegisterRequest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Register a client with the Repeater.</p>
 <p>Fields:</p>
 <dl class="attribute">
@@ -1063,16 +1057,17 @@ over the socket should first be passed through <a class="reference internal" hre
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>our_role</strong> : CLIENT or SERVER</p>
-<p><strong>address</strong> : tuple</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">(host,</span> <span class="pre">port)</span></code> as a string and an integer respectively</p>
-</div></blockquote>
-<p><strong>priority</strong> : integer or None</p>
-<blockquote class="last">
-<div><p>May be used by the server to prioritize requests when under high
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>our_role</strong> <span class="classifier-delimiter">:</span> <span class="classifier">CLIENT or SERVER</span></dt>
+<dd></dd>
+<dt><strong>address</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span></dt>
+<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">(host,</span> <span class="pre">port)</span></code> as a string and an integer respectively</p>
+</dd>
+<dt><strong>priority</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer or None</span></dt>
+<dd><p class="first last">May be used by the server to prioritize requests when under high
 load. Lowest priority is 0; highest is 99.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1117,16 +1112,18 @@ state machine.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>*commands :</strong></p>
-<blockquote>
-<div><p>any number of <code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code> objects</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>*commands :</strong></dt>
+<dd><p class="first last">any number of <code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code> objects</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>buffers_to_send</strong> : list</p>
-<blockquote class="last">
-<div><p>list of buffers to send over a socket</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>buffers_to_send</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd><p class="first last">list of buffers to send over a socket</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1144,13 +1141,17 @@ it against the protocol and update the VirtualCircuit’s state.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>*buffers :</strong></p>
-<blockquote>
-<div><p>any number of bytes-like buffers</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>*buffers :</strong></dt>
+<dd><p class="first last">any number of bytes-like buffers</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="docutils literal notranslate"><span class="pre">(commands,</span> <span class="pre">num_bytes_needed)</span></code></p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>``(commands, num_bytes_needed)``</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1209,11 +1210,13 @@ implementation. All data received over the socket should be passed to
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>our_role</strong> : CLIENT or SERVER</p>
-<p><strong>protocol_version</strong> : integer</p>
-<blockquote class="last">
-<div><p>Default is <code class="docutils literal notranslate"><span class="pre">DEFAULT_PROTOCOL_VERSION</span></code>.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>our_role</strong> <span class="classifier-delimiter">:</span> <span class="classifier">CLIENT or SERVER</span></dt>
+<dd></dd>
+<dt><strong>protocol_version</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd><p class="first last">Default is <code class="docutils literal notranslate"><span class="pre">DEFAULT_PROTOCOL_VERSION</span></code>.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1240,16 +1243,18 @@ state machine.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>*commands :</strong></p>
-<blockquote>
-<div><p>any number of <code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code> objects</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>*commands :</strong></dt>
+<dd><p class="first last">any number of <code class="xref py py-class docutils literal notranslate"><span class="pre">Message</span></code> objects</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>bytes_to_send</strong> : bytes</p>
-<blockquote class="last">
-<div><p>bytes to send over a socket</p>
-</div></blockquote>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>bytes_to_send</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bytes</span></dt>
+<dd><p class="first last">bytes to send over a socket</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1267,14 +1272,19 @@ against the protocol and update the Broadcaster’s state.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>byteslike</strong> : bytes-like</p>
-<p><strong>address</strong> : tuple</p>
-<blockquote>
-<div><p><code class="docutils literal notranslate"><span class="pre">(host,</span> <span class="pre">port)</span></code> as a string and an integer respectively</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>byteslike</strong> <span class="classifier-delimiter">:</span> <span class="classifier">bytes-like</span></dt>
+<dd></dd>
+<dt><strong>address</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple</span></dt>
+<dd><p class="first last"><code class="docutils literal notranslate"><span class="pre">(host,</span> <span class="pre">port)</span></code> as a string and an integer respectively</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><strong>commands</strong> : list</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>commands</strong> <span class="classifier-delimiter">:</span> <span class="classifier">list</span></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1304,13 +1314,17 @@ datagram.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
-<blockquote>
-<div><p>Channnel name (PV)</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Channnel name (PV)</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">(VersionRequest, SearchRequest)</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>(VersionRequest, SearchRequest)</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1319,19 +1333,25 @@ datagram.</p>
 
 <dl class="method">
 <dt id="caproto.Broadcaster.register">
-<code class="descname">register</code><span class="sig-paren">(</span><em>ip=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.register" title="Permalink to this definition">¶</a></dt>
+<code class="descname">register</code><span class="sig-paren">(</span><em>ip='0.0.0.0'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster.register" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.RepeaterRegisterRequest" title="caproto.RepeaterRegisterRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">RepeaterRegisterRequest</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ip</strong> : string, optional</p>
-<blockquote>
-<div><p>Our IP address. Defaults is output of <code class="docutils literal notranslate"><span class="pre">socket.gethostbyname</span></code>.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>ip</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
+<dd><p class="first last">Our IP address. Defaults is ‘0.0.0.0’, which ends up being
+converted by the repeater to the IP from which it receives the
+packet.</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">RepeaterRegisterRequest</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>RepeaterRegisterRequest</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1364,16 +1384,18 @@ and priority of that VirtualCircuit. It can be accessed in the circuit’s
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
-<blockquote>
-<div><p>Channnel name (PV)</p>
-</div></blockquote>
-<p><strong>circuit</strong> : VirtualCircuit</p>
-<p><strong>cid</strong> : integer, optional</p>
-<p><strong>protocol_version</strong> : integer, optional</p>
-<blockquote class="last">
-<div><p>Default is <code class="docutils literal notranslate"><span class="pre">DEFAULT_PROTOCOL_VERSION</span></code>.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Channnel name (PV)</p>
+</dd>
+<dt><strong>circuit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">VirtualCircuit</span></dt>
+<dd></dd>
+<dt><strong>cid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd></dd>
+<dt><strong>protocol_version</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Default is <code class="docutils literal notranslate"><span class="pre">DEFAULT_PROTOCOL_VERSION</span></code>.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1386,14 +1408,18 @@ and priority of that VirtualCircuit. It can be accessed in the circuit’s
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>priority</strong> : integer, optional</p>
-<blockquote>
-<div><p>May be used by the server to prioritize requests when under high
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>priority</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">May be used by the server to prioritize requests when under high
 load. Lowest priority is 0; highest is 99. Default is 0.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">VersionRequest</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>VersionRequest</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1408,13 +1434,17 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>host_name</strong> : string, optional</p>
-<blockquote>
-<div><p>defaults to output of <code class="docutils literal notranslate"><span class="pre">socket.gethostname()</span></code></p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>host_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
+<dd><p class="first last">defaults to output of <code class="docutils literal notranslate"><span class="pre">socket.gethostname()</span></code></p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">HostNameRequest</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>HostNameRequest</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1429,13 +1459,17 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>client_name</strong> : string, optional</p>
-<blockquote>
-<div><p>defaults to output of <code class="docutils literal notranslate"><span class="pre">getpass.getuser()</span></code></p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>client_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
+<dd><p class="first last">defaults to output of <code class="docutils literal notranslate"><span class="pre">getpass.getuser()</span></code></p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">ClientNameRequest</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ClientNameRequest</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1450,7 +1484,11 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">CreateChanRequest</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>CreateChanRequest</strong></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1464,7 +1502,11 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ClearChannelRequest</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ClearChannelRequest</strong></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1478,21 +1520,24 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data_type</strong> : a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
-<blockquote>
-<div><p>Requested Channel Access data type. Default is the channel’s
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
-</div></blockquote>
-<p><strong>data_count</strong> : integer, optional</p>
-<blockquote>
-<div><p>Requested number of values. Default is the channel’s native data
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">ReadNotifyRequest</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ReadNotifyRequest</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1507,26 +1552,29 @@ count, which can be checked in the Channel’s attribute
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : tuple, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">array.array</span></code>, or bytes</p>
-<p><strong>data_type</strong> : a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
-<blockquote>
-<div><p>Requested Channel Access data type. Default is the channel’s
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">array.array</span></code>, or bytes</span></dt>
+<dd></dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
-</div></blockquote>
-<p><strong>data_count</strong> : integer, optional</p>
-<blockquote>
-<div><p>Requested number of values. Default is the channel’s native data
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
-</div></blockquote>
-<p><strong>metadata</strong> : <code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</p>
-<blockquote>
-<div><p>Status and control metadata for the values</p>
-</div></blockquote>
+</dd>
+<dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
+<dd><p class="first last">Status and control metadata for the values</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">WriteNotifyRequest</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>WriteNotifyRequest</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1541,40 +1589,39 @@ count, which can be checked in the Channel’s attribute
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data_type</strong> : a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
-<blockquote>
-<div><p>Requested Channel Access data type. Default is the channel’s
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
-</div></blockquote>
-<p><strong>data_count</strong> : integer, optional</p>
-<blockquote>
-<div><p>Requested number of values. Default is the channel’s native data
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
-</div></blockquote>
-<p><strong>low</strong> : number</p>
-<blockquote>
-<div><p>Default is 0.</p>
-</div></blockquote>
-<p><strong>high</strong> : number</p>
-<blockquote>
-<div><p>Default is 0.</p>
-</div></blockquote>
-<p><strong>to</strong> : number</p>
-<blockquote>
-<div><p>Default is 0.</p>
-</div></blockquote>
-<p><strong>mask :</strong></p>
-<blockquote>
-<div><p>Default is None, which resolves to:
+</dd>
+<dt><strong>low</strong> <span class="classifier-delimiter">:</span> <span class="classifier">number</span></dt>
+<dd><p class="first last">Default is 0.</p>
+</dd>
+<dt><strong>high</strong> <span class="classifier-delimiter">:</span> <span class="classifier">number</span></dt>
+<dd><p class="first last">Default is 0.</p>
+</dd>
+<dt><strong>to</strong> <span class="classifier-delimiter">:</span> <span class="classifier">number</span></dt>
+<dd><p class="first last">Default is 0.</p>
+</dd>
+<dt><strong>mask :</strong></dt>
+<dd><p class="first last">Default is None, which resolves to:
 <code class="docutils literal notranslate"><span class="pre">(SubscriptionType.DBE_VALUE</span> <span class="pre">|</span> <span class="pre">``</span>
 <span class="pre">``</span> <span class="pre">SubscriptionType.DBE_ALARM</span> <span class="pre">|</span> <span class="pre">``</span>
 <span class="pre">``</span> <span class="pre">SubscriptionType.DBE_PROPERTY)</span></code></p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">EventAddRequest</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>EventAddRequest</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1589,14 +1636,18 @@ count, which can be checked in the Channel’s attribute
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>subscriptionid</strong> : integer</p>
-<blockquote>
-<div><p>The <code class="docutils literal notranslate"><span class="pre">subscriptionid</span></code> that was originally sent in the
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>subscriptionid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd><p class="first last">The <code class="docutils literal notranslate"><span class="pre">subscriptionid</span></code> that was originally sent in the
 corresponding <a class="reference internal" href="#caproto.EventAddRequest" title="caproto.EventAddRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventAddRequest</span></code></a>.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">EventAddRequest</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>EventAddRequest</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1613,16 +1664,18 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>name</strong> : string</p>
-<blockquote>
-<div><p>Channnel name (PV)</p>
-</div></blockquote>
-<p><strong>circuit</strong> : VirtualCircuit</p>
-<p><strong>cid</strong> : integer, optional</p>
-<p><strong>protocol_version</strong> : integer, optional</p>
-<blockquote class="last">
-<div><p>Default is <code class="docutils literal notranslate"><span class="pre">DEFAULT_PROTOCOL_VERSION</span></code>.</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Channnel name (PV)</p>
+</dd>
+<dt><strong>circuit</strong> <span class="classifier-delimiter">:</span> <span class="classifier">VirtualCircuit</span></dt>
+<dd></dd>
+<dt><strong>cid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd></dd>
+<dt><strong>protocol_version</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Default is <code class="docutils literal notranslate"><span class="pre">DEFAULT_PROTOCOL_VERSION</span></code>.</p>
+</dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1635,7 +1688,11 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">VersionResponse</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>VersionResponse</strong></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1649,21 +1706,23 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>native_data_type</strong> : a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID</p>
-<blockquote>
-<div><p>Default Channel Access data type.</p>
-</div></blockquote>
-<p><strong>native_data_count</strong> : integer</p>
-<blockquote>
-<div><p>Default number of values</p>
-</div></blockquote>
-<p><strong>sid</strong> : integer</p>
-<blockquote>
-<div><p>server-allocated sid</p>
-</div></blockquote>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>native_data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID</span></dt>
+<dd><p class="first last">Default Channel Access data type.</p>
+</dd>
+<dt><strong>native_data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd><p class="first last">Default number of values</p>
+</dd>
+<dt><strong>sid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd><p class="first last">server-allocated sid</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">CreateChanResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>CreateChanResponse</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1678,7 +1737,11 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">CreateChFailResponse</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>CreateChFailResponse</strong></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1692,7 +1755,11 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ServerDisconnResponse</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ServerDisconnResponse</strong></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1706,31 +1773,34 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : tuple, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">array.array</span></code>, or bytes</p>
-<p><strong>ioid</strong> : integer</p>
-<p><strong>data_type</strong> : a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
-<blockquote>
-<div><p>Requested Channel Access data type. Default is the channel’s
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">array.array</span></code>, or bytes</span></dt>
+<dd></dd>
+<dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd></dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
-</div></blockquote>
-<p><strong>data_count</strong> : integer, optional</p>
-<blockquote>
-<div><p>Requested number of values. Default is the channel’s native data
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
-</div></blockquote>
-<p><strong>status</strong> : integer, optional</p>
-<blockquote>
-<div><p>Default is 1 (success).</p>
-</div></blockquote>
-<p><strong>metadata</strong> : <code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</p>
-<blockquote>
-<div><p>Status and control metadata for the values</p>
-</div></blockquote>
+</dd>
+<dt><strong>status</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Default is 1 (success).</p>
+</dd>
+<dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
+<dd><p class="first last">Status and control metadata for the values</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">ReadNotifyResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ReadNotifyResponse</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1745,26 +1815,29 @@ count, which can be checked in the Channel’s attribute
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>ioid</strong> : integer</p>
-<p><strong>data_type</strong> : a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
-<blockquote>
-<div><p>Requested Channel Access data type. Default is the channel’s
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd></dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
-</div></blockquote>
-<p><strong>data_count</strong> : integer, optional</p>
-<blockquote>
-<div><p>Requested number of values. Default is the channel’s native data
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
-</div></blockquote>
-<p><strong>status</strong> : integer, optional</p>
-<blockquote>
-<div><p>Default is 1 (success).</p>
-</div></blockquote>
+</dd>
+<dt><strong>status</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Default is 1 (success).</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">WriteNotifyResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>WriteNotifyResponse</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1779,31 +1852,34 @@ count, which can be checked in the Channel’s attribute
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>data</strong> : tuple, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">array.array</span></code>, or bytes</p>
-<p><strong>subscriptionid</strong> : integer</p>
-<p><strong>data_type</strong> : a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
-<blockquote>
-<div><p>Requested Channel Access data type. Default is the channel’s
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">array.array</span></code>, or bytes</span></dt>
+<dd></dd>
+<dt><strong>subscriptionid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd></dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
-</div></blockquote>
-<p><strong>data_count</strong> : integer, optional</p>
-<blockquote>
-<div><p>Requested number of values. Default is the channel’s native data
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
-</div></blockquote>
-<p><strong>status_code</strong> : integer, optional</p>
-<blockquote>
-<div><p>Default is 32 (???).</p>
-</div></blockquote>
-<p><strong>metadata</strong> : <code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</p>
-<blockquote>
-<div><p>Status and control metadata for the values</p>
-</div></blockquote>
+</dd>
+<dt><strong>status_code</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Default is 32 (???).</p>
+</dd>
+<dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
+<dd><p class="first last">Status and control metadata for the values</p>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">EventAddResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>EventAddResponse</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1818,16 +1894,21 @@ count, which can be checked in the Channel’s attribute
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>subscriptionid</strong> : integer</p>
-<p><strong>data_type</strong> : a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</p>
-<blockquote>
-<div><p>Requested Channel Access data type. Default is the channel’s
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>subscriptionid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd></dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
-</div></blockquote>
+</dd>
+</dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">EventCancelResponse</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>EventCancelResponse</strong></dt>
+<dd></dd>
+</dl>
 </td>
 </tr>
 </tbody>
@@ -1842,7 +1923,11 @@ native data type, which can be checked in the Channel’s attribute
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">ServerDisconnResponse</td>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ServerDisconnResponse</strong></dt>
+<dd></dd>
+</dl>
+</td>
 </tr>
 </tbody>
 </table>
@@ -2120,9 +2205,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
 
 
            </div>
-           <div class="articleComments">
-            
-           </div>
+           
           </div>
           <footer>
   
@@ -2144,7 +2227,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -2162,7 +2245,8 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.1318.g055b709',
+            VERSION:'0+untagged.1475.gf8800d6',
+            LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true,
@@ -2181,14 +2265,13 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript" src="_static/js/theme.js"></script>
   
 
-  
-  
   <script type="text/javascript">
       jQuery(function () {
-          SphinxRtdTheme.StickyNav.enable();
+          
+          SphinxRtdTheme.Navigation.enableSticky();
+          
       });
-  </script>
-   
+  </script> 
 
 </body>
 </html>
