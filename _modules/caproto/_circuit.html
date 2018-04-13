@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0+untagged.1475.gf8800d6 documentation</title>
+  <title>caproto._circuit &mdash; caproto 0+untagged.1478.ga0071f5 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0+untagged.1475.gf8800d6
+                0+untagged.1478.ga0071f5
               </div>
             
           
@@ -168,12 +168,8 @@
 <span class="c1"># Responses.</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">getpass</span>
-<span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 
-<span class="c1"># N.B. We do no networking whatsoever in caproto. We only use socket for</span>
-<span class="c1"># socket.gethostname() to give a nice default for a HostNameRequest command.</span>
 <span class="kn">from</span> <span class="nn">._commands</span> <span class="k">import</span> <span class="p">(</span><span class="n">AccessRightsResponse</span><span class="p">,</span> <span class="n">CreateChFailResponse</span><span class="p">,</span>
                         <span class="n">ClearChannelRequest</span><span class="p">,</span> <span class="n">ClearChannelResponse</span><span class="p">,</span>
                         <span class="n">ClientNameRequest</span><span class="p">,</span> <span class="n">CreateChanRequest</span><span class="p">,</span>
@@ -642,25 +638,22 @@
                                  <span class="n">priority</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-<div class="viewcode-block" id="ClientChannel.host_name"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.host_name">[docs]</a>    <span class="k">def</span> <span class="nf">host_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ClientChannel.host_name"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.host_name">[docs]</a>    <span class="k">def</span> <span class="nf">host_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">host_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`HostNameRequest`.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        host_name : string, optional</span>
-<span class="sd">            defaults to output of ``socket.gethostname()``</span>
+<span class="sd">        host_name : string</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
 <span class="sd">        HostNameRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">host_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">host_name</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">HostNameRequest</span><span class="p">(</span><span class="n">host_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-<div class="viewcode-block" id="ClientChannel.client_name"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.client_name">[docs]</a>    <span class="k">def</span> <span class="nf">client_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ClientChannel.client_name"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.client_name">[docs]</a>    <span class="k">def</span> <span class="nf">client_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`ClientNameRequest`.</span>
 
@@ -673,8 +666,6 @@
 <span class="sd">        -------</span>
 <span class="sd">        ClientNameRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">client_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">client_name</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">()</span>
         <span class="n">command</span> <span class="o">=</span> <span class="n">ClientNameRequest</span><span class="p">(</span><span class="n">client_name</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
@@ -1049,7 +1040,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1475.gf8800d6',
+            VERSION:'0+untagged.1478.ga0071f5',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
