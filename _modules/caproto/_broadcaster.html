@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._broadcaster &mdash; caproto 0+untagged.1485.gc0de2a1 documentation</title>
+  <title>caproto._broadcaster &mdash; caproto 0+untagged.1497.g82c0673 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0+untagged.1485.gc0de2a1
+                0+untagged.1497.g82c0673
               </div>
             
           
@@ -324,7 +324,7 @@
                 <span class="k">continue</span>
             <span class="k">return</span> <span class="n">i</span></div>
 
-<div class="viewcode-block" id="Broadcaster.search"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+<div class="viewcode-block" id="Broadcaster.search"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.search">[docs]</a>    <span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`VersionRequest` and :class:`SearchRequest`.</span>
 
@@ -340,7 +340,9 @@
 <span class="sd">        -------</span>
 <span class="sd">        (VersionRequest, SearchRequest)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_search_id</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">cid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># TODO all client implementations want to handle cids on their own...</span>
+            <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_search_id</span><span class="p">()</span>
         <span class="n">commands</span> <span class="o">=</span> <span class="p">(</span><span class="n">VersionRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">),</span>
                     <span class="n">SearchRequest</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">commands</span></div>
@@ -415,7 +417,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1485.gc0de2a1',
+            VERSION:'0+untagged.1497.g82c0673',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
