@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0+untagged.1478.ga0071f5 documentation</title>
+  <title>caproto._utils &mdash; caproto 0+untagged.1483.gbadcf91 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0+untagged.1478.ga0071f5
+                0+untagged.1483.gbadcf91
               </div>
             
           
@@ -307,6 +307,27 @@
         <span class="k">return</span> <span class="n">broadcast_address_list_from_interfaces</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">addr_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_server_address_list</span><span class="p">(</span><span class="n">default_port</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Get the server interface addresses based on environment variables</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    list of (addr, port)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">intf_addrs</span> <span class="o">=</span> <span class="n">get_environment_variables</span><span class="p">()[</span><span class="s1">&#39;EPICS_CAS_INTF_ADDR_LIST&#39;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">intf_addrs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">[(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">default_port</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">addr</span><span class="p">:</span>
+            <span class="n">addr</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">specified_port</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">specified_port</span><span class="p">))</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">default_port</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">intf_addrs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)]</span>
 
 
 <span class="k">def</span> <span class="nf">get_beacon_address_list</span><span class="p">():</span>
@@ -685,7 +706,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1478.ga0071f5',
+            VERSION:'0+untagged.1483.gbadcf91',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
