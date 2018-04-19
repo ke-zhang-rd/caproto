@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0+untagged.1504.g9462a07 documentation</title>
+  <title>caproto._utils &mdash; caproto 0+untagged.1509.ge07f0fb documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0+untagged.1504.g9462a07
+                0+untagged.1509.ge07f0fb
               </div>
             
           
@@ -409,6 +409,39 @@
                                <span class="n">f</span><span class="s2">&quot;{type(s)}&quot;</span><span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">find_available_tcp_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">starting_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Find the next available TCP server port</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    host : str, optional</span>
+<span class="sd">        Host/interface to bind on; defaults to 0.0.0.0</span>
+<span class="sd">    starting_port : int, optional</span>
+<span class="sd">        Port to try first</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="kn">import</span> <span class="nn">random</span>
+    <span class="k">if</span> <span class="n">starting_port</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="n">EPICS_CA2_PORT</span>
+        <span class="n">starting_port</span> <span class="o">=</span> <span class="n">EPICS_CA2_PORT</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">port</span> <span class="o">=</span> <span class="n">starting_port</span>
+    <span class="n">stashed_ex</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+            <span class="n">stashed_ex</span> <span class="o">=</span> <span class="n">ex</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">port</span>
+
+        <span class="n">port</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">49152</span><span class="p">,</span> <span class="mi">65535</span><span class="p">)</span>
+
+    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;No available ports and/or bind failed&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">stashed_ex</span>
+
+
 <span class="k">def</span> <span class="nf">bcast_socket</span><span class="p">(</span><span class="n">socket_module</span><span class="o">=</span><span class="n">socket</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Make a socket and configure it for UDP broadcast.</span>
@@ -744,7 +777,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1504.g9462a07',
+            VERSION:'0+untagged.1509.ge07f0fb',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
