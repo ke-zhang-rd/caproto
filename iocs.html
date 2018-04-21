@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Input-Output Controllers &mdash; caproto 0+untagged.1509.ge07f0fb documentation</title>
+  <title>Input-Output Controllers &mdash; caproto 0+untagged.1512.gd4721f8 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1509.ge07f0fb
+                0+untagged.1512.gd4721f8
               </div>
             
           
@@ -186,6 +186,7 @@
     <span class="c1"># usage: simple.py [PREFIX]</span>
     <span class="kn">import</span> <span class="nn">sys</span>
     <span class="kn">import</span> <span class="nn">curio</span>
+    <span class="kn">import</span> <span class="nn">logging</span>
     <span class="kn">from</span> <span class="nn">caproto.curio.server</span> <span class="k">import</span> <span class="n">start_server</span>
 
     <span class="k">try</span><span class="p">:</span>
@@ -196,6 +197,10 @@
     <span class="c1"># Instantiate the IOC, assigning a prefix for the PV names.</span>
     <span class="n">ioc</span> <span class="o">=</span> <span class="n">SimpleIOC</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="n">prefix</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+
+    <span class="c1"># Print out some information when clients access</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">()</span>
+    <span class="n">ioc</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
 
     <span class="c1"># Run IOC using curio.</span>
     <span class="n">curio</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">start_server</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
@@ -212,10 +217,10 @@ PVs: <span class="o">[</span><span class="s1">&#39;example1:A&#39;</span>, <span
 <span class="nn">&lt;ipython-input-1-5c14b2fde07a&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
 <span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">get_pv</span>
 
-<span class="ne">ImportError</span>: cannot import name &#39;get_pv&#39;
+<span class="ne">ImportError</span>: cannot import name &#39;get_pv&#39; from &#39;caproto.threading.client&#39; (/home/travis/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py)
 
 <span class="gp">In [2]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:A&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                   ---------------------------------------------------------------------------</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                   ---------------------------------------------------------------------------</span>
 <span class="go">NameError                                 Traceback (most recent call last)</span>
 <span class="go">&lt;ipython-input-2-c392af11430d&gt; in &lt;module&gt;()</span>
 <span class="go">----&gt; 1 get_pv(&#39;example1:A&#39;).get()</span>
@@ -223,7 +228,7 @@ PVs: <span class="o">[</span><span class="s1">&#39;example1:A&#39;</span>, <span
 <span class="go">NameError: name &#39;get_pv&#39; is not defined</span>
 
 <span class="gp">In [3]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:B&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ---------------------------------------------------------------------------</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ---------------------------------------------------------------------------</span>
 <span class="go">NameError                                 Traceback (most recent call last)</span>
 <span class="go">&lt;ipython-input-3-d942c0c2e3b2&gt; in &lt;module&gt;()</span>
 <span class="go">----&gt; 1 get_pv(&#39;example1:B&#39;).get()</span>
@@ -483,7 +488,7 @@ example6:random_str                       b<span class="s1">&#39;a&#39;</span>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.1509.ge07f0fb',
+            VERSION:'0+untagged.1512.gd4721f8',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
