@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._broadcaster &mdash; caproto 0+untagged.1538.g72f7f42 documentation</title>
+  <title>caproto._broadcaster &mdash; caproto 0+untagged.1540.g1403eb1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0+untagged.1538.g72f7f42
+                0+untagged.1540.g1403eb1
               </div>
             
           
@@ -165,8 +165,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 
 <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">,</span> <span class="n">MAX_ID</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">DISCONNECTED</span><span class="p">,</span> <span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span>
-                     <span class="n">LocalProtocolError</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">LocalProtocolError</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._state</span> <span class="k">import</span> <span class="n">get_exception</span>
 <span class="kn">from</span> <span class="nn">._commands</span> <span class="k">import</span> <span class="p">(</span><span class="n">RepeaterConfirmResponse</span><span class="p">,</span> <span class="n">RepeaterRegisterRequest</span><span class="p">,</span>
                         <span class="n">SearchRequest</span><span class="p">,</span> <span class="n">SearchResponse</span><span class="p">,</span> <span class="n">VersionRequest</span><span class="p">,</span>
@@ -305,13 +304,13 @@
             <span class="c1"># seems to sometimes violate this part of the protocol.</span>
             <span class="c1"># if VersionResponse not in map(type, history):</span>
             <span class="c1">#     err = get_exception(self.our_role, command)</span>
-            <span class="c1">#     raise err(&quot;A broadcasted SearchResponse must be preceded by a &quot;</span>
-            <span class="c1">#               &quot;VersionResponse in the same datagram.&quot;)</span>
+            <span class="c1">#     raise err(&quot;A broadcasted SearchResponse must be preceded by &quot;</span>
+            <span class="c1">#               &quot;a VersionResponse in the same datagram.&quot;)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
         <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 
-    <span class="c1">### CONVENIENCE METHODS ###</span>
+    <span class="c1"># CONVENIENCE METHODS</span>
 
 <div class="viewcode-block" id="Broadcaster.new_search_id"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.new_search_id">[docs]</a>    <span class="k">def</span> <span class="nf">new_search_id</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Return the next sequential unused id. Wrap back to 0 on overflow.</span>
@@ -341,7 +340,7 @@
 <span class="sd">        (VersionRequest, SearchRequest)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">cid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="c1"># TODO all client implementations want to handle cids on their own...</span>
+            <span class="c1"># TODO all client implementations want to handle cids on their own.</span>
             <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">new_search_id</span><span class="p">()</span>
         <span class="n">commands</span> <span class="o">=</span> <span class="p">(</span><span class="n">VersionRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">),</span>
                     <span class="n">SearchRequest</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">))</span>
@@ -417,7 +416,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1538.g72f7f42',
+            VERSION:'0+untagged.1540.g1403eb1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
