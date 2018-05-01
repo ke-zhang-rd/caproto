@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._dbr &mdash; caproto 0+untagged.1521.g0cd4370 documentation</title>
+  <title>caproto._dbr &mdash; caproto 0+untagged.1538.g72f7f42 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0+untagged.1521.g0cd4370
+                0+untagged.1538.g72f7f42
               </div>
             
           
@@ -165,19 +165,12 @@
 <span class="c1"># The organizational code, making use of Enum, comes from pypvasync by Kenneth</span>
 <span class="c1"># Lauer.</span>
 
-<span class="kn">import</span> <span class="nn">array</span>
 <span class="kn">import</span> <span class="nn">ctypes</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">IntEnum</span><span class="p">,</span> <span class="n">IntFlag</span>
 <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">EPICS2UNIX_EPOCH</span><span class="p">,</span> <span class="n">EPICS_EPOCH</span><span class="p">,</span> <span class="n">MAX_STRING_SIZE</span><span class="p">,</span>
                          <span class="n">MAX_UNITS_SIZE</span><span class="p">,</span> <span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">,</span> <span class="n">MAX_ENUM_STATES</span><span class="p">)</span>
-
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="n">USE_NUMPY</span> <span class="o">=</span> <span class="kc">False</span>
-<span class="k">else</span><span class="p">:</span>
-    <span class="n">USE_NUMPY</span> <span class="o">=</span> <span class="kc">True</span>
 
 
 <span class="k">class</span> <span class="nc">AccessRights</span><span class="p">(</span><span class="n">IntFlag</span><span class="p">):</span>
@@ -319,90 +312,41 @@
 <span class="n">double_t</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_double</span>  <span class="c1"># epicsFloat64</span>
 
 
-<span class="k">def</span> <span class="nf">native_type</span><span class="p">(</span><span class="n">ftype</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;return native field type from TIME or CTRL variant&#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="n">_native_map</span><span class="p">[</span><span class="n">ftype</span><span class="p">]</span>
+<span class="k">class</span> <span class="nc">DbrStringArray</span><span class="p">(</span><span class="n">collections</span><span class="o">.</span><span class="n">UserList</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;A mockup of numpy.array, intended to hold byte strings</span>
 
-
-<span class="k">def</span> <span class="nf">promote_type</span><span class="p">(</span><span class="n">ftype</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">use_status</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_time</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">use_ctrl</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                 <span class="n">use_gr</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Promotes a native field type to its STS, TIME, CTRL, or GR variant.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    ftype : int</span>
-<span class="sd">        the promoted field value.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">sum</span><span class="p">([</span><span class="n">use_status</span><span class="p">,</span> <span class="n">use_time</span><span class="p">,</span> <span class="n">use_ctrl</span><span class="p">,</span> <span class="n">use_gr</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only one of the kwargs may be True.&quot;</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">ftype</span> <span class="ow">in</span> <span class="n">special_types</span><span class="p">:</span>
-        <span class="c1"># Special types have no promoted versions</span>
-        <span class="k">return</span> <span class="n">ftype</span>
-
-    <span class="k">if</span> <span class="n">_native_map</span><span class="p">:</span>  <span class="c1"># only during initialization</span>
-        <span class="c1"># Demote it back to a native type, if necessary</span>
-        <span class="n">ftype</span> <span class="o">=</span> <span class="n">_native_map</span><span class="p">[</span><span class="n">ChannelType</span><span class="p">(</span><span class="n">ftype</span><span class="p">)]</span>
-
-    <span class="c1"># Use the fact that the types are ordered in blocks and that the STRING</span>
-    <span class="c1"># variant is the first element of each block.</span>
-    <span class="k">if</span> <span class="n">use_ctrl</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">ftype</span> <span class="o">==</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span>
-        <span class="n">ftype</span> <span class="o">+=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_STRING</span>
-    <span class="k">elif</span> <span class="n">use_time</span><span class="p">:</span>
-        <span class="n">ftype</span> <span class="o">+=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span>
-    <span class="k">elif</span> <span class="n">use_status</span><span class="p">:</span>
-        <span class="n">ftype</span> <span class="o">+=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span>
-    <span class="k">elif</span> <span class="n">use_gr</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">ftype</span> <span class="o">==</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span>
-        <span class="n">ftype</span> <span class="o">+=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_STRING</span>
-    <span class="k">return</span> <span class="n">ChannelType</span><span class="p">(</span><span class="n">ftype</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">epics_timestamp_to_unix</span><span class="p">(</span><span class="n">seconds_since_epoch</span><span class="p">,</span> <span class="n">nano_seconds</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;UNIX timestamp (seconds) from Epics TimeStamp structure&#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">EPICS2UNIX_EPOCH</span> <span class="o">+</span> <span class="n">seconds_since_epoch</span> <span class="o">+</span> <span class="mf">1.e-6</span> <span class="o">*</span>
-            <span class="nb">int</span><span class="p">(</span><span class="mf">1.e-3</span> <span class="o">*</span> <span class="n">nano_seconds</span><span class="p">))</span>
-
-
-<span class="k">def</span> <span class="nf">timestamp_to_epics</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Python timestamp from EPICS TimeStamp structure&#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
-        <span class="n">ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
-    <span class="n">dt</span> <span class="o">=</span> <span class="n">ts</span> <span class="o">-</span> <span class="n">EPICS_EPOCH</span>
-    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()),</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">microseconds</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">array_type_code</span><span class="p">(</span><span class="n">native_type</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Get an array.array type code for a given native type&#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="n">_array_type_code_map</span><span class="p">[</span><span class="n">native_type</span><span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">native_to_builtin</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">native_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Convert from a native EPICS DBR type to a builtin Python type</span>
-
-<span class="sd">    Notes:</span>
-<span class="sd">     - A waveform of characters is just a bytestring.</span>
-<span class="sd">     - A waveform of strings is an array whose elements are fixed-length (40-</span>
-<span class="sd">       character) strings.</span>
-<span class="sd">     - Enums are just integers that happen to have special significance.</span>
-<span class="sd">     - Everything else is, straightforwardly, an array of numbers.</span>
+<span class="sd">    String arrays in numpy are special and inconvenient to work with.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">if</span> <span class="n">USE_NUMPY</span><span class="p">:</span>
-        <span class="c1"># Return an ndarray</span>
-        <span class="n">dt</span> <span class="o">=</span> <span class="n">_numpy_map</span><span class="p">[</span><span class="n">native_type</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">native_type</span> <span class="o">==</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">MAX_STRING_SIZE</span><span class="p">:</span>
-            <span class="c1"># caput behaves this way</span>
-            <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span>
-                <span class="nb">bytes</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">MAX_STRING_SIZE</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">res</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">slice</span><span class="p">)</span> <span class="k">else</span> <span class="n">res</span>
 
-        <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="c1"># TODO</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;the non-numpy version has not been &quot;</span>
-                                  <span class="s2">&quot;written yet&quot;</span><span class="p">)</span>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">frombuffer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="s1">&#39;Create a DbrStringArray from a buffer&#39;</span>
+        <span class="k">if</span> <span class="n">data_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">data_count</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span> <span class="o">//</span> <span class="n">MAX_STRING_SIZE</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">safely_find_eos</span><span class="p">():</span>
+            <span class="s1">&#39;Find null terminator, else MAX_STRING_SIZE/length of the string&#39;</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">min</span><span class="p">((</span><span class="n">MAX_STRING_SIZE</span><span class="p">,</span> <span class="n">buf</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="sa">b</span><span class="s1">&#39;</span><span class="se">\00</span><span class="s1">&#39;</span><span class="p">)))</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">min</span><span class="p">((</span><span class="n">MAX_STRING_SIZE</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">buf</span><span class="p">)))</span>
+
+        <span class="n">buf</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">buf</span><span class="p">)</span>
+        <span class="n">strings</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">data_count</span><span class="p">):</span>
+            <span class="n">strings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">buf</span><span class="p">[:</span><span class="n">safely_find_eos</span><span class="p">()])</span>
+            <span class="n">buf</span> <span class="o">=</span> <span class="n">buf</span><span class="p">[</span><span class="n">MAX_STRING_SIZE</span><span class="p">:]</span>
+
+        <span class="k">return</span> <span class="n">strings</span>
+
+    <span class="k">def</span> <span class="nf">tobytes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># numpy compat</span>
+        <span class="k">return</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">item</span><span class="p">[:</span><span class="n">MAX_STRING_SIZE</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">MAX_STRING_SIZE</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">DbrTypeBase</span><span class="p">(</span><span class="n">ctypes</span><span class="o">.</span><span class="n">BigEndianStructure</span><span class="p">):</span>
@@ -427,8 +371,10 @@
 
 <span class="k">class</span> <span class="nc">TimeStamp</span><span class="p">(</span><span class="n">DbrTypeBase</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;An EPICS timestamp with 32-bit seconds and nanoseconds&#39;&#39;&#39;</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;secondsSinceEpoch&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;nanoSeconds&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">)]</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;secondsSinceEpoch&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;nanoSeconds&#39;</span><span class="p">,</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">c_uint32</span><span class="p">)</span>
+    <span class="p">]</span>
 
     <span class="n">info_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;timestamp&#39;</span><span class="p">,</span> <span class="p">)</span>
 
@@ -452,10 +398,6 @@
     <span class="sd">&#39;&#39;&#39;DBR_TIME_* base&#39;&#39;&#39;</span>
     <span class="c1"># access to secondsSinceEpoch and nanoSeconds:</span>
     <span class="n">_anonymous_</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;stamp&#39;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;stamp&#39;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">)</span>
-                <span class="p">]</span>
     <span class="n">info_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
@@ -467,9 +409,6 @@
 <span class="k">class</span> <span class="nc">StatusTypeBase</span><span class="p">(</span><span class="n">DbrTypeBase</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;DBR_STS_* base&#39;&#39;&#39;</span>
     <span class="n">info_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">)</span>
-                <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">GraphicControlBase</span><span class="p">(</span><span class="n">DbrTypeBase</span><span class="p">):</span>
@@ -479,26 +418,10 @@
                       <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
     <span class="n">control_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">info_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="p">)</span> <span class="o">+</span> <span class="n">graphic_fields</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">)</span>
-                <span class="p">]</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">build_control_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_type</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Build list of _fields_ for a specific data_type&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="p">[(</span><span class="n">field</span><span class="p">,</span> <span class="n">data_type</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span>
-                <span class="bp">cls</span><span class="o">.</span><span class="n">graphic_fields</span> <span class="o">+</span> <span class="bp">cls</span><span class="o">.</span><span class="n">control_fields</span><span class="p">]</span>
-
-    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">build_graphic_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data_type</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Build list of _fields_ for a specific data_type&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="p">[(</span><span class="n">field</span><span class="p">,</span> <span class="n">data_type</span><span class="p">)</span> <span class="k">for</span> <span class="n">field</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">graphic_fields</span><span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">GraphicControlUnits</span><span class="p">(</span><span class="n">GraphicControlBase</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;DBR_CTRL/DBR_GR with units&#39;&#39;&#39;</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">char_t</span> <span class="o">*</span> <span class="n">MAX_UNITS_SIZE</span><span class="p">),</span>
-                <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">ControlTypeUnits</span><span class="p">(</span><span class="n">GraphicControlUnits</span><span class="p">):</span>
@@ -514,10 +437,6 @@
 
 <span class="k">class</span> <span class="nc">GraphicControlPrecision</span><span class="p">(</span><span class="n">GraphicControlBase</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;DBR_CTRL/DBR_GR with precision and units&#39;&#39;&#39;</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;RISC_pad0&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">char_t</span> <span class="o">*</span> <span class="n">MAX_UNITS_SIZE</span><span class="p">),</span>
-                <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">ControlTypePrecision</span><span class="p">(</span><span class="n">GraphicControlPrecision</span><span class="p">):</span>
@@ -577,34 +496,58 @@
 <span class="c1"># Status types</span>
 <span class="k">class</span> <span class="nc">DBR_STS_STRING</span><span class="p">(</span><span class="n">StatusTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_STS_INT</span><span class="p">(</span><span class="n">StatusTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_STS_FLOAT</span><span class="p">(</span><span class="n">StatusTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_STS_ENUM</span><span class="p">(</span><span class="n">StatusTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_STS_CHAR</span><span class="p">(</span><span class="n">StatusTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span>
     <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;RISC_pad&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
     <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_STS_LONG</span><span class="p">(</span><span class="n">StatusTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_STS_DOUBLE</span><span class="p">(</span><span class="n">StatusTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span>
     <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;RISC_pad&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
     <span class="p">]</span>
 
@@ -612,24 +555,38 @@
 <span class="c1"># Time types</span>
 <span class="k">class</span> <span class="nc">DBR_TIME_STRING</span><span class="p">(</span><span class="n">TimeTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stamp&#39;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_TIME_INT</span><span class="p">(</span><span class="n">TimeTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span>
     <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stamp&#39;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;RISC_pad&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
     <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_TIME_FLOAT</span><span class="p">(</span><span class="n">TimeTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stamp&#39;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_TIME_ENUM</span><span class="p">(</span><span class="n">TimeTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span>
     <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stamp&#39;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;RISC_pad&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
     <span class="p">]</span>
 
@@ -637,6 +594,9 @@
 <span class="k">class</span> <span class="nc">DBR_TIME_CHAR</span><span class="p">(</span><span class="n">TimeTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span>
     <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stamp&#39;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;RISC_pad0&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;RISC_pad1&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
     <span class="p">]</span>
@@ -644,12 +604,19 @@
 
 <span class="k">class</span> <span class="nc">DBR_TIME_LONG</span><span class="p">(</span><span class="n">TimeTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stamp&#39;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_TIME_DOUBLE</span><span class="p">(</span><span class="n">TimeTypeBase</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span>
     <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;stamp&#39;</span><span class="p">,</span> <span class="n">TimeStamp</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;RISC_pad&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
     <span class="p">]</span>
 
@@ -660,20 +627,160 @@
 <span class="c1"># Graphic types</span>
 <span class="k">class</span> <span class="nc">DBR_GR_INT</span><span class="p">(</span><span class="n">GraphicTypeUnits</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="n">GraphicTypeUnits</span><span class="o">.</span><span class="n">build_graphic_fields</span><span class="p">(</span><span class="n">short_t</span><span class="p">)</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_GR_FLOAT</span><span class="p">(</span><span class="n">GraphicTypePrecision</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="n">GraphicTypeUnits</span><span class="o">.</span><span class="n">build_graphic_fields</span><span class="p">(</span><span class="n">float_t</span><span class="p">)</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;RISC_pad0&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
-<span class="k">class</span> <span class="nc">DBR_GR_ENUM</span><span class="p">(</span><span class="n">GraphicControlBase</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">_EnumWithStrings</span><span class="p">:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">enum_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Enum byte strings as a tuple&#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">no_str</span><span class="p">))</span>
+
+    <span class="nd">@enum_strings</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">enum_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_strings</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bytes_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">enum_strings</span><span class="p">):</span>
+            <span class="n">bytes_</span> <span class="o">=</span> <span class="n">bytes_</span><span class="p">[:</span><span class="n">MAX_ENUM_STRING_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">strs</span><span class="p">[</span><span class="n">i</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">bytes_</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_str</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">enum_strings</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">DBR_GR_ENUM</span><span class="p">(</span><span class="n">GraphicControlBase</span><span class="p">,</span> <span class="n">_EnumWithStrings</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span>
     <span class="n">graphic_fields</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">control_fields</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">info_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="s1">&#39;enum_strings&#39;</span><span class="p">,</span> <span class="p">)</span>
     <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;no_str&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>  <span class="c1"># number of strings</span>
+        <span class="p">(</span><span class="s1">&#39;strs&#39;</span><span class="p">,</span> <span class="n">MAX_ENUM_STATES</span> <span class="o">*</span> <span class="p">(</span><span class="n">MAX_ENUM_STRING_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">)),</span>
+    <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">DBR_GR_CHAR</span><span class="p">(</span><span class="n">GraphicTypeUnits</span><span class="p">):</span>
+    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;RISC_pad&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+    <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">DBR_GR_LONG</span><span class="p">(</span><span class="n">GraphicTypeUnits</span><span class="p">):</span>
+    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+    <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">DBR_GR_DOUBLE</span><span class="p">(</span><span class="n">GraphicTypePrecision</span><span class="p">):</span>
+    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;RISC_pad0&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+    <span class="p">]</span>
+
+
+<span class="c1"># DBR_CTRL_STRING (28) is not implemented by lib</span>
+
+<span class="c1"># Control types</span>
+<span class="k">class</span> <span class="nc">DBR_CTRL_INT</span><span class="p">(</span><span class="n">ControlTypeUnits</span><span class="p">):</span>
+    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+    <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">DBR_CTRL_FLOAT</span><span class="p">(</span><span class="n">ControlTypePrecision</span><span class="p">):</span>
+    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;RISC_pad0&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">float_t</span><span class="p">),</span>
+    <span class="p">]</span>
+
+
+<span class="k">class</span> <span class="nc">DBR_CTRL_ENUM</span><span class="p">(</span><span class="n">GraphicControlBase</span><span class="p">,</span> <span class="n">_EnumWithStrings</span><span class="p">):</span>
+    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span>
+    <span class="n">control_fields</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">graphic_fields</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">info_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="s1">&#39;enum_strings&#39;</span><span class="p">,</span> <span class="p">)</span>
+
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
         <span class="p">(</span><span class="s1">&#39;no_str&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>  <span class="c1"># number of strings</span>
         <span class="p">(</span><span class="s1">&#39;strs&#39;</span><span class="p">,</span> <span class="n">MAX_ENUM_STATES</span> <span class="o">*</span> <span class="p">(</span><span class="n">MAX_ENUM_STRING_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">)),</span>
     <span class="p">]</span>
@@ -684,67 +791,66 @@
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
                      <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">no_str</span><span class="p">))</span>
 
-
-<span class="k">class</span> <span class="nc">DBR_GR_CHAR</span><span class="p">(</span><span class="n">GraphicTypeUnits</span><span class="p">):</span>
-    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">(</span><span class="n">GraphicTypeUnits</span><span class="o">.</span><span class="n">build_graphic_fields</span><span class="p">(</span><span class="n">char_t</span><span class="p">)</span> <span class="o">+</span>
-                <span class="p">[(</span><span class="s1">&#39;RISC_pad&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">)])</span>
-
-
-<span class="k">class</span> <span class="nc">DBR_GR_LONG</span><span class="p">(</span><span class="n">GraphicTypeUnits</span><span class="p">):</span>
-    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="n">GraphicTypeUnits</span><span class="o">.</span><span class="n">build_graphic_fields</span><span class="p">(</span><span class="n">long_t</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">DBR_GR_DOUBLE</span><span class="p">(</span><span class="n">GraphicTypePrecision</span><span class="p">):</span>
-    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="n">GraphicTypePrecision</span><span class="o">.</span><span class="n">build_graphic_fields</span><span class="p">(</span><span class="n">double_t</span><span class="p">)</span>
-
-
-<span class="c1"># DBR_CTRL_STRING (28) is not implemented by libca.</span>
-
-<span class="c1"># Control types</span>
-<span class="k">class</span> <span class="nc">DBR_CTRL_INT</span><span class="p">(</span><span class="n">ControlTypeUnits</span><span class="p">):</span>
-    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="n">ControlTypeUnits</span><span class="o">.</span><span class="n">build_control_fields</span><span class="p">(</span><span class="n">short_t</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">DBR_CTRL_FLOAT</span><span class="p">(</span><span class="n">ControlTypePrecision</span><span class="p">):</span>
-    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="n">ControlTypePrecision</span><span class="o">.</span><span class="n">build_control_fields</span><span class="p">(</span><span class="n">float_t</span><span class="p">)</span>
-
-
-<span class="k">class</span> <span class="nc">DBR_CTRL_ENUM</span><span class="p">(</span><span class="n">GraphicControlBase</span><span class="p">):</span>
-    <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span>
-    <span class="n">control_fields</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="n">graphic_fields</span> <span class="o">=</span> <span class="p">()</span>
-    <span class="n">info_fields</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="s1">&#39;enum_strings&#39;</span><span class="p">,</span> <span class="p">)</span>
-
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">&#39;no_str&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
-                <span class="p">(</span><span class="s1">&#39;strs&#39;</span><span class="p">,</span> <span class="p">(</span><span class="n">char_t</span> <span class="o">*</span> <span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">)</span> <span class="o">*</span> <span class="n">MAX_ENUM_STATES</span><span class="p">),</span>
-                <span class="p">]</span>
-
-    <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">enum_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Enum byte strings as a tuple&#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">strs</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
-                     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">no_str</span><span class="p">))</span>
+    <span class="nd">@enum_strings</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">enum_strings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">enum_strings</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">bytes_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">enum_strings</span><span class="p">):</span>
+            <span class="n">bytes_</span> <span class="o">=</span> <span class="n">bytes_</span><span class="p">[:</span><span class="n">MAX_ENUM_STRING_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">strs</span><span class="p">[</span><span class="n">i</span><span class="p">][:]</span> <span class="o">=</span> <span class="n">bytes_</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\x00</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">no_str</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">enum_strings</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_CTRL_CHAR</span><span class="p">(</span><span class="n">ControlTypeUnits</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">(</span><span class="n">ControlTypeUnits</span><span class="o">.</span><span class="n">build_control_fields</span><span class="p">(</span><span class="n">char_t</span><span class="p">)</span> <span class="o">+</span>
-                <span class="p">[(</span><span class="s1">&#39;RISC_pad&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">)])</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;RISC_pad&#39;</span><span class="p">,</span> <span class="n">char_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_CTRL_LONG</span><span class="p">(</span><span class="n">ControlTypeUnits</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="n">ControlTypeUnits</span><span class="o">.</span><span class="n">build_control_fields</span><span class="p">(</span><span class="n">long_t</span><span class="p">)</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">long_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="k">class</span> <span class="nc">DBR_CTRL_DOUBLE</span><span class="p">(</span><span class="n">ControlTypePrecision</span><span class="p">):</span>
     <span class="n">DBR_ID</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span>
-    <span class="n">_fields_</span> <span class="o">=</span> <span class="n">ControlTypePrecision</span><span class="o">.</span><span class="n">build_control_fields</span><span class="p">(</span><span class="n">double_t</span><span class="p">)</span>
+    <span class="n">_fields_</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="s1">&#39;status&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;severity&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;precision&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;RISC_pad0&#39;</span><span class="p">,</span> <span class="n">short_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;units&#39;</span><span class="p">,</span> <span class="n">MAX_UNITS_SIZE</span> <span class="o">*</span> <span class="n">char_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_disp_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_disp_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+        <span class="p">(</span><span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">,</span> <span class="n">double_t</span><span class="p">),</span>
+    <span class="p">]</span>
 
 
 <span class="c1"># Remaining &quot;special&quot; types</span>
@@ -784,123 +890,353 @@
 <span class="c1"># End of DBR type classes</span>
 
 
+<span class="c1"># Full mapping of promoted -&gt; native field types, and native -&gt; promoted types</span>
+<span class="n">field_types</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;native&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Native</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Status</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Time</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Graphic</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Control</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Special</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;status&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Native</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Status</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Time</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Graphic</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Control</span>
+        <span class="c1"># ChannelType.TIME_STRING: ChannelType.STS_STRING,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Special types</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Native</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Status</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Time</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Graphic</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Control</span>
+        <span class="c1"># ChannelType.TIME_STRING: ChannelType.TIME_STRING,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Special types</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;graphic&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Native</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Status</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Time</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Graphic</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Control</span>
+        <span class="c1"># ChannelType.TIME_STRING: ChannelType.STS_STRING,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Special types</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span>
+    <span class="p">},</span>
+
+    <span class="s1">&#39;control&#39;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="c1"># Native</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Status</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Time</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Graphic</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Control</span>
+        <span class="c1"># ChannelType.TIME_STRING: ChannelType.TIME_STRING,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">,</span>
+
+        <span class="c1"># Special types</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span>
+        <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span>
+
+
 <span class="c1"># All native types available</span>
-<span class="n">native_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
+<span class="n">native_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span>
                 <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span>
-                <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
+                <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">}</span>
 
 <span class="c1"># Special types without any corresponding promoted versions</span>
-<span class="n">special_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span>
-                 <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">)</span>
-
-<span class="c1"># Map of promoted types to native types, to be filled below</span>
-<span class="n">_native_map</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">special_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span>
+                 <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">}</span>
 
 <span class="c1"># ChannelTypes grouped by included metadata</span>
-<span class="n">status_types</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">promote_type</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">use_status</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">nt</span> <span class="ow">in</span> <span class="n">native_types</span><span class="p">)</span>
-<span class="n">time_types</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">promote_type</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">use_time</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">nt</span> <span class="ow">in</span> <span class="n">native_types</span><span class="p">)</span>
-<span class="n">graphical_types</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">promote_type</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">use_gr</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">nt</span> <span class="ow">in</span> <span class="n">native_types</span>
-                        <span class="k">if</span> <span class="n">nt</span> <span class="o">!=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">)</span>
-<span class="n">control_types</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">promote_type</span><span class="p">(</span><span class="n">nt</span><span class="p">,</span> <span class="n">use_ctrl</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">nt</span> <span class="ow">in</span> <span class="n">native_types</span>
-                      <span class="k">if</span> <span class="n">nt</span> <span class="o">!=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">)</span>
+<span class="n">status_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">field_types</span><span class="p">[</span><span class="s1">&#39;status&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">special_types</span><span class="p">)</span>
+<span class="n">time_types</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">field_types</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">special_types</span><span class="p">)</span>
+<span class="n">graphical_types</span> <span class="o">=</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">field_types</span><span class="p">[</span><span class="s1">&#39;graphic&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">special_types</span><span class="p">)</span> <span class="o">-</span>
+                   <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">})</span>
+<span class="n">control_types</span> <span class="o">=</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">field_types</span><span class="p">[</span><span class="s1">&#39;control&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">special_types</span><span class="p">)</span> <span class="o">-</span>
+                 <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">})</span>
 
 <span class="c1"># ChannelTypes grouped by value data type</span>
-<span class="n">char_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">,</span>
-              <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span><span class="p">)</span>
+<span class="n">char_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">,</span>
+              <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_CHAR</span>
+              <span class="p">}</span>
 
-<span class="n">string_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
-                <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_STRING</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span><span class="p">)</span>
+<span class="n">string_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_STRING</span><span class="p">,</span>
+                <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_STRING</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_STRING</span>
+                <span class="p">}</span>
 
-<span class="n">int_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">,</span>
-             <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">,</span>
-             <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">)</span>
+<span class="n">int_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_INT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_INT</span><span class="p">,</span>
+             <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_LONG</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_LONG</span><span class="p">,</span>
+             <span class="p">}</span>
 
-<span class="n">float_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">,</span>
-               <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">,</span>
+<span class="n">float_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_FLOAT</span><span class="p">,</span>
+               <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_FLOAT</span><span class="p">,</span>
                <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_DOUBLE</span><span class="p">,</span>
-               <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">)</span>
+               <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_DOUBLE</span><span class="p">,</span>
+               <span class="p">}</span>
 
-<span class="n">enum_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">,</span>
-              <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span><span class="p">)</span>
-<span class="n">char_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">)</span>
-<span class="n">native_float_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">)</span>
-<span class="n">native_int_types</span> <span class="o">=</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span>
-                    <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">)</span>
+<span class="n">enum_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STS_ENUM</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_ENUM</span><span class="p">,</span>
+              <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_ENUM</span>
+              <span class="p">}</span>
 
-<span class="c1"># Fill in the map of promoted types to native types</span>
-<span class="n">_native_map</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">promote_type</span><span class="p">(</span><span class="n">native_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">):</span> <span class="n">native_type</span>
-                    <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">dict</span><span class="p">(),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="n">use_status</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="n">use_time</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="n">use_gr</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="n">use_ctrl</span><span class="o">=</span><span class="kc">True</span><span class="p">)]</span>
-                    <span class="k">for</span> <span class="n">native_type</span> <span class="ow">in</span> <span class="n">native_types</span>
-                    <span class="p">})</span>
+<span class="n">char_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">TIME_CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_CHAR</span><span class="p">}</span>
 
-<span class="c1"># Special types need to be added as well:</span>
-<span class="n">_native_map</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span>
+<span class="n">native_float_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">}</span>
 
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">:</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span>
-<span class="p">})</span>
+<span class="n">native_int_types</span> <span class="o">=</span> <span class="p">{</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span>
+                    <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span>
+                    <span class="p">}</span>
 
 <span class="c1"># map of Epics DBR types to ctypes types</span>
-<span class="n">DBR_TYPES</span> <span class="o">=</span> <span class="p">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">DBR_ID</span><span class="p">:</span> <span class="bp">cls</span>
-             <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-             <span class="k">if</span> <span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;DBR_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">DbrTypeBase</span><span class="p">)</span>
-                 <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;DBR_ID&#39;</span><span class="p">))</span>
-             <span class="p">}</span>
+<span class="n">DBR_TYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="bp">cls</span><span class="o">.</span><span class="n">DBR_ID</span><span class="p">:</span> <span class="bp">cls</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="bp">cls</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;DBR_&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">DbrTypeBase</span><span class="p">)</span> <span class="ow">and</span>
+        <span class="nb">hasattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="s1">&#39;DBR_ID&#39;</span><span class="p">))</span>
+<span class="p">}</span>
 
 <span class="c1"># Unimplemented STRING types are mapped to DBR_TIME_STRING</span>
 <span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">GR_STRING</span><span class="p">]</span> <span class="o">=</span> <span class="n">DBR_STS_STRING</span>
 <span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CTRL_STRING</span><span class="p">]</span> <span class="o">=</span> <span class="n">DBR_TIME_STRING</span>
 
 
-<span class="k">if</span> <span class="n">USE_NUMPY</span><span class="p">:</span>
-    <span class="n">_numpy_map</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="n">ch_type</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span><span class="o">.</span><span class="n">newbyteorder</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">ch_type</span><span class="p">,</span> <span class="n">dtype</span> <span class="ow">in</span>
-        <span class="p">[(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int16</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="s1">&#39;&gt;S40&#39;</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="s1">&#39;b&#39;</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ushort</span><span class="p">),</span>
-         <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ushort</span><span class="p">),</span>
-         <span class="p">]</span>
-    <span class="p">}</span>
+<span class="k">def</span> <span class="nf">native_type</span><span class="p">(</span><span class="n">ftype</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;return native field type from TIME or CTRL variant&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">field_types</span><span class="p">[</span><span class="s1">&#39;native&#39;</span><span class="p">][</span><span class="n">ftype</span><span class="p">]</span>
 
 
-<span class="n">_array_type_code_map</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span>  <span class="c1"># TO DO</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">INT</span><span class="p">:</span> <span class="s1">&#39;h&#39;</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">FLOAT</span><span class="p">:</span> <span class="s1">&#39;f&#39;</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">:</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">:</span> <span class="s1">&#39;i&#39;</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">:</span> <span class="s1">&#39;d&#39;</span><span class="p">,</span>
+<span class="k">def</span> <span class="nf">epics_timestamp_to_unix</span><span class="p">(</span><span class="n">seconds_since_epoch</span><span class="p">,</span> <span class="n">nano_seconds</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;UNIX timestamp (seconds) from Epics TimeStamp structure&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">EPICS2UNIX_EPOCH</span> <span class="o">+</span> <span class="n">seconds_since_epoch</span> <span class="o">+</span> <span class="mf">1.e-6</span> <span class="o">*</span>
+            <span class="nb">int</span><span class="p">(</span><span class="mf">1.e-3</span> <span class="o">*</span> <span class="n">nano_seconds</span><span class="p">))</span>
 
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">:</span> <span class="s1">&#39;b&#39;</span><span class="p">,</span>
 
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">:</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span>  <span class="c1"># ushort_t</span>
-    <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">:</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span>
-<span class="p">}</span>
-
-<span class="k">for</span> <span class="n">_type</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">native_types</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">([</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">]):</span>
-    <span class="k">assert</span> <span class="p">(</span><span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">_array_type_code_map</span><span class="p">[</span><span class="n">_type</span><span class="p">])</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">==</span>
-            <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">DBR_TYPES</span><span class="p">[</span><span class="n">_type</span><span class="p">])),</span> <span class="s1">&#39;</span><span class="si">{!r}</span><span class="s1"> check failed&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_type</span><span class="p">)</span>
-
-<span class="k">del</span> <span class="n">_type</span>
+<span class="k">def</span> <span class="nf">timestamp_to_epics</span><span class="p">(</span><span class="n">ts</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Python timestamp from EPICS TimeStamp structure&#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ts</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">utcfromtimestamp</span><span class="p">(</span><span class="n">ts</span><span class="p">)</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">ts</span> <span class="o">-</span> <span class="n">EPICS_EPOCH</span>
+    <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()),</span> <span class="nb">int</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">microseconds</span> <span class="o">*</span> <span class="mf">1e3</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -935,7 +1271,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1521.g0cd4370',
+            VERSION:'0+untagged.1538.g72f7f42',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

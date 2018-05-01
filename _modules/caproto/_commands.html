@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0+untagged.1521.g0cd4370 documentation</title>
+  <title>caproto._commands &mdash; caproto 0+untagged.1538.g72f7f42 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0+untagged.1521.g0cd4370
+                0+untagged.1538.g72f7f42
               </div>
             
           
@@ -185,7 +185,6 @@
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">import</span> <span class="nn">socket</span>
-<span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">._headers</span> <span class="k">import</span> <span class="p">(</span><span class="n">MessageHeader</span><span class="p">,</span> <span class="n">ExtendedMessageHeader</span><span class="p">,</span>
                        <span class="n">AccessRightsResponseHeader</span><span class="p">,</span> <span class="n">ClearChannelRequestHeader</span><span class="p">,</span>
                        <span class="n">ClearChannelResponseHeader</span><span class="p">,</span> <span class="n">ClientNameRequestHeader</span><span class="p">,</span>
@@ -209,21 +208,16 @@
 
 <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">DO_REPLY</span><span class="p">,</span> <span class="n">NO_REPLY</span><span class="p">,</span> <span class="n">MAX_RECORD_LENGTH</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">DBR_INT</span><span class="p">,</span> <span class="n">DBR_TYPES</span><span class="p">,</span> <span class="n">ChannelType</span><span class="p">,</span> <span class="n">float_t</span><span class="p">,</span> <span class="n">short_t</span><span class="p">,</span> <span class="n">ushort_t</span><span class="p">,</span>
-                   <span class="n">native_type</span><span class="p">,</span> <span class="n">MAX_STRING_SIZE</span><span class="p">,</span> <span class="n">USE_NUMPY</span><span class="p">,</span>
-                   <span class="n">array_type_code</span><span class="p">,</span> <span class="n">AccessRights</span><span class="p">)</span>
+                   <span class="n">native_type</span><span class="p">,</span> <span class="n">special_types</span><span class="p">,</span> <span class="n">MAX_STRING_SIZE</span><span class="p">,</span> <span class="n">AccessRights</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_dbr</span> <span class="k">as</span> <span class="n">dbr</span>
+<span class="kn">from</span> <span class="nn">._backend</span> <span class="k">import</span> <span class="n">backend_ns</span> <span class="k">as</span> <span class="n">backend</span>
 <span class="kn">from</span> <span class="nn">._status</span> <span class="k">import</span> <span class="n">eca_value_to_status</span>
 <span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">REQUEST</span><span class="p">,</span> <span class="n">RESPONSE</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span>
                      <span class="n">CaprotoTypeError</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span>
                      <span class="n">CaprotoNotImplementedError</span><span class="p">,</span>
                      <span class="n">ensure_bytes</span><span class="p">)</span>
 
-<span class="c1"># numpy is only used if it is available</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="k">pass</span>
 
 <span class="n">_MessageHeaderSize</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">MessageHeader</span><span class="p">)</span>
 <span class="n">_ExtendedMessageHeaderSize</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">ExtendedMessageHeader</span><span class="p">)</span>
@@ -247,10 +241,8 @@
 
 <span class="k">def</span> <span class="nf">has_metadata</span><span class="p">(</span><span class="n">data_type</span><span class="p">):</span>
     <span class="s1">&#39;Does data_type have associated metadata?&#39;</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">data_type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKS</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">PUT_ACKT</span><span class="p">,</span>
-                          <span class="n">ChannelType</span><span class="o">.</span><span class="n">STSACK_STRING</span><span class="p">,</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CLASS_NAME</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="n">data_type</span> <span class="o">!=</span> <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
-            <span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">data_type</span> <span class="ow">in</span> <span class="n">special_types</span> <span class="ow">or</span>
+            <span class="n">data_type</span> <span class="o">!=</span> <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">))</span>
 
 
 <span class="k">def</span> <span class="nf">from_buffer</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">buffer</span><span class="p">):</span>
@@ -304,7 +296,7 @@
 <span class="sd">    - ``array.array`` (from the builtin Python lib)</span>
 <span class="sd">    - ``ctypes`` objects</span>
 <span class="sd">    - an object that has an ``nbytes`` attribute (notably, numpy arrays and</span>
-<span class="sd">      ``memoryview``)</span>
+<span class="sd">    ``memoryview``)</span>
 <span class="sd">    - ``bytes``</span>
 <span class="sd">    - ``bytearray``</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -388,31 +380,21 @@
 <span class="sd">    size, md_payload, data_payload[, pad_payload]</span>
 <span class="sd">        pad_payload will only be returned if needed</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ntype</span> <span class="o">=</span> <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
 
     <span class="c1"># Make the data payload.</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
-        <span class="c1"># Assume array is big-endian; we have no way of checking.</span>
-        <span class="n">data_payload</span> <span class="o">=</span> <span class="n">data</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
         <span class="c1"># Assume bytes are big-endian; we have no way of checking.</span>
         <span class="n">data_payload</span> <span class="o">=</span> <span class="n">data</span>
-    <span class="k">elif</span> <span class="n">USE_NUMPY</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="c1"># Make big-endian.</span>
-        <span class="n">data_payload</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">newbyteorder</span><span class="p">(</span><span class="s1">&#39;&gt;&#39;</span><span class="p">))</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">:</span>
-            <span class="n">data_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">d</span><span class="p">[:</span><span class="mi">39</span><span class="p">]</span><span class="o">.</span><span class="n">ljust</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;</span><span class="se">\0</span><span class="s1">&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data_payload</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">array_type_code</span><span class="p">(</span><span class="n">ntype</span><span class="p">),</span> <span class="n">data</span><span class="p">)</span>
-            <span class="c1"># Make big-endian.</span>
-            <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;little&#39;</span><span class="p">:</span>
-                <span class="n">data_payload</span><span class="o">.</span><span class="n">byteswap</span><span class="p">()</span>
+    <span class="k">elif</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">backend</span><span class="o">.</span><span class="n">array_types</span><span class="p">)</span> <span class="ow">or</span>
+          <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Iterable</span><span class="p">)):</span>
+        <span class="n">data_payload</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">python_to_epics</span><span class="p">(</span>
+            <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">),</span> <span class="n">data</span><span class="p">,</span> <span class="n">byteswap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">data_payload</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;data given as type we cannot handle - </span><span class="si">{}</span><span class="s2">&quot;</span>
                                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+
     <span class="n">md_payload</span> <span class="o">=</span> <span class="n">parse_metadata</span><span class="p">(</span><span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">)</span>
     <span class="n">size</span><span class="p">,</span> <span class="n">pad_payload</span> <span class="o">=</span> <span class="n">pad_buffers</span><span class="p">(</span><span class="n">md_payload</span><span class="p">,</span> <span class="n">data_payload</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">pad_payload</span><span class="p">:</span>
@@ -423,8 +405,11 @@
 
 <span class="k">def</span> <span class="nf">extract_data</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">):</span>
     <span class="s2">&quot;Return a scalar or big-endian array (numpy.ndarray or array.array).&quot;</span>
-    <span class="n">data</span> <span class="o">=</span> <span class="n">dbr</span><span class="o">.</span><span class="n">native_to_builtin</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">),</span> <span class="n">data_count</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">data</span><span class="p">[:</span><span class="n">data_count</span><span class="p">]</span>  <span class="c1"># TODO Does this make a copy?</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">backend</span><span class="o">.</span><span class="n">epics_to_python</span><span class="p">(</span><span class="n">buffer</span><span class="p">,</span> <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">),</span> <span class="n">data_count</span><span class="p">,</span>
+                                   <span class="n">auto_byteswap</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">data_count</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">[:</span><span class="n">data_count</span><span class="p">]</span>  <span class="c1"># (no copy)</span>
+    <span class="k">return</span> <span class="n">data</span>
 
 
 <span class="k">def</span> <span class="nf">extract_metadata</span><span class="p">(</span><span class="n">payload</span><span class="p">,</span> <span class="n">data_type</span><span class="p">):</span>
@@ -1053,7 +1038,6 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">payload_struct</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">EventAddRequestPayload</span><span class="o">.</span><span class="n">from_buffer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">ChannelType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">))</span>
     <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
@@ -1873,7 +1857,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0+untagged.1521.g0cd4370',
+            VERSION:'0+untagged.1538.g72f7f42',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
