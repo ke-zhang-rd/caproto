@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Documentation &mdash; caproto 0+untagged.1543.g4c36fb7 documentation</title>
+  <title>API Documentation &mdash; caproto 0+untagged.1544.g86ebab8 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0+untagged.1543.g4c36fb7
+                0+untagged.1544.g86ebab8
               </div>
             
           
@@ -1513,14 +1513,14 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 
 <dl class="method">
 <dt id="caproto.ClientChannel.read">
-<code class="descname">read</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.read" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>ioid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadNotifyRequest" title="caproto.ReadNotifyRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1545,7 +1545,7 @@ count, which can be checked in the Channel’s attribute
 
 <dl class="method">
 <dt id="caproto.ClientChannel.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.write" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>metadata=None</em>, <em>ioid=None</em>, <em>use_notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.WriteNotifyRequest" title="caproto.WriteNotifyRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteNotifyRequest</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1554,7 +1554,7 @@ count, which can be checked in the Channel’s attribute
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">array.array</span></code>, or bytes</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1582,14 +1582,14 @@ count, which can be checked in the Channel’s attribute
 
 <dl class="method">
 <dt id="caproto.ClientChannel.subscribe">
-<code class="descname">subscribe</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>low=0.0</em>, <em>high=0.0</em>, <em>to=0.0</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.subscribe" title="Permalink to this definition">¶</a></dt>
+<code class="descname">subscribe</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>subscriptionid=None</em>, <em>low=0.0</em>, <em>high=0.0</em>, <em>to=0.0</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.subscribe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.EventAddRequest" title="caproto.EventAddRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventAddRequest</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1599,6 +1599,8 @@ native data type, which can be checked in the Channel’s attribute
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
 </dd>
+<dt><strong>subscriptionid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd></dd>
 <dt><strong>low</strong> <span class="classifier-delimiter">:</span> <span class="classifier">number</span></dt>
 <dd><p class="first last">Default is 0.</p>
 </dd>
@@ -1706,7 +1708,7 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>native_data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID</span></dt>
+<dt><strong>native_data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
 <dd><p class="first last">Default Channel Access data type.</p>
 </dd>
 <dt><strong>native_data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
@@ -1777,7 +1779,7 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <dd></dd>
 <dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1817,7 +1819,7 @@ count, which can be checked in the Channel’s attribute
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1856,7 +1858,7 @@ count, which can be checked in the Channel’s attribute
 <dd></dd>
 <dt><strong>subscriptionid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1896,7 +1898,7 @@ count, which can be checked in the Channel’s attribute
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>subscriptionid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a <code class="xref py py-class docutils literal notranslate"><span class="pre">DBR_TYPE</span></code> or its designation integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -2244,7 +2246,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0+untagged.1543.g4c36fb7',
+            VERSION:'0+untagged.1544.g86ebab8',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -2266,9 +2268,7 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
 
   <script type="text/javascript">
       jQuery(function () {
-          
-          SphinxRtdTheme.Navigation.enableSticky();
-          
+          SphinxRtdTheme.Navigation.enable(true);
       });
   </script> 
 
