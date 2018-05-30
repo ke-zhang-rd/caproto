@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0.1.0a1+45.g0ac04d3 documentation</title>
+  <title>caproto._utils &mdash; caproto 0.1.0a1+58.g0544c88 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+45.g0ac04d3
+                0.1.0a1+58.g0544c88
               </div>
             
           
@@ -540,7 +540,7 @@
                     <span class="n">sent</span> <span class="o">=</span> <span class="n">send_func</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
                     <span class="k">break</span>
                 <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-                    <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">buffers_to_send</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">buffers_to_send</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
 
         <span class="k">except</span> <span class="n">SendAllRetry</span><span class="p">:</span>
             <span class="k">continue</span>
@@ -578,7 +578,7 @@
                     <span class="n">sent</span> <span class="o">=</span> <span class="k">await</span> <span class="n">async_send_func</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
                     <span class="k">break</span>
                 <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
-                    <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">buffers_to_send</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span><span class="o">//</span><span class="mi">2</span><span class="p">]</span>
+                    <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">buffers_to_send</span><span class="p">[:</span><span class="nb">len</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">]</span>
         <span class="k">except</span> <span class="n">SendAllRetry</span><span class="p">:</span>
             <span class="k">continue</span>
 
@@ -796,7 +796,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+45.g0ac04d3',
+            VERSION:'0.1.0a1+58.g0544c88',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
