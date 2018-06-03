@@ -1,0 +1,1025 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>caproto.sync.client &mdash; caproto 0.1.0a1+161.g41f1cf6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> caproto
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0a1+161.g41f1cf6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../install.html">Install Caproto</a></li>
+</ul>
+<p class="caption"><span class="caption-text">EPICS Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../command-line-client.html">Command-Line Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../sync-client.html">Synchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../threading-client.html">Threading Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyepics-compat-client.html">Pyepics-Compatible Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../async-clients.html">Asynchronous Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../iocs.html">Input-Output Controllers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../servers.html">Servers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../basics.html">Writing Your Own Channel Access Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api.html">Core API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../release-notes.html">Release Notes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">caproto</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+      <li>caproto.sync.client</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for caproto.sync.client</h1><div class="highlight"><pre>
+<span></span><span class="c1"># This module contains a synchronous implementation of a Channel Access client</span>
+<span class="c1"># as three top-level functions: get, put, and monitor. They are comparatively</span>
+<span class="c1"># simple and naive, with no caching or concurrency, and therefore less</span>
+<span class="c1"># performant but more robust.</span>
+
+<span class="c1"># The module also includes variants intended for use at the command line</span>
+<span class="c1"># (get_cli, put_cli, monitor_cli) which layers argparse on top of the get, put</span>
+<span class="c1"># and monitor. These can be called directly from the shell using the scripts</span>
+<span class="c1"># caproto-get, caproto-put, and caproto-monitor, which are added to the PATH</span>
+<span class="c1"># when caproto is installed.</span>
+
+<span class="c1"># Additionally, there is repeater_cli and caproto-repeater, which spawns a</span>
+<span class="c1"># repeater in a detached subprocess.</span>
+
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">ast</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Iterable</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">getpass</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">selectors</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">subprocess</span>
+
+<span class="kn">import</span> <span class="nn">caproto</span> <span class="k">as</span> <span class="nn">ca</span>
+<span class="kn">from</span> <span class="nn">.._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">field_types</span><span class="p">,</span> <span class="n">ChannelType</span><span class="p">,</span> <span class="n">native_type</span><span class="p">,</span> <span class="n">SubscriptionType</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.._utils</span> <span class="k">import</span> <span class="n">ErrorResponseReceived</span><span class="p">,</span> <span class="n">CaprotoError</span>
+<span class="kn">from</span> <span class="nn">.repeater</span> <span class="k">import</span> <span class="n">run</span> <span class="k">as</span> <span class="n">run_repeater</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;get&#39;</span><span class="p">,</span> <span class="s1">&#39;put&#39;</span><span class="p">,</span> <span class="s1">&#39;monitor&#39;</span><span class="p">]</span>
+
+
+<span class="n">CA_SERVER_PORT</span> <span class="o">=</span> <span class="mi">5064</span>  <span class="c1"># just a default</span>
+
+<span class="c1"># Make a dict to hold our tcp sockets.</span>
+<span class="n">sockets</span> <span class="o">=</span> <span class="p">{}</span>
+
+
+<span class="c1"># Convenience functions that do both transport and caproto validation/ingest.</span>
+<span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="n">circuit</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
+    <span class="n">buffers_to_send</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+    <span class="n">sockets</span><span class="p">[</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">sendmsg</span><span class="p">(</span><span class="n">buffers_to_send</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">recv</span><span class="p">(</span><span class="n">circuit</span><span class="p">):</span>
+    <span class="n">bytes_received</span> <span class="o">=</span> <span class="n">sockets</span><span class="p">[</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="mi">4096</span><span class="p">)</span>
+    <span class="n">commands</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+        <span class="n">circuit</span><span class="o">.</span><span class="n">process_command</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">commands</span>
+
+
+<span class="k">def</span> <span class="nf">search</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">udp_sock</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+    <span class="c1"># Set Broadcaster log level to match our logger.</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Broadcaster</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">)</span>
+
+    <span class="c1"># Send registration request to the repeater</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Registering with the Channel Access repeater.&#39;</span><span class="p">)</span>
+    <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">RepeaterRegisterRequest</span><span class="p">())</span>
+
+    <span class="n">repeater_port</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EPICS_CA_REPEATER_PORT&#39;</span><span class="p">,</span> <span class="mi">5065</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">ca</span><span class="o">.</span><span class="n">get_address_list</span><span class="p">():</span>
+        <span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">repeater_port</span><span class="p">))</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Searching for &#39;</span><span class="si">%s</span><span class="s2">&#39;....&quot;</span><span class="p">,</span> <span class="n">pv_name</span><span class="p">)</span>
+    <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span>
+                           <span class="n">ca</span><span class="o">.</span><span class="n">SearchRequest</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">send_search</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">ca</span><span class="o">.</span><span class="n">get_address_list</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">host</span><span class="p">:</span>
+                <span class="n">host</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">specified_port</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                <span class="n">dest</span> <span class="o">=</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">specified_port</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">dest</span> <span class="o">=</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">CA_SERVER_PORT</span><span class="p">)</span>
+            <span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Search request sent to </span><span class="si">%r</span><span class="s1">.&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">check_timeout</span><span class="p">():</span>
+        <span class="k">nonlocal</span> <span class="n">retry_at</span>
+
+        <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">retry_at</span><span class="p">:</span>
+            <span class="n">send_search</span><span class="p">()</span>
+            <span class="n">retry_at</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">retry_timeout</span>
+
+        <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Timed out while awaiting a response &quot;</span>
+                               <span class="n">f</span><span class="s2">&quot;from the search for </span><span class="si">{pv_name!r}</span><span class="s2">. Search &quot;</span>
+                               <span class="n">f</span><span class="s2">&quot;requests were sent to this address list: &quot;</span>
+                               <span class="n">f</span><span class="s2">&quot;{ca.get_address_list()}.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Initial search attempt</span>
+    <span class="n">send_search</span><span class="p">()</span>
+
+    <span class="c1"># Await a search response, and keep track of registration status</span>
+    <span class="n">retry_timeout</span> <span class="o">=</span> <span class="n">timeout</span> <span class="o">/</span> <span class="nb">max</span><span class="p">((</span><span class="n">max_retries</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+    <span class="n">retry_at</span> <span class="o">=</span> <span class="n">t</span> <span class="o">+</span> <span class="n">retry_timeout</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">orig_timeout</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">gettimeout</span><span class="p">()</span>
+        <span class="n">udp_sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">retry_timeout</span><span class="p">)</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span> <span class="o">=</span> <span class="n">udp_sock</span><span class="o">.</span><span class="n">recvfrom</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">MAX_UDP_RECV</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                <span class="n">check_timeout</span><span class="p">()</span>
+                <span class="k">continue</span>
+
+            <span class="n">check_timeout</span><span class="p">()</span>
+
+            <span class="n">commands</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_received</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+            <span class="n">b</span><span class="o">.</span><span class="n">process_commands</span><span class="p">(</span><span class="n">commands</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">SearchResponse</span><span class="p">)</span> <span class="ow">and</span> <span class="n">command</span><span class="o">.</span><span class="n">cid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">ca</span><span class="o">.</span><span class="n">extract_address</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># None of the commands we have seen are a reply to our request.</span>
+                <span class="c1"># Receive more data.</span>
+                <span class="k">continue</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">udp_sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">orig_timeout</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">make_channel</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">udp_sock</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">timeout</span><span class="p">):</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">search</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">udp_sock</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+    <span class="n">circuit</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">,</span>
+                                <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span>
+                                <span class="n">priority</span><span class="o">=</span><span class="n">priority</span><span class="p">)</span>
+    <span class="n">chan</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">ClientChannel</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">circuit</span><span class="p">)</span>
+    <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                                                     <span class="n">timeout</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Initialize our new TCP-based CA connection with a VersionRequest.</span>
+        <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="n">priority</span><span class="o">=</span><span class="n">priority</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mi">13</span><span class="p">))</span>
+        <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">host_name</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()))</span>
+        <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">client_name</span><span class="p">(</span><span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">()))</span>
+        <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">create</span><span class="p">())</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">commands</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span>
+            <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="s2">&quot;Timeout while awaiting channel creation.&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">command</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">CaprotoError</span><span class="p">(</span><span class="s1">&#39;Disconnected during initialization&#39;</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Channel created.&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">BaseException</span><span class="p">:</span>
+        <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">raise</span>
+    <span class="k">return</span> <span class="n">chan</span>
+
+
+<span class="k">def</span> <span class="nf">spawn_repeater</span><span class="p">(</span><span class="n">logger</span><span class="p">):</span>
+    <span class="c1"># Spawn repeater with a verbosity level matching the current logger.</span>
+    <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--verbose&#39;</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="n">logger</span><span class="o">.</span><span class="n">getEffectiveLevel</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="mi">30</span><span class="p">:</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;--quiet&#39;</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Spawning caproto-repeater process....&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">subprocess</span><span class="o">.</span><span class="n">Popen</span><span class="p">([</span><span class="s1">&#39;caproto-repeater&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">args</span><span class="p">,</span> <span class="n">cwd</span><span class="o">=</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="s1">&#39;Failed to spawn repeater.&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">data_type</span><span class="p">):</span>
+    <span class="n">req</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">)</span>
+    <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">commands</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+            <span class="n">commands</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="s2">&quot;Timeout while awaiting reading.&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ReadNotifyResponse</span><span class="p">)</span> <span class="ow">and</span>
+                    <span class="n">command</span><span class="o">.</span><span class="n">ioid</span> <span class="o">==</span> <span class="n">req</span><span class="o">.</span><span class="n">ioid</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">command</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ErrorResponse</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ErrorResponseReceived</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">command</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">CaprotoError</span><span class="p">(</span><span class="s1">&#39;Disconnected while waiting for &#39;</span>
+                                   <span class="s1">&#39;read response&#39;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_cli</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Read the value of a PV.&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s1">&#39;action&#39;</span><span class="p">,</span> <span class="s1">&#39;list_types&#39;</span><span class="p">,</span> <span class="n">_ListTypesAction</span><span class="p">)</span>
+    <span class="n">fmt_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;pv_names&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;PV (channel) name(s) separated by spaces&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s2">&quot;DATA_TYPE&quot;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Request a certain data type. Accepts numeric &quot;</span>
+                              <span class="s2">&quot;code (&#39;3&#39;) or case-insensitive string (&#39;enum&#39;)&quot;</span>
+                              <span class="s2">&quot;. See --list-types&quot;</span><span class="p">))</span>
+    <span class="n">fmt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                           <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Python format string. Available tokens are &quot;</span>
+                                 <span class="s2">&quot;</span><span class="si">{pv_name}</span><span class="s2"> and </span><span class="si">{response}</span><span class="s2">. Additionally, if &quot;</span>
+                                 <span class="s2">&quot;this data type includes time, </span><span class="si">{timestamp}</span><span class="s2"> &quot;</span>
+                                 <span class="s2">&quot;and usages like &quot;</span>
+                                 <span class="s2">&quot;{timestamp:</span><span class="si">%%</span><span class="s2">Y-</span><span class="si">%%</span><span class="s2">m-</span><span class="si">%%</span><span class="s2">d </span><span class="si">%%</span><span class="s2">H:</span><span class="si">%%</span><span class="s2">M:</span><span class="si">%%</span><span class="s2">S} are &quot;</span>
+                                 <span class="s2">&quot;supported.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--list-types&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;list_types&#39;</span><span class="p">,</span>
+                        <span class="n">default</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;List allowed values for -d and exit.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Retrieve enums as integers (default is &quot;</span>
+                              <span class="s2">&quot;strings).&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-repeater&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Do not spawn a Channel Access repeater daemon &quot;</span>
+                              <span class="s2">&quot;process.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--priority&#39;</span><span class="p">,</span> <span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Channel Access Virtual Circuit priority. &quot;</span>
+                             <span class="s2">&quot;Lowest is 0; highest is 99.&quot;</span><span class="p">)</span>
+    <span class="n">fmt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--terse&#39;</span><span class="p">,</span> <span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                           <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Display data only. Unpack scalars: &quot;</span>
+                                 <span class="s2">&quot;[3.] -&gt; 3.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;-w&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Timeout (&#39;wait&#39;) in seconds for server &quot;</span>
+                              <span class="s2">&quot;responses.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Verbose mode. (Use -vvv for more.)&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-vvv&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto.get&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">vvv</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+    <span class="n">data_type</span> <span class="o">=</span> <span class="n">parse_data_type</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">d</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">pv_name</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">pv_names</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="n">pv_name</span><span class="o">=</span><span class="n">pv_name</span><span class="p">,</span>
+                           <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
+                           <span class="n">timeout</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+                           <span class="n">priority</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+                           <span class="n">force_int_enums</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">n</span><span class="p">,</span>
+                           <span class="n">repeater</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_repeater</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">format_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{pv_name: &lt;40}</span><span class="s1">  </span><span class="si">{response.data}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">format_str</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span>
+            <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">terse</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">format_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{response.data[0]}</span><span class="s1">&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">format_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{response.data}</span><span class="s1">&#39;</span>
+            <span class="n">tokens</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">pv_name</span><span class="o">=</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">):</span>
+                <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+                <span class="n">tokens</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">format_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">tokens</span><span class="p">))</span>
+
+    <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="c1"># Show the full traceback.</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Print a one-line error message.</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get"><a class="viewcode-back" href="../../../sync-client.html#caproto.sync.client.get">[docs]</a><span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">force_int_enums</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">repeater</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read a Channel.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pv_name : str</span>
+<span class="sd">    data_type : int, optional</span>
+<span class="sd">        Request specific data type. Default is Channel&#39;s native data type.</span>
+<span class="sd">    timeout : float, optional</span>
+<span class="sd">        Default is 1 second.</span>
+<span class="sd">    priority : 0, optional</span>
+<span class="sd">        Virtual Circuit priority. Default is 0, lowest. Highest is 99.</span>
+<span class="sd">    force_int_enums : boolean, optional</span>
+<span class="sd">        Retrieve enums as integers. (Default is strings.)</span>
+<span class="sd">    repeater : boolean, optional</span>
+<span class="sd">        Spawn a Channel Access Repeater process if the port is available.</span>
+<span class="sd">        True default, as the Channel Access spec stipulates that well-behaved</span>
+<span class="sd">        clients should do this.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    response : ReadNotifyResponse</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Get the value of a Channel named &#39;cat&#39;.</span>
+<span class="sd">    &gt;&gt;&gt; get(&#39;cat&#39;).data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto.get&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">repeater</span><span class="p">:</span>
+        <span class="c1"># As per the EPICS spec, a well-behaved client should start a</span>
+        <span class="c1"># caproto-repeater that will continue running after it exits.</span>
+        <span class="n">spawn_repeater</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+    <span class="n">udp_sock</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">bcast_socket</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">udp_sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">chan</span> <span class="o">=</span> <span class="n">make_channel</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">udp_sock</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">udp_sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Detected native data_type </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">native_data_type</span><span class="p">)</span>
+        <span class="n">ntype</span> <span class="o">=</span> <span class="n">native_type</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">native_data_type</span><span class="p">)</span>  <span class="c1"># abundance of caution</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">ntype</span> <span class="ow">is</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="p">(</span><span class="n">data_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">force_int_enums</span><span class="p">)):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Changing requested data_type to STRING.&quot;</span><span class="p">)</span>
+            <span class="n">data_type</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span>
+        <span class="k">return</span> <span class="n">read</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
+                <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">disconnect</span><span class="p">())</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">monitor_cli</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Read the value of a PV.&#39;</span><span class="p">)</span>
+    <span class="n">fmt_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;pv_names&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;+&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;PV (channel) name&quot;</span><span class="p">)</span>
+    <span class="n">fmt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                           <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Python format string. Available tokens are &quot;</span>
+                                 <span class="s2">&quot;</span><span class="si">{pv_name}</span><span class="s2">, </span><span class="si">{response}</span><span class="s2">, </span><span class="si">{callback_count}</span><span class="s2">. &quot;</span>
+                                 <span class="s2">&quot;Additionally, if this data type includes &quot;</span>
+                                 <span class="s2">&quot;time, </span><span class="si">{timestamp}</span><span class="s2">, </span><span class="si">{timedelta}</span><span class="s2"> and usages &quot;</span>
+                                 <span class="s2">&quot;like {timestamp:</span><span class="si">%%</span><span class="s2">Y-</span><span class="si">%%</span><span class="s2">m-</span><span class="si">%%</span><span class="s2">d </span><span class="si">%%</span><span class="s2">H:</span><span class="si">%%</span><span class="s2">M:</span><span class="si">%%</span><span class="s2">S} are&quot;</span>
+                                 <span class="s2">&quot; supported.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-m&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;MASK&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;va&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Channel Access mask. Any combination of &quot;</span>
+                              <span class="s2">&quot;&#39;v&#39; (value), &#39;a&#39; (alarm), &#39;l&#39; (log/archive), &quot;</span>
+                              <span class="s2">&quot;&#39;p&#39; (property). Default is &#39;va&#39;.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Retrieve enums as integers (default is &quot;</span>
+                              <span class="s2">&quot;strings).&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-repeater&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Do not spawn a Channel Access repeater daemon &quot;</span>
+                              <span class="s2">&quot;process.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--priority&#39;</span><span class="p">,</span> <span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Channel Access Virtual Circuit priority. &quot;</span>
+                             <span class="s2">&quot;Lowest is 0; highest is 99.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;-w&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Timeout (&#39;wait&#39;) in seconds for server &quot;</span>
+                              <span class="s2">&quot;responses.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show DEBUG log messages.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-vvv&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--maximum&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Maximum number of monitor events to display.&quot;</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto.monitor&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">vvv</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+
+    <span class="n">mask</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="s1">&#39;v&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">m</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">|=</span> <span class="n">SubscriptionType</span><span class="o">.</span><span class="n">DBE_VALUE</span>
+    <span class="k">if</span> <span class="s1">&#39;a&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">m</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">|=</span> <span class="n">SubscriptionType</span><span class="o">.</span><span class="n">DBE_ALARM</span>
+    <span class="k">if</span> <span class="s1">&#39;l&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">m</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">|=</span> <span class="n">SubscriptionType</span><span class="o">.</span><span class="n">DBE_LOG</span>
+    <span class="k">if</span> <span class="s1">&#39;p&#39;</span> <span class="ow">in</span> <span class="n">args</span><span class="o">.</span><span class="n">m</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">|=</span> <span class="n">SubscriptionType</span><span class="o">.</span><span class="n">DBE_PROPERTY</span>
+
+    <span class="n">history</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;callback_count&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">callback</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="n">tokens</span><span class="p">[</span><span class="s1">&#39;callback_count&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">format_str</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;</span><span class="si">{pv_name: &lt;40}</span><span class="s2">  {timestamp:%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S} &quot;</span>
+                          <span class="s2">&quot;</span><span class="si">{response.data}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">format_str</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span>
+        <span class="n">tokens</span><span class="p">[</span><span class="s1">&#39;pv_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pv_name</span>
+        <span class="n">tokens</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+        <span class="n">tokens</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="k">if</span> <span class="n">history</span><span class="p">:</span>
+            <span class="c1"># Add a {timedelta} token using the previous timestamp.</span>
+            <span class="n">td</span> <span class="o">=</span> <span class="n">dt</span> <span class="o">-</span> <span class="n">history</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Special case for the first reading: show difference between</span>
+            <span class="c1"># timestamp and current time -- showing how old the most recent</span>
+            <span class="c1"># update is.</span>
+            <span class="n">td</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">())</span> <span class="o">-</span> <span class="n">dt</span>
+        <span class="n">history</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+        <span class="n">tokens</span><span class="p">[</span><span class="s1">&#39;timedelta&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">td</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">format_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">tokens</span><span class="p">),</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">maximum</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">tokens</span><span class="p">[</span><span class="s1">&#39;callback_count&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">args</span><span class="o">.</span><span class="n">maximum</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">monitor</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="o">.</span><span class="n">pv_names</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="n">priority</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+                <span class="n">force_int_enums</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">n</span><span class="p">,</span>
+                <span class="n">repeater</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_repeater</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="o">...</span>
+    <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="c1"># Show the full traceback.</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Print a one-line error message.</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="monitor"><a class="viewcode-back" href="../../../sync-client.html#caproto.sync.client.monitor">[docs]</a><span class="k">def</span> <span class="nf">monitor</span><span class="p">(</span><span class="o">*</span><span class="n">pv_names</span><span class="p">,</span> <span class="n">callback</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">force_int_enums</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">repeater</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Monitor one or more Channels indefinitely.</span>
+
+<span class="sd">    Use Ctrl+C (SIGINT) to escape.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pv_names : str</span>
+<span class="sd">    callback : callable, required keyword-only argument</span>
+<span class="sd">        Expected signature is ``f(pv_name, ReadNotifyResponse)``.</span>
+<span class="sd">    mask : int, optional</span>
+<span class="sd">        Default, None, resolves to</span>
+<span class="sd">        ``(SubscriptionType.DBE_VALUE | SubscriptionType.DBE_ALARM)``.</span>
+<span class="sd">    data_type : int, optional</span>
+<span class="sd">        Request specific data type. Default is Channel&#39;s native data type.</span>
+<span class="sd">    timeout : float, optional</span>
+<span class="sd">        Default is 1 second.</span>
+<span class="sd">    priority : 0, optional</span>
+<span class="sd">        Virtual Circuit priority. Default is 0, lowest. Highest is 99.</span>
+<span class="sd">    force_int_enums : boolean, optional</span>
+<span class="sd">        Retrieve enums as integers. (Default is strings.)</span>
+<span class="sd">    repeater : boolean, optional</span>
+<span class="sd">        Spawn a Channel Access Repeater process if the port is available.</span>
+<span class="sd">        True default, as the Channel Access spec stipulates that well-behaved</span>
+<span class="sd">        clients should do this.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Get the value of a Channel named &#39;cat&#39;.</span>
+<span class="sd">    &gt;&gt;&gt; get(&#39;cat&#39;).data</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">SubscriptionType</span><span class="o">.</span><span class="n">DBE_VALUE</span> <span class="o">|</span> <span class="n">SubscriptionType</span><span class="o">.</span><span class="n">DBE_ALARM</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto.monitor&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">repeater</span><span class="p">:</span>
+        <span class="c1"># As per the EPICS spec, a well-behaved client should start a</span>
+        <span class="c1"># caproto-repeater that will continue running after it exits.</span>
+        <span class="n">spawn_repeater</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+    <span class="n">udp_sock</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">bcast_socket</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">udp_sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">channels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">pv_name</span> <span class="ow">in</span> <span class="n">pv_names</span><span class="p">:</span>
+            <span class="n">chan</span> <span class="o">=</span> <span class="n">make_channel</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">udp_sock</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+            <span class="n">channels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chan</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">udp_sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Subscribe to all the channels.</span>
+        <span class="n">sub_ids</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Detected native data_type </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span>
+                         <span class="n">chan</span><span class="o">.</span><span class="n">native_data_type</span><span class="p">)</span>
+
+            <span class="c1"># abundance of caution</span>
+            <span class="n">ntype</span> <span class="o">=</span> <span class="n">field_types</span><span class="p">[</span><span class="s1">&#39;native&#39;</span><span class="p">][</span><span class="n">chan</span><span class="o">.</span><span class="n">native_data_type</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">((</span><span class="n">ntype</span> <span class="ow">is</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="ow">not</span> <span class="n">force_int_enums</span><span class="p">)):</span>
+                <span class="n">ntype</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span>
+            <span class="n">time_type</span> <span class="o">=</span> <span class="n">field_types</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">][</span><span class="n">ntype</span><span class="p">]</span>
+            <span class="c1"># Adjust the timeout during monitoring.</span>
+            <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Subscribing with data_type </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">time_type</span><span class="p">)</span>
+            <span class="n">req</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="n">time_type</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+            <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
+            <span class="n">sub_ids</span><span class="p">[</span><span class="n">req</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Subscribed. Building socket selector.&#39;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">circuits</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span> <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">)</span>
+            <span class="n">selector</span> <span class="o">=</span> <span class="n">selectors</span><span class="o">.</span><span class="n">DefaultSelector</span><span class="p">()</span>
+            <span class="n">sock_to_circuit</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="n">circuits</span><span class="p">:</span>
+                <span class="n">sock</span> <span class="o">=</span> <span class="n">sockets</span><span class="p">[</span><span class="n">circuit</span><span class="p">]</span>
+                <span class="n">sock_to_circuit</span><span class="p">[</span><span class="n">sock</span><span class="p">]</span> <span class="o">=</span> <span class="n">circuit</span>
+                <span class="n">selector</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">selectors</span><span class="o">.</span><span class="n">EVENT_READ</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Continuing until SIGINT is received....&#39;</span><span class="p">)</span>
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">events</span> <span class="o">=</span> <span class="n">selector</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">selector_key</span><span class="p">,</span> <span class="n">mask</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+                    <span class="n">circuit</span> <span class="o">=</span> <span class="n">sock_to_circuit</span><span class="p">[</span><span class="n">selector_key</span><span class="o">.</span><span class="n">fileobj</span><span class="p">]</span>
+                    <span class="n">commands</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">circuit</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ErrorResponse</span><span class="p">):</span>
+                            <span class="k">raise</span> <span class="n">ErrorResponseReceived</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">):</span>
+                            <span class="c1"># TODO Re-connect.</span>
+                            <span class="k">raise</span> <span class="n">CaprotoError</span><span class="p">(</span><span class="s2">&quot;Disconnected&quot;</span><span class="p">)</span>
+                        <span class="n">chan</span> <span class="o">=</span> <span class="n">sub_ids</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">chan</span><span class="p">:</span>
+                            <span class="n">callback</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Received SIGINT. Closing.&#39;</span><span class="p">)</span>
+            <span class="k">pass</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
+                    <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">disconnect</span><span class="p">())</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># Reinstate the timeout for channel cleanup.</span>
+            <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="p">:</span>
+                <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+                <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="k">def</span> <span class="nf">put_cli</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s1">&#39;Write a value to a PV.&#39;</span><span class="p">)</span>
+    <span class="n">fmt_group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;pv_name&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;PV (channel) name&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;data&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Value or values to write.&quot;</span><span class="p">)</span>
+    <span class="n">fmt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--format&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                           <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Python format string. Available tokens are &quot;</span>
+                                 <span class="s2">&quot;</span><span class="si">{pv_name}</span><span class="s2"> and </span><span class="si">{response}</span><span class="s2">. Additionally, &quot;</span>
+                                 <span class="s2">&quot;this data type includes time, </span><span class="si">{timestamp}</span><span class="s2"> &quot;</span>
+                                 <span class="s2">&quot;and usages like &quot;</span>
+                                 <span class="s2">&quot;{timestamp:</span><span class="si">%%</span><span class="s2">Y-</span><span class="si">%%</span><span class="s2">m-</span><span class="si">%%</span><span class="s2">d </span><span class="si">%%</span><span class="s2">H:</span><span class="si">%%</span><span class="s2">M:</span><span class="si">%%</span><span class="s2">S} are &quot;</span>
+                                 <span class="s2">&quot;supported.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--no-repeater&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Do not spawn a Channel Access repeater daemon &quot;</span>
+                              <span class="s2">&quot;process.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--priority&#39;</span><span class="p">,</span> <span class="s1">&#39;-p&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Channel Access Virtual Circuit priority. &quot;</span>
+                             <span class="s2">&quot;Lowest is 0; highest is 99.&quot;</span><span class="p">)</span>
+    <span class="n">fmt_group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--terse&#39;</span><span class="p">,</span> <span class="s1">&#39;-t&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                           <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Display data only. Unpack scalars: &quot;</span>
+                                 <span class="s2">&quot;[3.] -&gt; 3.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--timeout&#39;</span><span class="p">,</span> <span class="s1">&#39;-w&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Timeout (&#39;wait&#39;) in seconds for server &quot;</span>
+                              <span class="s2">&quot;responses.&quot;</span><span class="p">))</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Show DEBUG log messages.&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-vvv&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                        <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto.put&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">vvv</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">initial</span><span class="p">,</span> <span class="n">final</span> <span class="o">=</span> <span class="n">put</span><span class="p">(</span><span class="n">pv_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">data</span><span class="p">,</span>
+                             <span class="n">timeout</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+                             <span class="n">priority</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+                             <span class="n">repeater</span><span class="o">=</span><span class="ow">not</span> <span class="n">args</span><span class="o">.</span><span class="n">no_repeater</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">format_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{pv_name: &lt;40}</span><span class="s1">  </span><span class="si">{response.data}</span><span class="s1">&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">format_str</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">format</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">terse</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">initial</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">format_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{response.data[0]}</span><span class="s1">&#39;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">format_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{response.data}</span><span class="s1">&#39;</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">pv_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">initial</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">initial</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">):</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">initial</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+            <span class="n">tokens</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">format_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">tokens</span><span class="p">))</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">pv_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">final</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">final</span><span class="o">.</span><span class="n">metadata</span><span class="p">,</span> <span class="s1">&#39;timestamp&#39;</span><span class="p">):</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="n">final</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+            <span class="n">tokens</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dt</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">pv_name</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">final</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">format_str</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">tokens</span><span class="p">))</span>
+    <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="c1"># Show the full traceback.</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Print a one-line error message.</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="put"><a class="viewcode-back" href="../../../sync-client.html#caproto.sync.client.put">[docs]</a><span class="k">def</span> <span class="nf">put</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">timeout</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">priority</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">repeater</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Write to a Channel.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    pv_name : str</span>
+<span class="sd">    data : str, int, or float or a list of these</span>
+<span class="sd">        Value to write.</span>
+<span class="sd">    data_type : int, optional</span>
+<span class="sd">        Request specific data type. Default is inferred from input.</span>
+<span class="sd">    metadata : ``ctypes.BigEndianStructure`` or tuple</span>
+<span class="sd">        Status and control metadata for the values</span>
+<span class="sd">    timeout : float, optional</span>
+<span class="sd">        Default is 1 second.</span>
+<span class="sd">    priority : 0, optional</span>
+<span class="sd">        Virtual Circuit priority. Default is 0, lowest. Highest is 99.</span>
+<span class="sd">    repeater : boolean, optional</span>
+<span class="sd">        Spawn a Channel Access Repeater process if the port is available.</span>
+<span class="sd">        True default, as the Channel Access spec stipulates that well-behaved</span>
+<span class="sd">        clients should do this.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    initial, final : tuple of ReadNotifyResponse objects</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Write the value 5 to a Channel named &#39;cat&#39;.</span>
+<span class="sd">    &gt;&gt;&gt; initial, final = put(&#39;cat&#39;, 5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">raw_data</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto.put&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">repeater</span><span class="p">:</span>
+        <span class="c1"># As per the EPICS spec, a well-behaved client should start a</span>
+        <span class="c1"># caproto-repeater that will continue running after it exits.</span>
+        <span class="n">spawn_repeater</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_data</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">ast</span><span class="o">.</span><span class="n">literal_eval</span><span class="p">(</span><span class="n">raw_data</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="c1"># interpret as string</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">raw_data</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">data</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;latin-1&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Data argument </span><span class="si">%s</span><span class="s1"> parsed as </span><span class="si">%r</span><span class="s1">.&#39;</span><span class="p">,</span> <span class="n">raw_data</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+
+    <span class="n">udp_sock</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">bcast_socket</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">udp_sock</span><span class="o">.</span><span class="n">settimeout</span><span class="p">(</span><span class="n">timeout</span><span class="p">)</span>
+        <span class="n">chan</span> <span class="o">=</span> <span class="n">make_channel</span><span class="p">(</span><span class="n">pv_name</span><span class="p">,</span> <span class="n">logger</span><span class="p">,</span> <span class="n">udp_sock</span><span class="p">,</span> <span class="n">priority</span><span class="p">,</span> <span class="n">timeout</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">udp_sock</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Detected native data_type </span><span class="si">%r</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">native_data_type</span><span class="p">)</span>
+        <span class="c1"># abundance of caution</span>
+        <span class="n">ntype</span> <span class="o">=</span> <span class="n">field_types</span><span class="p">[</span><span class="s1">&#39;native&#39;</span><span class="p">][</span><span class="n">chan</span><span class="o">.</span><span class="n">native_data_type</span><span class="p">]</span>
+        <span class="c1"># Stash initial value</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Taking &#39;initial&#39; reading before writing.&quot;</span><span class="p">)</span>
+        <span class="n">initial_response</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Handle ENUM: If data is INT, carry on. If data is STRING,</span>
+            <span class="c1"># write it specifically as STRING data_Type.</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">ntype</span> <span class="ow">is</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Will write to ENUM as data_type STRING.&quot;</span><span class="p">)</span>
+                <span class="n">data_type</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Writing.&quot;</span><span class="p">)</span>
+        <span class="n">req</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">req</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">commands</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">socket</span><span class="o">.</span><span class="n">timeout</span><span class="p">:</span>
+                <span class="n">commands</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="k">if</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span> <span class="o">&gt;</span> <span class="n">timeout</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="s2">&quot;Timeout while awaiting write reply.&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">WriteNotifyResponse</span><span class="p">)</span> <span class="ow">and</span>
+                        <span class="n">command</span><span class="o">.</span><span class="n">ioid</span> <span class="o">==</span> <span class="n">req</span><span class="o">.</span><span class="n">ioid</span><span class="p">):</span>
+                    <span class="k">break</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ErrorResponse</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ErrorResponseReceived</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">command</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">CaprotoError</span><span class="p">(</span><span class="s1">&#39;Disconnected while waiting for &#39;</span>
+                                       <span class="s1">&#39;write response&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">break</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Taking &#39;final&#39; reading after writing.&quot;</span><span class="p">)</span>
+        <span class="n">final_response</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="n">chan</span><span class="p">,</span> <span class="n">timeout</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
+                <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">disconnect</span><span class="p">())</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">initial_response</span><span class="p">,</span> <span class="n">final_response</span></div>
+
+
+<span class="k">def</span> <span class="nf">repeater_cli</span><span class="p">():</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Run a Channel Access Repeater.</span>
+
+<span class="s2">If the Repeater port is already in use, assume a Repeater is already running</span>
+<span class="s2">and exit. That port number is set by the environment variable</span>
+<span class="s2">EPICS_CA_REPEATER_PORT. It defaults to the standard 5065. The current value is</span>
+<span class="si">{}</span><span class="s2">.&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EPICS_CA_REPEATER_PORT&#39;</span><span class="p">,</span> <span class="mi">5065</span><span class="p">)))</span>
+
+    <span class="n">group</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_mutually_exclusive_group</span><span class="p">()</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-q&#39;</span><span class="p">,</span> <span class="s1">&#39;--quiet&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;Suppress INFO log messages. &quot;</span>
+                             <span class="s2">&quot;(Still show WARNING or higher.)&quot;</span><span class="p">))</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-v&#39;</span><span class="p">,</span> <span class="s1">&#39;--verbose&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="s2">&quot;Verbose mode. (Use -vvv for more.)&quot;</span><span class="p">)</span>
+    <span class="n">group</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-vvv&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span>
+                       <span class="n">help</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">vvv</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="s1">&#39;DEBUG&#39;</span>
+        <span class="k">elif</span> <span class="n">args</span><span class="o">.</span><span class="n">quiet</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="s1">&#39;WARNING&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="s1">&#39;INFO&#39;</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto.repeater&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">run_repeater</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">BaseException</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="c1"># Show the full traceback.</span>
+            <span class="k">raise</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Print a one-line error message.</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">parse_data_type</span><span class="p">(</span><span class="n">raw_data_type</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse raw_data_type string as ChannelType. None passes through.</span>
+
+<span class="sd">    &#39;3&#39;, &#39;ENUM&#39;, and &#39;enum&#39; all parse as &lt;ChannelType.ENUM 3&gt;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">raw_data_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">data_type</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">raw_data_type</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+        <span class="c1"># ChannelType is an IntEnum.</span>
+        <span class="c1"># If d is int, use ChannelType(d). If string, getattr(ChannelType, d).</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data_type_int</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">raw_data_type</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">data_type</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ChannelType</span><span class="p">,</span> <span class="n">raw_data_type</span><span class="o">.</span><span class="n">upper</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_type</span> <span class="o">=</span> <span class="n">ChannelType</span><span class="p">(</span><span class="n">data_type_int</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_type</span>
+
+
+<span class="k">class</span> <span class="nc">_ListTypesAction</span><span class="p">(</span><span class="n">argparse</span><span class="o">.</span><span class="n">Action</span><span class="p">):</span>
+    <span class="c1"># a special action that allows the usage --list-types to override</span>
+    <span class="c1"># any &#39;required args&#39; requirements, the same way that --help does</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">option_strings</span><span class="p">,</span>
+                 <span class="n">dest</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+                 <span class="n">default</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">SUPPRESS</span><span class="p">,</span>
+                 <span class="n">help</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">_ListTypesAction</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">option_strings</span><span class="o">=</span><span class="n">option_strings</span><span class="p">,</span>
+            <span class="n">dest</span><span class="o">=</span><span class="n">dest</span><span class="p">,</span>
+            <span class="n">default</span><span class="o">=</span><span class="n">default</span><span class="p">,</span>
+            <span class="n">nargs</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+            <span class="n">help</span><span class="o">=</span><span class="n">help</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parser</span><span class="p">,</span> <span class="n">namespace</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">option_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">elem</span> <span class="ow">in</span> <span class="n">ChannelType</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{elem.value: &lt;2}</span><span class="s1"> </span><span class="si">{elem.name}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">parser</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Daniel Allan.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'0.1.0a1+161.g41f1cf6',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

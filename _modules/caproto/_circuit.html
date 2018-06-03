@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0.1.0a1+58.g0544c88 documentation</title>
+  <title>caproto._circuit &mdash; caproto 0.1.0a1+161.g41f1cf6 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+58.g0544c88
+                0.1.0a1+161.g41f1cf6
               </div>
             
           
@@ -81,20 +81,29 @@
               
             
             
-              <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Install Caproto</a></li>
+</ul>
+<p class="caption"><span class="caption-text">EPICS Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../command-line-client.html">Command-Line Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sync-client.html">Synchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../threading-client.html">Threading Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyepics-compat-client.html">Pyepics-Compatible Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../async-clients.html">Asynchronous Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../iocs.html">Input-Output Controllers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../servers.html">Servers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basics.html">Writing Your Own Channel Access Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../iocs.html">Input-Output Controllers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Core API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release-notes.html">Release Notes</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Clients and Servers</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../curio-client.html">Asynchronous Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../curio-server.html">Asynchronous Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
 </ul>
 
             
@@ -209,15 +218,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">our_role</span> <span class="o">=</span> <span class="n">our_role</span>
         <span class="k">if</span> <span class="n">our_role</span> <span class="ow">is</span> <span class="n">CLIENT</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span> <span class="o">=</span> <span class="n">SERVER</span>
-            <span class="n">abbrev</span> <span class="o">=</span> <span class="s1">&#39;cli&#39;</span>  <span class="c1"># just for logger</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span> <span class="o">=</span> <span class="n">CLIENT</span>
-            <span class="n">abbrev</span> <span class="o">=</span> <span class="s1">&#39;srv&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">priority</span> <span class="o">=</span> <span class="n">priority</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map cid to Channel</span>
-        <span class="n">logger_name</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{abbrev}</span><span class="s2">.</span><span class="si">{address[0]}</span><span class="s2">:</span><span class="si">{address[1]}</span><span class="s2">.</span><span class="si">{priority}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">states</span> <span class="o">=</span> <span class="n">CircuitState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="nb">bytearray</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map sid to Channel</span>
@@ -231,6 +236,22 @@
             <span class="k">raise</span> <span class="n">CaprotoRuntimeError</span><span class="p">(</span><span class="s2">&quot;Client-side VirtualCircuit requires a &quot;</span>
                                       <span class="s2">&quot;non-None priority at initialization &quot;</span>
                                       <span class="s2">&quot;time.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">DEFAULT_PROTOCOL_VERSION</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_priority</span>
+
+    <span class="nd">@priority</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">priority</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+        <span class="c1"># A server-side circuit does not get to know its priority until after</span>
+        <span class="c1"># instantiation, so we need a setter.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_priority</span> <span class="o">=</span> <span class="n">priority</span>
+        <span class="c1"># The logger_name includes the priority so we have to set it.</span>
+        <span class="n">logger_name</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="s2">&quot;caproto.circ.&quot;</span>
+                       <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.address[0]}</span><span class="s2">:</span><span class="si">{self.address[1]}</span><span class="s2">.&quot;</span>
+                       <span class="n">f</span><span class="s2">&quot;</span><span class="si">{priority}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">host</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -449,6 +470,7 @@
                 <span class="n">chan</span><span class="o">.</span><span class="n">access_rights</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">access_rights</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">CreateChanResponse</span><span class="p">):</span>
                 <span class="n">chan</span><span class="o">.</span><span class="n">sid</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">sid</span>
+                <span class="n">chan</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ClearChannelResponse</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">sid</span><span class="p">)</span>
@@ -482,6 +504,16 @@
                 <span class="k">raise</span> <span class="n">err</span><span class="p">(</span><span class="s2">&quot;priority </span><span class="si">{}</span><span class="s2"> does not match previously set priority &quot;</span>
                           <span class="s2">&quot;of </span><span class="si">{}</span><span class="s2"> for this circuit&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
                                                           <span class="bp">self</span><span class="o">.</span><span class="n">priority</span><span class="p">))</span>
+            <span class="n">protocol_version</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
+            <span class="k">for</span> <span class="n">cid</span><span class="p">,</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">chan</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">VersionResponse</span><span class="p">):</span>
+            <span class="n">protocol_version</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
+            <span class="k">for</span> <span class="n">cid</span><span class="p">,</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">chan</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
 
 <div class="viewcode-block" id="VirtualCircuit.disconnect"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -538,9 +570,8 @@
     <span class="c1"># Base class for ClientChannel and ServerChannel, which add convenience</span>
     <span class="c1"># methods for composing requests and repsponses, respectively. All of the</span>
     <span class="c1"># important code is here in the base class.</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">protocol_version</span><span class="o">=</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">protocol_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">=</span> <span class="n">circuit</span>
         <span class="k">if</span> <span class="n">cid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -568,7 +599,10 @@
         <span class="k">if</span> <span class="n">data_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">data_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_data_type</span>
         <span class="k">if</span> <span class="n">data_count</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">data_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">&gt;=</span> <span class="mi">13</span><span class="p">:</span>
+                <span class="n">data_count</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">native_data_count</span>
         <span class="k">return</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span>
 
     <span class="k">def</span> <span class="nf">state_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">,</span> <span class="n">old_state</span><span class="p">,</span> <span class="n">new_state</span><span class="p">,</span> <span class="n">command</span><span class="p">):</span>
@@ -1052,7 +1086,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+58.g0544c88',
+            VERSION:'0.1.0a1+161.g41f1cf6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

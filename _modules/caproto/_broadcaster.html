@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._broadcaster &mdash; caproto 0.1.0a1+58.g0544c88 documentation</title>
+  <title>caproto._broadcaster &mdash; caproto 0.1.0a1+161.g41f1cf6 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+58.g0544c88
+                0.1.0a1+161.g41f1cf6
               </div>
             
           
@@ -81,20 +81,29 @@
               
             
             
-              <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Install Caproto</a></li>
+</ul>
+<p class="caption"><span class="caption-text">EPICS Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../command-line-client.html">Command-Line Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sync-client.html">Synchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../threading-client.html">Threading Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyepics-compat-client.html">Pyepics-Compatible Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../async-clients.html">Asynchronous Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../iocs.html">Input-Output Controllers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../servers.html">Servers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basics.html">Writing Your Own Channel Access Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../iocs.html">Input-Output Controllers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Core API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release-notes.html">Release Notes</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Clients and Servers</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../curio-client.html">Asynchronous Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../curio-server.html">Asynchronous Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
 </ul>
 
             
@@ -195,10 +204,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">our_role</span> <span class="o">=</span> <span class="n">our_role</span>
         <span class="k">if</span> <span class="n">our_role</span> <span class="ow">is</span> <span class="n">CLIENT</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span> <span class="o">=</span> <span class="n">SERVER</span>
-            <span class="n">abbrev</span> <span class="o">=</span> <span class="s1">&#39;cli&#39;</span>  <span class="c1"># just for logger</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span> <span class="o">=</span> <span class="n">CLIENT</span>
-            <span class="n">abbrev</span> <span class="o">=</span> <span class="s1">&#39;srv&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map search id (cid) to name</span>
         <span class="c1"># Unlike VirtualCircuit and Channel, there is very little state to</span>
@@ -207,8 +214,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_registered</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_attempted_registration</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_search_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">logger_name</span> <span class="o">=</span> <span class="n">f</span><span class="s2">&quot;</span><span class="si">{abbrev}</span><span class="s2">.bcast&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;caproto.bcast&quot;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Broadcaster.send"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">commands</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -416,7 +422,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+58.g0544c88',
+            VERSION:'0.1.0a1+161.g41f1cf6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

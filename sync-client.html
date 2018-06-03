@@ -1,0 +1,482 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Synchronous Client &mdash; caproto 0.1.0a1+161.g41f1cf6 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Threading Client" href="threading-client.html" />
+    <link rel="prev" title="Command-Line Client" href="command-line-client.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> caproto
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1.0a1+161.g41f1cf6
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install Caproto</a></li>
+</ul>
+<p class="caption"><span class="caption-text">EPICS Clients and Servers</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="command-line-client.html">Command-Line Client</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Synchronous Client</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#tutorial">Tutorial</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#api-documentation">API Documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Threading Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyepics-compat-client.html">Pyepics-Compatible Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async-clients.html">Asynchronous Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="iocs.html">Input-Output Controllers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">Servers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Core API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">caproto</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Synchronous Client</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/sync-client.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="synchronous-client">
+<h1>Synchronous Client<a class="headerlink" href="#synchronous-client" title="Permalink to this headline">¶</a></h1>
+<p>The synchronous client optimizes for simplicity of implementation over
+performance. This has its uses, but for high-performance applications one of
+the other clients, such as the <a class="reference internal" href="threading-client.html"><span class="doc">Threading Client</span></a>, should be used.</p>
+<div class="section" id="tutorial">
+<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
+<p>In a separate shell, start one of caproto’s demo IOCs.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.random_walk
+PVs: <span class="o">[</span><span class="s1">&#39;random_walk:dt&#39;</span>, <span class="s1">&#39;random_walk:x&#39;</span><span class="o">]</span>
+</pre></div>
+</div>
+<p>Now, in Python we will talk to it using caproto’s synchronous client:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">get</span><span class="p">,</span> <span class="n">put</span><span class="p">,</span> <span class="n">monitor</span>
+
+<span class="gp">In [2]: </span><span class="n">res</span> <span class="o">=</span> <span class="n">get</span><span class="p">(</span><span class="s1">&#39;random_walk:dt&#39;</span><span class="p">)</span>
+
+<span class="gp">In [3]: </span><span class="n">res</span>
+<span class="gh">Out[3]: </span><span class="go">ReadNotifyResponse(data=array([3.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=0, metadata=None)</span>
+</pre></div>
+</div>
+<p>This object is a human-friendly representation of the server’s response. The
+raw bytes of that response are:</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="nb">bytes</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="gh">Out[4]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00@\x08\x00\x00\x00\x00\x00\x00&#39;</span>
+</pre></div>
+</div>
+<p>Access particular fields in the response using attribute (“dot”) access on
+<code class="docutils literal notranslate"><span class="pre">res</span></code>.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">res</span><span class="o">.</span><span class="n">data</span>
+<span class="gh">Out[5]: </span><span class="go">array([3.])</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><strong>Performance Note</strong></p>
+<p>The underlying metadata and data are stored in efficient, contiguous-memory
+data structures.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">res</span><span class="o">.</span><span class="n">header</span>  <span class="c1"># a ctypes.BigEndianStructure</span>
+<span class="gh">Out[6]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=0)</span>
+
+<span class="gp">In [7]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
+<span class="go">                                                                                                         Out[7]: (b&#39;&#39;, &lt;memory at 0x147d37f26888&gt;)</span>
+</pre></div>
+</div>
+<p class="last">They were received directly from the socket into these structure with no
+intermediate copies. Accessing the <code class="docutils literal notranslate"><span class="pre">res.data</span></code> — which returns a
+<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <code class="docutils literal notranslate"><span class="pre">array.array</span></code> — provides a view onto that same
+memory with no copying (if the data was received from the socket all at
+once) or one copy (if the data bridged multiple receipts).</p>
+</div>
+<p>Let us set the value to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">before</span><span class="p">,</span> <span class="n">after</span> <span class="o">=</span> <span class="n">put</span><span class="p">(</span><span class="s1">&#39;random_walk:dt&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="gp">In [9]: </span><span class="n">before</span><span class="o">.</span><span class="n">data</span>
+<span class="gh">Out[9]: </span><span class="go">array([1.])</span>
+
+<span class="gp">In [10]: </span><span class="n">after</span><span class="o">.</span><span class="n">data</span>
+<span class="go">                    Out[10]: array([1.])</span>
+</pre></div>
+</div>
+<p>The synchronous client issues three requests:</p>
+<ol class="arabic simple">
+<li>Read the current value.</li>
+<li>Write <code class="docutils literal notranslate"><span class="pre">1</span></code>.</li>
+<li>Read the value again.</li>
+</ol>
+<p>This behavior is particular to caproto’s <em>synchronous</em> client. The other, more
+sophisticated clients leave it up to the caller when and whether to request
+readings.</p>
+<p>Let us now monitor a channel. The server updates the <code class="docutils literal notranslate"><span class="pre">random_walk:x</span></code> channel
+periodically. (The period is set by <code class="docutils literal notranslate"><span class="pre">random_walk:dt</span></code>.) We can subscribe
+to updates.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [11]: </span><span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="gp">In [12]: </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+<span class="gp">   ....: </span>    <span class="s2">&quot;On each update, print the data and cache the full response.&quot;</span>
+<span class="gp">   ....: </span>    <span class="n">responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+<span class="gp">   ....: </span>    <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="gp">   ....: </span>
+</pre></div>
+</div>
+<p>This call to <a class="reference internal" href="#caproto.sync.client.monitor" title="caproto.sync.client.monitor"><code class="xref py py-func docutils literal notranslate"><span class="pre">monitor()</span></code></a> blocks indefinitely, passing responses to <code class="docutils literal notranslate"><span class="pre">f</span></code> as
+they arrive. When we are satisfied, we can interrupted it with Ctrl+C.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">monitor</span><span class="p">(</span><span class="s1">&#39;random_walk:x&#39;</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+<span class="go">[24.51439201]</span>
+<span class="go">[24.6344612]</span>
+<span class="go">[24.7142318]</span>
+<span class="go">[25.54776527]</span>
+<span class="go">[25.67713186]</span>
+<span class="go">^C</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="api-documentation">
+<h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="caproto.sync.client.get">
+<code class="descclassname">caproto.sync.client.</code><code class="descname">get</code><span class="sig-paren">(</span><em>pv_name</em>, <em>*</em>, <em>data_type=None</em>, <em>timeout=1</em>, <em>priority=0</em>, <em>force_int_enums=False</em>, <em>repeater=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read a Channel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>pv_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd></dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Request specific data type. Default is Channel’s native data type.</p>
+</dd>
+<dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Default is 1 second.</p>
+</dd>
+<dt><strong>priority</strong> <span class="classifier-delimiter">:</span> <span class="classifier">0, optional</span></dt>
+<dd><p class="first last">Virtual Circuit priority. Default is 0, lowest. Highest is 99.</p>
+</dd>
+<dt><strong>force_int_enums</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Retrieve enums as integers. (Default is strings.)</p>
+</dd>
+<dt><strong>repeater</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Spawn a Channel Access Repeater process if the port is available.
+True default, as the Channel Access spec stipulates that well-behaved
+clients should do this.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>response</strong> <span class="classifier-delimiter">:</span> <span class="classifier">ReadNotifyResponse</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Get the value of a Channel named ‘cat’.
+&gt;&gt;&gt; get(‘cat’).data</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="caproto.sync.client.put">
+<code class="descclassname">caproto.sync.client.</code><code class="descname">put</code><span class="sig-paren">(</span><em>pv_name</em>, <em>data</em>, <em>*</em>, <em>data_type=None</em>, <em>metadata=None</em>, <em>timeout=1</em>, <em>priority=0</em>, <em>repeater=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.put" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write to a Channel.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>pv_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd></dd>
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str, int, or float or a list of these</span></dt>
+<dd><p class="first last">Value to write.</p>
+</dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Request specific data type. Default is inferred from input.</p>
+</dd>
+<dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
+<dd><p class="first last">Status and control metadata for the values</p>
+</dd>
+<dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Default is 1 second.</p>
+</dd>
+<dt><strong>priority</strong> <span class="classifier-delimiter">:</span> <span class="classifier">0, optional</span></dt>
+<dd><p class="first last">Virtual Circuit priority. Default is 0, lowest. Highest is 99.</p>
+</dd>
+<dt><strong>repeater</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Spawn a Channel Access Repeater process if the port is available.
+True default, as the Channel Access spec stipulates that well-behaved
+clients should do this.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>initial, final</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple of ReadNotifyResponse objects</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Write the value 5 to a Channel named ‘cat’.
+&gt;&gt;&gt; initial, final = put(‘cat’, 5)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="caproto.sync.client.monitor">
+<code class="descclassname">caproto.sync.client.</code><code class="descname">monitor</code><span class="sig-paren">(</span><em>*pv_names</em>, <em>callback</em>, <em>mask=None</em>, <em>timeout=1</em>, <em>priority=0</em>, <em>force_int_enums=False</em>, <em>repeater=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#monitor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.monitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monitor one or more Channels indefinitely.</p>
+<p>Use Ctrl+C (SIGINT) to escape.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>pv_names</strong> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd></dd>
+<dt><strong>callback</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable, required keyword-only argument</span></dt>
+<dd><p class="first last">Expected signature is <code class="docutils literal notranslate"><span class="pre">f(pv_name,</span> <span class="pre">ReadNotifyResponse)</span></code>.</p>
+</dd>
+<dt><strong>mask</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Default, None, resolves to
+<code class="docutils literal notranslate"><span class="pre">(SubscriptionType.DBE_VALUE</span> <span class="pre">|</span> <span class="pre">SubscriptionType.DBE_ALARM)</span></code>.</p>
+</dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int, optional</span></dt>
+<dd><p class="first last">Request specific data type. Default is Channel’s native data type.</p>
+</dd>
+<dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">Default is 1 second.</p>
+</dd>
+<dt><strong>priority</strong> <span class="classifier-delimiter">:</span> <span class="classifier">0, optional</span></dt>
+<dd><p class="first last">Virtual Circuit priority. Default is 0, lowest. Highest is 99.</p>
+</dd>
+<dt><strong>force_int_enums</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Retrieve enums as integers. (Default is strings.)</p>
+</dd>
+<dt><strong>repeater</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">Spawn a Channel Access Repeater process if the port is available.
+True default, as the Channel Access spec stipulates that well-behaved
+clients should do this.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Get the value of a Channel named ‘cat’.
+&gt;&gt;&gt; get(‘cat’).data</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="threading-client.html" class="btn btn-neutral float-right" title="Threading Client" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="command-line-client.html" class="btn btn-neutral" title="Command-Line Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Daniel Allan.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.1.0a1+161.g41f1cf6',
+            LANGUAGE:'None',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

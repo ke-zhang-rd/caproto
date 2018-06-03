@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0.1.0a1+58.g0544c88 documentation</title>
+  <title>caproto._utils &mdash; caproto 0.1.0a1+161.g41f1cf6 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+58.g0544c88
+                0.1.0a1+161.g41f1cf6
               </div>
             
           
@@ -81,20 +81,29 @@
               
             
             
-              <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install.html">Install Caproto</a></li>
+</ul>
+<p class="caption"><span class="caption-text">EPICS Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../command-line-client.html">Command-Line Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sync-client.html">Synchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../threading-client.html">Threading Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyepics-compat-client.html">Pyepics-Compatible Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../async-clients.html">Asynchronous Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../iocs.html">Input-Output Controllers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../servers.html">Servers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../basics.html">Writing Your Own Channel Access Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../iocs.html">Input-Output Controllers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">Core API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../release-notes.html">Release Notes</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Clients and Servers</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../../curio-client.html">Asynchronous Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../curio-server.html">Asynchronous Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
 </ul>
 
             
@@ -161,6 +170,7 @@
 <span></span><span class="c1"># This module includes all exceptions raised by caproto, sentinel objects used</span>
 <span class="c1"># throughout the package (see detailed comment below), various network-related</span>
 <span class="c1"># helper functions, and other miscellaneous utilities.</span>
+<span class="kn">import</span> <span class="nn">array</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">socket</span>
@@ -169,7 +179,17 @@
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="k">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span> <span class="nn">warnings</span> <span class="k">import</span> <span class="n">warn</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">fcntl</span>
+    <span class="kn">import</span> <span class="nn">termios</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">fcntl</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">termios</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># fcntl is unavailale on windows</span>
+
 
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">netifaces</span>
@@ -292,7 +312,11 @@
     <span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EPICS_CA_ADDR_LIST&#39;</span><span class="p">)</span> <span class="ow">and</span>
             <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EPICS_CA_AUTO_ADDR_LIST&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;NO&#39;</span><span class="p">):</span>
         <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;EPICS_CA_ADDR_LIST is set but will be ignored because &quot;</span>
-             <span class="s2">&quot;EPICS_CA_AUTO_ADDR_LIST is not set to &#39;no&#39;.&quot;</span><span class="p">)</span>
+             <span class="s2">&quot;EPICS_CA_AUTO_ADDR_LIST is not set to &#39;no&#39;. &quot;</span>
+             <span class="s2">&quot;EPICS_CA_ADDR_LIST=</span><span class="si">{!r}</span><span class="s2"> EPICS_CA_AUTO_ADDR_LIST=</span><span class="si">{!r}</span><span class="s2">&quot;</span>
+             <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EPICS_CA_AUTO_ADDR_LIST&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">),</span>
+                       <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EPICS_CA_ADDR_LIST&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">))</span>
+             <span class="p">)</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EPICS_CAS_BEACON_ADDR_LIST&#39;</span><span class="p">)</span> <span class="ow">and</span>
             <span class="n">result</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;EPICS_CAS_AUTO_BEACON_ADDR_LIST&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">!=</span> <span class="s1">&#39;NO&#39;</span><span class="p">):</span>
         <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;EPICS_CAS_BEACON_ADDR_LIST is set but will be ignored because &quot;</span>
@@ -460,18 +484,28 @@
 <span class="sd">        Default is the built-in :mod:`socket` module, but anything with the</span>
 <span class="sd">        same interface may be used, such as :mod:`curio.socket`.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">socket</span> <span class="o">=</span> <span class="n">socket_module</span>
-    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
-    <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">sock</span> <span class="o">=</span> <span class="n">socket_module</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket_module</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket_module</span><span class="o">.</span><span class="n">SOCK_DGRAM</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket_module</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket_module</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">!=</span> <span class="s1">&#39;win32&#39;</span><span class="p">:</span>
+            <span class="k">raise</span>
+        <span class="c1"># WIN32_TODO: trio compatibility</span>
+        <span class="kn">import</span> <span class="nn">socket</span> <span class="k">as</span> <span class="nn">system_socket</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket_module</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span>
+                        <span class="n">system_socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># sock.setsockopt(socket_module.SOL_SOCKET,</span>
+        <span class="c1">#                 system_socket.SO_EXCLUSIVEADDRUSE, 1)</span>
+
+    <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket_module</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket_module</span><span class="o">.</span><span class="n">SO_BROADCAST</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
     <span class="c1"># for BSD/Darwin only</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEPORT</span>
+        <span class="n">socket_module</span><span class="o">.</span><span class="n">SO_REUSEPORT</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
         <span class="o">...</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket_module</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket_module</span><span class="o">.</span><span class="n">SO_REUSEPORT</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">sock</span>
 
 
@@ -762,6 +796,48 @@
 
                 <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
                 <span class="k">return</span> <span class="n">value</span>
+
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s1">&#39;win32&#39;</span> <span class="ow">or</span> <span class="n">fcntl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">socket_bytes_available</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">default_buffer_size</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>  <span class="c1"># noqa</span>
+                               <span class="n">available_buffer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># No support for fcntl/termios on win32</span>
+        <span class="k">return</span> <span class="n">default_buffer_size</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">socket_bytes_available</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">default_buffer_size</span><span class="o">=</span><span class="mi">4096</span><span class="p">,</span>
+                               <span class="n">available_buffer</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Return bytes available to receive on socket</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sock : socket.socket</span>
+<span class="sd">        default_buffer_size : int, optional</span>
+<span class="sd">            Default recv buffer size, should the platform not support the call or</span>
+<span class="sd">            the call fails for unknown reasons</span>
+<span class="sd">        available_buffer : array.array, optional</span>
+<span class="sd">            Array used for call to fcntl; can be specified to avoid reallocating</span>
+<span class="sd">            many times</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">available_buffer</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">available_buffer</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">ok</span> <span class="o">=</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">ioctl</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span> <span class="n">termios</span><span class="o">.</span><span class="n">FIONREAD</span><span class="p">,</span> <span class="n">available_buffer</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nb">max</span><span class="p">((</span><span class="n">available_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">default_buffer_size</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">ok</span> <span class="k">else</span> <span class="n">default_buffer_size</span><span class="p">)</span>
+
+
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">named_temporary_file</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;NamedTemporaryFile wrapper that works around issues in windows&#39;&#39;&#39;</span>
+    <span class="c1"># See: https://bugs.python.org/issue14243</span>
+
+    <span class="kn">from</span> <span class="nn">tempfile</span> <span class="k">import</span> <span class="n">NamedTemporaryFile</span>
+    <span class="k">with</span> <span class="n">NamedTemporaryFile</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">delete</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">f</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">delete</span><span class="p">:</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">unlink</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 </pre></div>
 
            </div>
@@ -796,7 +872,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+58.g0544c88',
+            VERSION:'0.1.0a1+161.g41f1cf6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

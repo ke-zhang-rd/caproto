@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; caproto 0.1.0a1+58.g0544c88 documentation</title>
+  <title>Index &mdash; caproto 0.1.0a1+161.g41f1cf6 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+58.g0544c88
+                0.1.0a1+161.g41f1cf6
               </div>
             
           
@@ -82,20 +82,29 @@
               
             
             
-              <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install Caproto</a></li>
+</ul>
+<p class="caption"><span class="caption-text">EPICS Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="command-line-client.html">Command-Line Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sync-client.html">Synchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Threading Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyepics-compat-client.html">Pyepics-Compatible Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async-clients.html">Asynchronous Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="iocs.html">Input-Output Controllers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">Servers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="iocs.html">Input-Output Controllers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Core API Documentation</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
-</ul>
-<p class="caption"><span class="caption-text">Clients and Servers</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="curio-client.html">Asynchronous Client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="curio-server.html">Asynchronous Server</a></li>
-<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Thread-based Client Mirroring pyepics API</a></li>
 </ul>
 
             
@@ -168,6 +177,7 @@
  | <a href="#D"><strong>D</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
+ | <a href="#G"><strong>G</strong></a>
  | <a href="#H"><strong>H</strong></a>
  | <a href="#I"><strong>I</strong></a>
  | <a href="#K"><strong>K</strong></a>
@@ -243,6 +253,8 @@
         <li><a href="api.html#caproto.ServerDisconnResponse.cid">(caproto.ServerDisconnResponse attribute)</a>
 </li>
       </ul></li>
+      <li><a href="threading-client.html#caproto.threading.client.Subscription.clear">clear() (caproto.threading.client.Subscription method)</a>
+</li>
       <li><a href="api.html#caproto.ClearChannelRequest">ClearChannelRequest (class in caproto)</a>
 </li>
   </ul></td>
@@ -262,6 +274,8 @@
       <li><a href="api.html#caproto.CLOSED">CLOSED (in module caproto)</a>
 </li>
       <li><a href="api.html#caproto.CONNECTED">CONNECTED (in module caproto)</a>
+</li>
+      <li><a href="threading-client.html#caproto.threading.client.Context">Context (class in caproto.threading.client)</a>
 </li>
       <li><a href="api.html#caproto.ClientChannel.create">create() (caproto.ClientChannel method)</a>
 
@@ -368,6 +382,24 @@
   </ul></td>
 </tr></table>
 
+<h2 id="G">G</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sync-client.html#caproto.sync.client.get">get() (in module caproto.sync.client)</a>
+</li>
+      <li><a href="threading-client.html#caproto.threading.client.SharedBroadcaster.get_cached_search_result">get_cached_search_result() (caproto.threading.client.SharedBroadcaster method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="threading-client.html#caproto.threading.client.Context.get_circuit_manager">get_circuit_manager() (caproto.threading.client.Context method)</a>
+</li>
+      <li><a href="threading-client.html#caproto.threading.client.Context.get_pvs">get_pvs() (caproto.threading.client.Context method)</a>
+</li>
+      <li><a href="threading-client.html#caproto.threading.client.PV.go_idle">go_idle() (caproto.threading.client.PV method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="H">H</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -445,6 +477,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="sync-client.html#caproto.sync.client.monitor">monitor() (in module caproto.sync.client)</a>
+</li>
       <li><a href="api.html#caproto.MUST_CLOSE">MUST_CLOSE (in module caproto)</a>
 </li>
   </ul></td>
@@ -501,13 +535,19 @@
         <li><a href="api.html#caproto.VirtualCircuit.port">(caproto.VirtualCircuit attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api.html#caproto.VersionRequest.priority">priority (caproto.VersionRequest attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#caproto.VersionRequest.priority">priority (caproto.VersionRequest attribute)</a>
+      <li><a href="threading-client.html#caproto.threading.client.Subscription.process">process() (caproto.threading.client.Subscription method)</a>
 </li>
       <li><a href="api.html#caproto.VirtualCircuit.process_command">process_command() (caproto.VirtualCircuit method)</a>
 </li>
       <li><a href="api.html#caproto.Broadcaster.process_commands">process_commands() (caproto.Broadcaster method)</a>
+</li>
+      <li><a href="sync-client.html#caproto.sync.client.put">put() (in module caproto.sync.client)</a>
+</li>
+      <li><a href="threading-client.html#caproto.threading.client.PV">PV (class in caproto.threading.client)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -531,6 +571,12 @@
 </li>
       <li><a href="api.html#caproto.ReadSyncRequest">ReadSyncRequest (class in caproto)</a>
 </li>
+      <li><a href="threading-client.html#caproto.threading.client.SharedBroadcaster.received">received() (caproto.threading.client.SharedBroadcaster method)</a>
+
+      <ul>
+        <li><a href="threading-client.html#caproto.threading.client.VirtualCircuitManager.received">(caproto.threading.client.VirtualCircuitManager method)</a>
+</li>
+      </ul></li>
       <li><a href="api.html#caproto.Broadcaster.recv">recv() (caproto.Broadcaster method)</a>
 
       <ul>
@@ -564,7 +610,11 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#caproto.Broadcaster.search">search() (caproto.Broadcaster method)</a>
+
+      <ul>
+        <li><a href="threading-client.html#caproto.threading.client.SharedBroadcaster.search">(caproto.threading.client.SharedBroadcaster method)</a>
 </li>
+      </ul></li>
       <li><a href="api.html#caproto.SearchRequest">SearchRequest (class in caproto)</a>
 </li>
       <li><a href="api.html#caproto.SearchResponse">SearchResponse (class in caproto)</a>
@@ -573,6 +623,8 @@
 
       <ul>
         <li><a href="api.html#caproto.VirtualCircuit.send">(caproto.VirtualCircuit method)</a>
+</li>
+        <li><a href="threading-client.html#caproto.threading.client.SharedBroadcaster.send">(caproto.threading.client.SharedBroadcaster method)</a>
 </li>
       </ul></li>
       <li><a href="api.html#caproto.SEND_CREATE_CHAN_REQUEST">SEND_CREATE_CHAN_REQUEST (in module caproto)</a>
@@ -594,6 +646,8 @@
       <li><a href="api.html#caproto.ServerChannel">ServerChannel (class in caproto)</a>
 </li>
       <li><a href="api.html#caproto.ServerDisconnResponse">ServerDisconnResponse (class in caproto)</a>
+</li>
+      <li><a href="threading-client.html#caproto.threading.client.SharedBroadcaster">SharedBroadcaster (class in caproto.threading.client)</a>
 </li>
       <li><a href="api.html#caproto.ClearChannelRequest.sid">sid (caproto.ClearChannelRequest attribute)</a>
 
@@ -634,7 +688,11 @@
       <ul>
         <li><a href="api.html#caproto.ServerChannel.subscribe">(caproto.ServerChannel method)</a>
 </li>
+        <li><a href="threading-client.html#caproto.threading.client.PV.subscribe">(caproto.threading.client.PV method)</a>
+</li>
       </ul></li>
+      <li><a href="threading-client.html#caproto.threading.client.Subscription">Subscription (class in caproto.threading.client)</a>
+</li>
       <li><a href="api.html#caproto.EventAddRequest.subscriptionid">subscriptionid (caproto.EventAddRequest attribute)</a>
 
       <ul>
@@ -699,12 +757,16 @@
 </li>
       <li><a href="api.html#caproto.VirtualCircuit">VirtualCircuit (class in caproto)</a>
 </li>
+      <li><a href="threading-client.html#caproto.threading.client.VirtualCircuitManager">VirtualCircuitManager (class in caproto.threading.client)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="threading-client.html#caproto.threading.client.PV.wait_for_search">wait_for_search() (caproto.threading.client.PV method)</a>
+</li>
       <li><a href="api.html#caproto.ClientChannel.write">write() (caproto.ClientChannel method)</a>
 
       <ul>
@@ -756,7 +818,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+58.g0544c88',
+            VERSION:'0.1.0a1+161.g41f1cf6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
