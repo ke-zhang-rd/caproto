@@ -1,54 +1,96 @@
 {
     "benchmarks": {
-        "benchmarks.TimeWaveform4000.time_caproto_curio": {
-            "code": "def time_caproto_curio(self):\n    async def curio_reading():\n        for i in range(self.ITERS):\n            reading = await self.chan1.read()\n            assert len(reading.data) == self.num\n\n    with curio.Kernel() as kernel:\n        kernel.run(curio_reading())\n",
-            "goal_time": 2.0,
-            "name": "benchmarks.TimeWaveform4000.time_caproto_curio",
+        "test_many_connections_same_ioc": {
+            "code": "    def pyepics():\n        nonlocal pvs\n\n        pvs = [epics.PV(pvname, auto_monitor=False)\n               for pvname in pv_names]\n\n        while not all(pv.connected for pv in pvs):\n            time.sleep(0.01)\n",
+            "name": "test_many_connections_same_ioc",
             "number": 0,
-            "param_names": [],
-            "params": [],
-            "pretty_name": "benchmarks.TimeWaveform4000.time_caproto_curio",
-            "repeat": 0,
-            "timeout": 60.0,
+            "param_names": [
+                "log_level",
+                "backend",
+                "pv_format",
+                "connection_count"
+            ],
+            "params": [
+                [
+                    "'INFO'"
+                ],
+                [
+                    "'pyepics'",
+                    "'curio'",
+                    "'trio'",
+                    "'threading'"
+                ],
+                [
+                    "'connections:{}'"
+                ],
+                [
+                    "5",
+                    "100",
+                    "500"
+                ]
+            ],
+            "pretty_name": "test_many_connections_same_ioc",
+            "repeat": 1,
             "type": "time",
             "unit": "seconds"
         },
-        "benchmarks.TimeWaveform4000.time_pyepics": {
-            "code": "def time_pyepics(self):\n    for i in range(self.ITERS):\n        values = self.pv.get(timeout=0.5, as_numpy=True)\n        assert len(values) == self.num\n",
-            "goal_time": 2.0,
-            "name": "benchmarks.TimeWaveform4000.time_pyepics",
+        "test_waveform_get": {
+            "code": "        def pyepics():\n            value = pv.get(use_monitor=False)\n            if initial_value is not None:\n                assert len(value) == len(initial_value)\n",
+            "name": "test_waveform_get",
             "number": 0,
-            "param_names": [],
-            "params": [],
-            "pretty_name": "benchmarks.TimeWaveform4000.time_pyepics",
-            "repeat": 0,
-            "timeout": 60.0,
+            "param_names": [
+                "log_level",
+                "backend",
+                "waveform_size"
+            ],
+            "params": [
+                [
+                    "'INFO'"
+                ],
+                [
+                    "'pyepics'",
+                    "'curio'",
+                    "'threading'"
+                ],
+                [
+                    "4000",
+                    "8000",
+                    "50000",
+                    "1000000"
+                ]
+            ],
+            "pretty_name": "test_waveform_get",
+            "repeat": 1,
             "type": "time",
             "unit": "seconds"
         },
-        "benchmarks.TimeWaveformMillion.time_caproto_curio": {
-            "code": "def time_caproto_curio(self):\n    async def curio_reading():\n        for i in range(self.ITERS):\n            reading = await self.chan1.read()\n            assert len(reading.data) == self.num\n\n    with curio.Kernel() as kernel:\n        kernel.run(curio_reading())\n",
-            "goal_time": 2.0,
-            "name": "benchmarks.TimeWaveformMillion.time_caproto_curio",
+        "test_waveform_put": {
+            "code": "        def pyepics():\n            pv.put(value, wait=True)\n",
+            "name": "test_waveform_put",
             "number": 0,
-            "param_names": [],
-            "params": [],
-            "pretty_name": "benchmarks.TimeWaveformMillion.time_caproto_curio",
-            "repeat": 0,
-            "timeout": 60.0,
-            "type": "time",
-            "unit": "seconds"
-        },
-        "benchmarks.TimeWaveformMillion.time_pyepics": {
-            "code": "def time_pyepics(self):\n    for i in range(self.ITERS):\n        values = self.pv.get(timeout=0.5, as_numpy=True)\n        assert len(values) == self.num\n",
-            "goal_time": 2.0,
-            "name": "benchmarks.TimeWaveformMillion.time_pyepics",
-            "number": 0,
-            "param_names": [],
-            "params": [],
-            "pretty_name": "benchmarks.TimeWaveformMillion.time_pyepics",
-            "repeat": 0,
-            "timeout": 60.0,
+            "param_names": [
+                "log_level",
+                "backend",
+                "waveform_size"
+            ],
+            "params": [
+                [
+                    "'INFO'"
+                ],
+                [
+                    "'pyepics'",
+                    "'curio'",
+                    "'threading'"
+                ],
+                [
+                    "4000",
+                    "8000",
+                    "50000",
+                    "1000000"
+                ]
+            ],
+            "pretty_name": "test_waveform_put",
+            "repeat": 1,
             "type": "time",
             "unit": "seconds"
         }
@@ -57,24 +99,30 @@
         {
             "arch": "x86_64",
             "branch": "master",
-            "cpu": "Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz",
-            "machine": "freyja.nsls2.bnl.gov",
-            "numpy": "",
-            "os": "Linux 3.19.0-84-generic",
-            "pip+curio": "",
-            "pip+pyepics": "",
-            "python": "3.6",
-            "ram": "264096552"
+            "cpu": "Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz",
+            "machine": "ip-172-31-83-159",
+            "os": "Linux 4.4.0-1060-aws",
+            "python": "3.6.5",
+            "ram": "4.05M"
+        },
+        {
+            "arch": "x86_64",
+            "branch": "master",
+            "cpu": "Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz",
+            "machine": "ip-172-31-83-159",
+            "os": "Linux 4.4.0-1060-aws",
+            "python": "3.6.5",
+            "ram": "4.0M"
         }
     ],
     "hash_length": 8,
     "machines": {
-        "freyja.nsls2.bnl.gov": {
+        "ip-172-31-83-159": {
             "arch": "x86_64",
-            "cpu": "Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz",
-            "machine": "freyja.nsls2.bnl.gov",
-            "os": "Linux 3.19.0-84-generic",
-            "ram": "264096552",
+            "cpu": "Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz",
+            "machine": "ip-172-31-83-159",
+            "os": "Linux 4.4.0-1060-aws",
+            "ram": "4.05M",
             "version": 1
         }
     },
@@ -103,42 +151,44 @@
             "master"
         ],
         "cpu": [
-            "Intel(R) Xeon(R) CPU E5-2697 v2 @ 2.70GHz"
+            "Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz"
         ],
         "machine": [
-            "freyja.nsls2.bnl.gov"
-        ],
-        "numpy": [
-            ""
+            "ip-172-31-83-159"
         ],
         "os": [
-            "Linux 3.19.0-84-generic"
-        ],
-        "pip+curio": [
-            ""
-        ],
-        "pip+pyepics": [
-            ""
+            "Linux 4.4.0-1060-aws"
         ],
         "python": [
-            "3.6"
+            "3.6.5"
         ],
         "ram": [
-            "264096552"
+            "4.05M",
+            "4.0M"
         ]
     },
     "project": "caproto",
-    "project_url": "https://danielballan.github.io/caproto/doc",
+    "project_url": "https://nsls-ii.github.io/caproto/doc",
     "revision_to_date": {
-        "708": 1493217608000,
-        "709": 1493217644000,
-        "714": 1493221820000
+        "1947": 1526476971000,
+        "2025": 1527675888000,
+        "2028": 1527845488000,
+        "2078": 1527938343000,
+        "2118": 1527972616000,
+        "2127": 1528019254000,
+        "2140": 1528049016000
     },
     "revision_to_hash": {
-        "708": "3a9140ab685ae80336bfa36965cde6021c612061",
-        "709": "147aa40d175f196ef6689120e3569794f044da4f",
-        "714": "7ae17e31a6bd89bf72f6c5550469f9e8fda69aea"
+        "1947": "3f1875ff542e6798929dfbef94c926a6a39df7cb",
+        "2025": "0544c882c641319083049b5778372a219be92c45",
+        "2028": "770c6242cda1ac87868bf9aaf764af454c73b2ef",
+        "2078": "dab4e493f6f01df735522f7ff9662468b81fa70a",
+        "2118": "2fe818962bed5e95f46d1be6007e8f56b94860ca",
+        "2127": "41f1cf66379edf99090045b823c6b79c06d716c3",
+        "2140": "9546d413321c3eacda556995bf340b8898c629dd"
     },
     "show_commit_url": "#",
-    "tags": {}
+    "tags": {
+        "v0.1.0a1": 1947
+    }
 }

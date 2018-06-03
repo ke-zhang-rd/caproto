@@ -1,3 +1,104 @@
 {
-    "regressions": []
+    "regressions": [
+        [
+            "test_many_connections_same_ioc('INFO', 'curio', 'connections:{}', 100)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
+            {
+                "ram": "4.05M"
+            },
+            4,
+            [
+                [
+                    [
+                        null,
+                        2078,
+                        0.06374170231356402,
+                        0.20625459767082552
+                    ]
+                ],
+                0.20625459767082552,
+                0.06374170231356402
+            ]
+        ],
+        [
+            "test_many_connections_same_ioc('INFO', 'curio', 'connections:{}', 500)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
+            {
+                "ram": "4.05M"
+            },
+            5,
+            [
+                [
+                    [
+                        null,
+                        2078,
+                        0.3638965291029308,
+                        1.1994979687966407
+                    ]
+                ],
+                1.1994979687966407,
+                0.3638965291029308
+            ]
+        ],
+        [
+            "test_many_connections_same_ioc('INFO', 'trio', 'connections:{}', 5)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
+            {
+                "ram": "4.05M"
+            },
+            6,
+            [
+                [
+                    [
+                        null,
+                        2078,
+                        0.015066726955901829,
+                        0.020777489018049284
+                    ]
+                ],
+                0.020777489018049284,
+                0.015066726955901829
+            ]
+        ],
+        [
+            "test_many_connections_same_ioc('INFO', 'trio', 'connections:{}', 100)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
+            {
+                "ram": "4.05M"
+            },
+            7,
+            [
+                [
+                    [
+                        null,
+                        2078,
+                        0.13805980455280015,
+                        0.24215198580059222
+                    ]
+                ],
+                0.24215198580059222,
+                0.13805980455280015
+            ]
+        ],
+        [
+            "test_many_connections_same_ioc('INFO', 'trio', 'connections:{}', 500)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
+            {
+                "ram": "4.05M"
+            },
+            8,
+            [
+                [
+                    [
+                        null,
+                        2078,
+                        0.7928010414034361,
+                        1.287318980798591
+                    ]
+                ],
+                1.287318980798591,
+                0.7928010414034361
+            ]
+        ]
+    ]
 }

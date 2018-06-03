@@ -1,0 +1,362 @@
+[
+    {
+        "change_rev": null,
+        "idx": 0,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0024040464668360073,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'pyepics', 'connections:{}', 5)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 1,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.04665471258097872,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'pyepics', 'connections:{}', 100)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 2,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.23138573070588922,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'pyepics', 'connections:{}', 500)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 3,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.02392931715003215,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'curio', 'connections:{}', 5)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 4,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.202069232337332,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'curio', 'connections:{}', 100)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 5,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 1.180982317397138,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'curio', 'connections:{}', 500)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 6,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.021192708306233935,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'trio', 'connections:{}', 5)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 7,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.2472678648016881,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'trio', 'connections:{}', 100)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 8,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 1.2624874814064242,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'trio', 'connections:{}', 500)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 9,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 1.117089414037764e-05,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'threading', 'connections:{}', 5)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 10,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0001704994007013738,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'threading', 'connections:{}', 100)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 11,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0008527435944415629,
+        "name": "test_many_connections_same_ioc",
+        "pretty_name": "test_many_connections_same_ioc('INFO', 'threading', 'connections:{}', 500)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 0,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.00026346329712782914,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'pyepics', 4000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 1,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.00029257713075864623,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'pyepics', 8000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 2,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0006317432488384062,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'pyepics', 50000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 3,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.008505831872436987,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'pyepics', 1000000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 4,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0003106469146627718,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'curio', 4000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 5,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0003372660814586032,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'curio', 8000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 6,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0005098822337784631,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'curio', 50000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 7,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.004227276895085338,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'curio', 1000000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 8,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.00028832549433317593,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'threading', 4000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 9,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.00030320338785556726,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'threading', 8000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 10,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0004635576682228801,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'threading', 50000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 11,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.004037282115523913,
+        "name": "test_waveform_get",
+        "pretty_name": "test_waveform_get('INFO', 'threading', 1000000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 0,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.00046023265813590627,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'pyepics', 4000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 1,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0006580714381375718,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'pyepics', 8000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 2,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.002937146783224307,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'pyepics', 50000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 3,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.05705793987144716,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'pyepics', 1000000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 4,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0006417451649340611,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'curio', 4000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 5,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.000900995845504826,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'curio', 8000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 6,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0035311932202286857,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'curio', 50000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 7,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.06668743020272813,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'curio', 1000000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 8,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0006104475198249399,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'threading', 4000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 9,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.0008724100776016712,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'threading', 8000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 10,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.003552269915720293,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'threading', 50000)",
+        "prev_value": null
+    },
+    {
+        "change_rev": null,
+        "idx": 11,
+        "last_err": 0.0,
+        "last_rev": 2140,
+        "last_value": 0.06756004419682236,
+        "name": "test_waveform_put",
+        "pretty_name": "test_waveform_put('INFO', 'threading', 1000000)",
+        "prev_value": null
+    }
+]
