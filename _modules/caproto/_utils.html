@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0.1.0a1+180.g12d4d3b documentation</title>
+  <title>caproto._utils &mdash; caproto 0.1.0a1+183.g1ce37f1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+180.g12d4d3b
+                0.1.0a1+183.g1ce37f1
               </div>
             
           
@@ -198,7 +198,6 @@
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>  <span class="c1"># noqa F822</span>
-    <span class="s1">&#39;make_sentinel&#39;</span><span class="p">,</span>
     <span class="s1">&#39;get_environment_variables&#39;</span><span class="p">,</span>
     <span class="s1">&#39;get_address_list&#39;</span><span class="p">,</span>
     <span class="s1">&#39;get_server_address_list&#39;</span><span class="p">,</span>
@@ -243,42 +242,49 @@
 
 <span class="c1"># This module defines sentinels used in the state machine and elsewhere, such</span>
 <span class="c1"># as NEED_DATA, CLIENT, SERVER, AWAITING_SEARCH_RESPONSE, etc.</span>
-<span class="c1"># It also defines some custom Exceptions. That is all.</span>
+<span class="c1"># It also defines some custom Exceptions.</span>
 
-<span class="c1"># This sentinel code is copied, with thanks and admiration, from h11,</span>
-<span class="c1"># which is released under an MIT license.</span>
-<span class="c1">#</span>
-<span class="c1"># Sentinel values</span>
-<span class="c1">#</span>
-<span class="c1"># - Inherit identity-based comparison and hashing from object</span>
-<span class="c1"># - Have a nice repr</span>
-<span class="c1"># - Have a *bonus property*: type(sentinel) is sentinel</span>
-<span class="c1">#</span>
-<span class="c1"># The bonus property is useful if you want to take the return value from</span>
-<span class="c1"># next_event() and do some sort of dispatch based on type(event).</span>
-<span class="k">class</span> <span class="nc">_SentinelBase</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">_SimpleReprEnum</span><span class="p">(</span><span class="n">enum</span><span class="o">.</span><span class="n">Enum</span><span class="p">):</span>
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
 
 
-<span class="k">def</span> <span class="nf">make_sentinel</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
-    <span class="bp">cls</span> <span class="o">=</span> <span class="n">_SentinelBase</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">_SentinelBase</span><span class="p">,),</span> <span class="p">{})</span>
-    <span class="bp">cls</span><span class="o">.</span><span class="vm">__class__</span> <span class="o">=</span> <span class="bp">cls</span>
-    <span class="k">return</span> <span class="bp">cls</span>
+<span class="k">class</span> <span class="nc">Role</span><span class="p">(</span><span class="n">_SimpleReprEnum</span><span class="p">):</span>
+    <span class="n">CLIENT</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SERVER</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">Direction</span><span class="p">(</span><span class="n">_SimpleReprEnum</span><span class="p">):</span>
+    <span class="n">RESPONSE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">REQUEST</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">States</span><span class="p">(</span><span class="n">_SimpleReprEnum</span><span class="p">):</span>
+    <span class="n">SEND_SEARCH_REQUEST</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">AWAIT_SEARCH_RESPONSE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SEND_SEARCH_RESPONSE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SEND_VERSION_REQUEST</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">AWAIT_VERSION_RESPONSE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SEND_VERSION_RESPONSE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SEND_CREATE_CHAN_REQUEST</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">AWAIT_CREATE_CHAN_RESPONSE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">SEND_CREATE_CHAN_RESPONSE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">CONNECTED</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">MUST_CLOSE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">CLOSED</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">IDLE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">FAILED</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">DISCONNECTED</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+
+    <span class="c1"># Special old &#39;sentinel&#39; for needing more data</span>
+    <span class="n">NEED_DATA</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
 
 <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
-    <span class="p">{</span><span class="n">token</span><span class="p">:</span> <span class="n">make_sentinel</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span>
-     <span class="p">(</span><span class="s1">&#39;CLIENT&#39;</span><span class="p">,</span> <span class="s1">&#39;SERVER&#39;</span><span class="p">,</span>  <span class="c1"># roles</span>
-      <span class="s1">&#39;RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;REQUEST&#39;</span><span class="p">,</span>  <span class="c1"># directions</span>
-      <span class="s1">&#39;NEED_DATA&#39;</span><span class="p">,</span>  <span class="c1"># special sentinel for read_* functions</span>
-      <span class="c1"># and states</span>
-      <span class="s1">&#39;SEND_SEARCH_REQUEST&#39;</span><span class="p">,</span> <span class="s1">&#39;AWAIT_SEARCH_RESPONSE&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;SEND_SEARCH_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;SEND_VERSION_REQUEST&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;AWAIT_VERSION_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;SEND_VERSION_RESPONSE&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;SEND_CREATE_CHAN_REQUEST&#39;</span><span class="p">,</span> <span class="s1">&#39;AWAIT_CREATE_CHAN_RESPONSE&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;SEND_CREATE_CHAN_RESPONSE&#39;</span><span class="p">,</span> <span class="s1">&#39;CONNECTED&#39;</span><span class="p">,</span> <span class="s1">&#39;MUST_CLOSE&#39;</span><span class="p">,</span> <span class="s1">&#39;CLOSED&#39;</span><span class="p">,</span>
-      <span class="s1">&#39;IDLE&#39;</span><span class="p">,</span> <span class="s1">&#39;FAILED&#39;</span><span class="p">,</span> <span class="s1">&#39;DISCONNECTED&#39;</span><span class="p">)</span>
+    <span class="p">{</span><span class="n">token</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_enum</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+     <span class="k">for</span> <span class="n">_enum</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Role</span><span class="p">,</span> <span class="n">Direction</span><span class="p">,</span> <span class="n">States</span><span class="p">]</span>
+     <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="n">_enum</span><span class="p">)</span>
+     <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
      <span class="p">})</span>
 
 
@@ -916,7 +922,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+180.g12d4d3b',
+            VERSION:'0.1.0a1+183.g1ce37f1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

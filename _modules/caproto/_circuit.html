@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0.1.0a1+180.g12d4d3b documentation</title>
+  <title>caproto._circuit &mdash; caproto 0.1.0a1+183.g1ce37f1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+180.g12d4d3b
+                0.1.0a1+183.g1ce37f1
               </div>
             
           
@@ -342,7 +342,7 @@
              <span class="n">num_bytes_needed</span><span class="p">)</span> <span class="o">=</span> <span class="n">read_from_bytestream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span>
                                                       <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">)</span>
             <span class="n">len_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>  <span class="c1"># just for logging</span>
-            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">command</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">NEED_DATA</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">command</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">NEED_DATA</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> bytes -&gt; </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="n">command</span><span class="p">)</span>
                 <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
@@ -1089,7 +1089,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+180.g12d4d3b',
+            VERSION:'0.1.0a1+183.g1ce37f1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

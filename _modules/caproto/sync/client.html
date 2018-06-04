@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.sync.client &mdash; caproto 0.1.0a1+180.g12d4d3b documentation</title>
+  <title>caproto.sync.client &mdash; caproto 0.1.0a1+183.g1ce37f1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+180.g12d4d3b
+                0.1.0a1+183.g1ce37f1
               </div>
             
           
@@ -683,7 +683,7 @@
                     <span class="k">for</span> <span class="n">response</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
                         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">ErrorResponse</span><span class="p">):</span>
                             <span class="k">raise</span> <span class="n">ErrorResponseReceived</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">DISCONNECTED</span><span class="p">:</span>
                             <span class="c1"># TODO Re-connect.</span>
                             <span class="k">raise</span> <span class="n">CaprotoError</span><span class="p">(</span><span class="s2">&quot;Disconnected&quot;</span><span class="p">)</span>
                         <span class="n">chan</span> <span class="o">=</span> <span class="n">sub_ids</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">subscriptionid</span><span class="p">)</span>
@@ -995,7 +995,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0a1+180.g12d4d3b',
+            VERSION:'0.1.0a1+183.g1ce37f1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
