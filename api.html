@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Core API Documentation &mdash; caproto 0.1.0a1+170.g9546d41 documentation</title>
+  <title>Core API Documentation &mdash; caproto 0.1.0a1+180.g12d4d3b documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.1.0a1+170.g9546d41
+                0.1.0a1+180.g12d4d3b
               </div>
             
           
@@ -2244,6 +2244,12 @@ requests are still awaiting replies</li>
 <li><code class="docutils literal notranslate"><span class="pre">'caproto.ctx.&lt;id&gt;'</span></code> – narrows to one specific Context instance <code class="docutils literal notranslate"><span class="pre">ctx</span></code>
 where <code class="docutils literal notranslate"><span class="pre">&lt;id&gt;</span></code> <code class="docutils literal notranslate"><span class="pre">str(id(ctx))</span></code></li>
 </ul>
+<p>At import time, caproto adds a logging stream handler
+<code class="docutils literal notranslate"><span class="pre">caproto.color_log_handler</span></code> to the <code class="docutils literal notranslate"><span class="pre">'caproto'</span></code> logger, which uses ANSI
+color codes to color-code the log messages by log level.</p>
+<p>To conveniently switch to a version without the colors:</p>
+<p>You can, of course, configure the handlers manually in the standard fashion
+supported by Python, using <code class="docutils literal notranslate"><span class="pre">logging.getLogger('caproto').handlers</span></code>.</p>
 </div>
 </div>
 
@@ -2289,7 +2295,7 @@ where <code class="docutils literal notranslate"><span class="pre">&lt;id&gt;</s
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+170.g9546d41',
+            VERSION:'0.1.0a1+180.g12d4d3b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

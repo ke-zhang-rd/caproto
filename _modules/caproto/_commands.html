@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0.1.0a1+170.g9546d41 documentation</title>
+  <title>caproto._commands &mdash; caproto 0.1.0a1+180.g12d4d3b documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+170.g9546d41
+                0.1.0a1+180.g12d4d3b
               </div>
             
           
@@ -180,9 +180,9 @@
 <span class="c1"># A command class may be instantiated in one of two ways:</span>
 <span class="c1"># 1. For sending: by passing user-friendly inputs to ``__init__``.</span>
 <span class="c1"># 2. For receiving: by passing a datagram or bytestream to the functions</span>
-<span class="c1">#    ``read_datagram`` and `read_bytestream`` respectively. These identify the</span>
-<span class="c1">#    command type and instantiate the appropriate class from bytes using</span>
-<span class="c1">#    ``__new__``.</span>
+<span class="c1">#    ``read_datagram`` and `read_from _bytestream`` respectively. These</span>
+<span class="c1">#    identify the command type and instantiate the appropriate class from bytes</span>
+<span class="c1">#    using ``__new__``.</span>
 <span class="c1">#</span>
 <span class="c1"># (1) is typically done by the user. (2) is typically done by calling the</span>
 <span class="c1"># ``next_command`` method of a :class:`Broadcaster` or a</span>
@@ -220,12 +220,35 @@
                    <span class="n">native_type</span><span class="p">,</span> <span class="n">special_types</span><span class="p">,</span> <span class="n">MAX_STRING_SIZE</span><span class="p">,</span> <span class="n">AccessRights</span><span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_dbr</span> <span class="k">as</span> <span class="n">dbr</span>
-<span class="kn">from</span> <span class="nn">._backend</span> <span class="k">import</span> <span class="n">backend_ns</span> <span class="k">as</span> <span class="n">backend</span>
-<span class="kn">from</span> <span class="nn">._status</span> <span class="k">import</span> <span class="n">eca_value_to_status</span>
+<span class="kn">from</span> <span class="nn">._backend</span> <span class="k">import</span> <span class="n">backend</span>
+<span class="kn">from</span> <span class="nn">._status</span> <span class="k">import</span> <span class="n">eca_value_to_status</span><span class="p">,</span> <span class="n">ensure_eca_value</span>
 <span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">REQUEST</span><span class="p">,</span> <span class="n">RESPONSE</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span>
                      <span class="n">CaprotoTypeError</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span>
                      <span class="n">CaprotoNotImplementedError</span><span class="p">,</span>
                      <span class="n">ensure_bytes</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;AccessRightsResponse&#39;</span><span class="p">,</span> <span class="s1">&#39;ClearChannelRequest&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ClearChannelResponse&#39;</span><span class="p">,</span> <span class="s1">&#39;ClientNameRequest&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;CreateChFailResponse&#39;</span><span class="p">,</span> <span class="s1">&#39;CreateChanRequest&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;CreateChanResponse&#39;</span><span class="p">,</span> <span class="s1">&#39;EchoRequest&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;EchoResponse&#39;</span><span class="p">,</span> <span class="s1">&#39;ErrorResponse&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;EventAddRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;EventAddRequestPayload&#39;</span><span class="p">,</span> <span class="s1">&#39;EventAddResponse&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;EventCancelRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;EventCancelResponse&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;EventsOffRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;EventsOnRequest&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;get_command_class&#39;</span><span class="p">,</span> <span class="s1">&#39;HostNameRequest&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ipv4_from_int32&#39;</span><span class="p">,</span> <span class="s1">&#39;ipv4_to_int32&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;NotFoundResponse&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ReadNotifyRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;ReadNotifyResponse&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ReadRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;ReadResponse&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ReadSyncRequest&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;RepeaterConfirmResponse&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;RepeaterRegisterRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;RsrvIsUpResponse&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;SearchRequest&#39;</span><span class="p">,</span> <span class="s1">&#39;SearchResponse&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;ServerDisconnResponse&#39;</span><span class="p">,</span> <span class="s1">&#39;VersionRequest&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;VersionResponse&#39;</span><span class="p">,</span> <span class="s1">&#39;WriteNotifyRequest&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;WriteNotifyResponse&#39;</span><span class="p">,</span> <span class="s1">&#39;WriteRequest&#39;</span><span class="p">,</span>
+           <span class="p">)</span>
 
 
 <span class="n">_MessageHeaderSize</span> <span class="o">=</span> <span class="n">ctypes</span><span class="o">.</span><span class="n">sizeof</span><span class="p">(</span><span class="n">MessageHeader</span><span class="p">)</span>
@@ -1096,6 +1119,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
                  <span class="n">status_code</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">size</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
+        <span class="n">status_code</span> <span class="o">=</span> <span class="n">ensure_eca_value</span><span class="p">(</span><span class="n">status_code</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">EventAddResponseHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
                                         <span class="n">status_code</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">)</span>
@@ -1344,6 +1368,7 @@
         <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">req_bytes</span><span class="p">)</span> <span class="o">+</span> <span class="n">msg_size</span>
         <span class="n">payload</span> <span class="o">=</span> <span class="n">req_bytes</span> <span class="o">+</span> <span class="n">msg_payload</span>
 
+        <span class="n">status_code</span> <span class="o">=</span> <span class="n">ensure_eca_value</span><span class="p">(</span><span class="n">status_code</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">ErrorResponseHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">status_code</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
 
@@ -1495,6 +1520,7 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="n">size</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">ensure_eca_value</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">ReadNotifyResponseHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
                                           <span class="n">ioid</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">)</span>
@@ -1693,6 +1719,7 @@
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">):</span>
+        <span class="n">status</span> <span class="o">=</span> <span class="n">ensure_eca_value</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">WriteNotifyResponseHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
@@ -1866,7 +1893,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+170.g9546d41',
+            VERSION:'0.1.0a1+180.g12d4d3b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

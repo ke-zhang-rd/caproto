@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._dbr &mdash; caproto 0.1.0a1+170.g9546d41 documentation</title>
+  <title>caproto._dbr &mdash; caproto 0.1.0a1+180.g12d4d3b documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+170.g9546d41
+                0.1.0a1+180.g12d4d3b
               </div>
             
           
@@ -180,6 +180,16 @@
 <span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">IntEnum</span><span class="p">,</span> <span class="n">IntFlag</span>
 <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">EPICS2UNIX_EPOCH</span><span class="p">,</span> <span class="n">EPICS_EPOCH</span><span class="p">,</span> <span class="n">MAX_STRING_SIZE</span><span class="p">,</span>
                          <span class="n">MAX_UNITS_SIZE</span><span class="p">,</span> <span class="n">MAX_ENUM_STRING_SIZE</span><span class="p">,</span> <span class="n">MAX_ENUM_STATES</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;AccessRights&#39;</span><span class="p">,</span> <span class="s1">&#39;AlarmSeverity&#39;</span><span class="p">,</span> <span class="s1">&#39;AlarmStatus&#39;</span><span class="p">,</span> <span class="s1">&#39;ConnStatus&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;TimeStamp&#39;</span><span class="p">,</span> <span class="s1">&#39;ChannelType&#39;</span><span class="p">,</span> <span class="s1">&#39;SubscriptionType&#39;</span><span class="p">,</span> <span class="s1">&#39;DbrStringArray&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;epics_timestamp_to_unix&#39;</span><span class="p">,</span> <span class="s1">&#39;timestamp_to_epics&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;field_types&#39;</span><span class="p">,</span> <span class="s1">&#39;DBR_TYPES&#39;</span><span class="p">,</span> <span class="s1">&#39;native_type&#39;</span><span class="p">,</span> <span class="s1">&#39;native_types&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;status_types&#39;</span><span class="p">,</span> <span class="s1">&#39;time_types&#39;</span><span class="p">,</span> <span class="s1">&#39;graphical_types&#39;</span><span class="p">,</span> <span class="s1">&#39;control_types&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;char_types&#39;</span><span class="p">,</span> <span class="s1">&#39;string_types&#39;</span><span class="p">,</span> <span class="s1">&#39;int_types&#39;</span><span class="p">,</span> <span class="s1">&#39;float_types&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;enum_types&#39;</span><span class="p">,</span> <span class="s1">&#39;char_types&#39;</span><span class="p">,</span> <span class="s1">&#39;native_float_types&#39;</span><span class="p">,</span>
+           <span class="s1">&#39;native_int_types&#39;</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">AccessRights</span><span class="p">(</span><span class="n">IntFlag</span><span class="p">):</span>
@@ -1280,7 +1290,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+170.g9546d41',
+            VERSION:'0.1.0a1+180.g12d4d3b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
