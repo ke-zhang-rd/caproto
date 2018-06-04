@@ -3,101 +3,229 @@
         [
             "test_many_connections_same_ioc('INFO', 'curio', 'connections:{}', 100)",
             "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
-            {
-                "ram": "4.05M"
-            },
-            4,
+            {},
+            1,
             [
                 [
                     [
+                        1933,
+                        1944,
+                        0.053716661776860214,
+                        0.06382546115492005
+                    ],
+                    [
                         null,
                         2078,
-                        0.06374170231356402,
-                        0.20625459767082552
+                        0.06382546115492005,
+                        0.20391342770017218
                     ]
                 ],
-                0.20625459767082552,
-                0.06374170231356402
+                0.20391342770017218,
+                0.053716661776860214
             ]
         ],
         [
             "test_many_connections_same_ioc('INFO', 'curio', 'connections:{}', 500)",
             "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
-            {
-                "ram": "4.05M"
-            },
+            {},
+            2,
+            [
+                [
+                    [
+                        1933,
+                        1944,
+                        0.28514895300322673,
+                        0.3631078601989429
+                    ],
+                    [
+                        null,
+                        2078,
+                        0.3631078601989429,
+                        1.1798302038019757
+                    ]
+                ],
+                1.1798302038019757,
+                0.28514895300322673
+            ]
+        ],
+        [
+            "test_many_connections_same_ioc('INFO', 'threading', 'connections:{}', 500)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
+            {},
+            8,
+            [
+                [
+                    [
+                        1933,
+                        1944,
+                        0.0008034820959437639,
+                        0.0008613804937340319
+                    ]
+                ],
+                0.0008613804937340319,
+                0.0008034820959437639
+            ]
+        ],
+        [
+            "test_waveform_get('INFO', 'threading', 8000)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_waveform_get.json",
+            {},
+            9,
+            [
+                [
+                    [
+                        1933,
+                        1944,
+                        0.00028342268700392393,
+                        0.00030287745944582395
+                    ]
+                ],
+                0.00030287745944582395,
+                0.00028342268700392393
+            ]
+        ],
+        [
+            "test_waveform_get('INFO', 'threading', 50000)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_waveform_get.json",
+            {},
+            10,
+            [
+                [
+                    [
+                        1933,
+                        1944,
+                        0.00043855902371939883,
+                        0.0004617264308001206
+                    ]
+                ],
+                0.0004617264308001206,
+                0.00043855902371939883
+            ]
+        ],
+        [
+            "test_waveform_put('INFO', 'curio', 4000)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_waveform_put.json",
+            {},
+            4,
+            [
+                [
+                    [
+                        null,
+                        1924,
+                        0.0005152151677275149,
+                        0.0006406148990484393
+                    ]
+                ],
+                0.0006406148990484393,
+                0.0005152151677275149
+            ]
+        ],
+        [
+            "test_waveform_put('INFO', 'curio', 8000)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_waveform_put.json",
+            {},
             5,
             [
                 [
                     [
                         null,
-                        2078,
-                        0.3638965291029308,
-                        1.1994979687966407
+                        1924,
+                        0.00067226440706947,
+                        0.0009013214833843945
                     ]
                 ],
-                1.1994979687966407,
-                0.3638965291029308
+                0.0009013214833843945,
+                0.00067226440706947
             ]
         ],
         [
-            "test_many_connections_same_ioc('INFO', 'trio', 'connections:{}', 5)",
-            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
-            {
-                "ram": "4.05M"
-            },
+            "test_waveform_put('INFO', 'curio', 50000)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_waveform_put.json",
+            {},
             6,
             [
                 [
                     [
                         null,
-                        2078,
-                        0.015066726955901829,
-                        0.020777489018049284
+                        1924,
+                        0.0022548152378294617,
+                        0.0035337907477999884
                     ]
                 ],
-                0.020777489018049284,
-                0.015066726955901829
+                0.0035337907477999884,
+                0.0022548152378294617
             ]
         ],
         [
-            "test_many_connections_same_ioc('INFO', 'trio', 'connections:{}', 100)",
-            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
-            {
-                "ram": "4.05M"
-            },
+            "test_waveform_put('INFO', 'curio', 1000000)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_waveform_put.json",
+            {},
             7,
             [
                 [
                     [
                         null,
-                        2078,
-                        0.13805980455280015,
-                        0.24215198580059222
+                        1924,
+                        0.039314203124376945,
+                        0.06696306923046134
                     ]
                 ],
-                0.24215198580059222,
-                0.13805980455280015
+                0.06696306923046134,
+                0.039314203124376945
             ]
         ],
         [
-            "test_many_connections_same_ioc('INFO', 'trio', 'connections:{}', 500)",
-            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_many_connections_same_ioc.json",
-            {
-                "ram": "4.05M"
-            },
+            "test_waveform_put('INFO', 'threading', 4000)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_waveform_put.json",
+            {},
             8,
             [
                 [
                     [
                         null,
-                        2078,
-                        0.7928010414034361,
-                        1.287318980798591
+                        1918,
+                        0.00046704322339131466,
+                        0.000610372005594779
                     ]
                 ],
-                1.287318980798591,
-                0.7928010414034361
+                0.000610372005594779,
+                0.00046704322339131466
+            ]
+        ],
+        [
+            "test_waveform_put('INFO', 'threading', 8000)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_waveform_put.json",
+            {},
+            9,
+            [
+                [
+                    [
+                        null,
+                        1918,
+                        0.0006200908242710816,
+                        0.0008636384520850579
+                    ]
+                ],
+                0.0008636384520850579,
+                0.0006200908242710816
+            ]
+        ],
+        [
+            "test_waveform_put('INFO', 'threading', 1000000)",
+            "graphs/arch-x86_64/branch-master/cpu-Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz/machine-ip-172-31-83-159/os-Linux 4.4.0-1060-aws/python-3.6.5/ram-4.05M/test_waveform_put.json",
+            {},
+            11,
+            [
+                [
+                    [
+                        1901,
+                        1924,
+                        0.039250960497156484,
+                        0.06711846299899313
+                    ]
+                ],
+                0.06711846299899313,
+                0.039250960497156484
             ]
         ]
     ]

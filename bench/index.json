@@ -1,7 +1,7 @@
 {
     "benchmarks": {
         "test_many_connections_same_ioc": {
-            "code": "    def pyepics():\n        nonlocal pvs\n\n        pvs = [epics.PV(pvname, auto_monitor=False)\n               for pvname in pv_names]\n\n        while not all(pv.connected for pv in pvs):\n            time.sleep(0.01)\n",
+            "code": "    def curio_client():\n        with curio.Kernel() as kernel:\n            kernel.run(test)\n",
             "name": "test_many_connections_same_ioc",
             "number": 0,
             "param_names": [
@@ -15,9 +15,8 @@
                     "'INFO'"
                 ],
                 [
-                    "'pyepics'",
                     "'curio'",
-                    "'trio'",
+                    "'pyepics'",
                     "'threading'"
                 ],
                 [
@@ -104,15 +103,6 @@
             "os": "Linux 4.4.0-1060-aws",
             "python": "3.6.5",
             "ram": "4.05M"
-        },
-        {
-            "arch": "x86_64",
-            "branch": "master",
-            "cpu": "Intel(R) Xeon(R) CPU E5-2676 v3 @ 2.40GHz",
-            "machine": "ip-172-31-83-159",
-            "os": "Linux 4.4.0-1060-aws",
-            "python": "3.6.5",
-            "ram": "4.0M"
         }
     ],
     "hash_length": 8,
@@ -163,14 +153,37 @@
             "3.6.5"
         ],
         "ram": [
-            "4.05M",
-            "4.0M"
+            "4.05M"
         ]
     },
     "project": "caproto",
     "project_url": "https://nsls-ii.github.io/caproto/doc",
     "revision_to_date": {
+        "1842": 1523632438000,
+        "1850": 1523717131000,
+        "1863": 1523711454000,
+        "1867": 1523732614000,
+        "1872": 1523741214000,
+        "1878": 1523824114000,
+        "1885": 1524139512000,
+        "1891": 1524302717000,
+        "1895": 1524735359000,
+        "1901": 1525117378000,
+        "1918": 1525161501000,
+        "1924": 1525169061000,
+        "1928": 1525182909000,
+        "1933": 1525195494000,
+        "1944": 1526460075000,
         "1947": 1526476971000,
+        "1950": 1526507227000,
+        "1955": 1527152438000,
+        "1958": 1527155082000,
+        "1988": 1527505943000,
+        "1997": 1527525993000,
+        "1999": 1527529734000,
+        "2006": 1527602507000,
+        "2013": 1527624532000,
+        "2014": 1527641004000,
         "2025": 1527675888000,
         "2028": 1527845488000,
         "2078": 1527938343000,
@@ -179,7 +192,31 @@
         "2140": 1528049016000
     },
     "revision_to_hash": {
+        "1842": "a0071f5b59b0cb7ce117a3b7e94dc8d389ba91a0",
+        "1850": "badcf91cef38a4b4b6542d026033ec6afc301ef9",
+        "1863": "c0de2a17586f7f4f1b1931d44b6ad1916016afe3",
+        "1867": "82c06734da8ba9c5022aaf4dfbbd9134ebe2ddca",
+        "1872": "67a4db587752d17e91654e78ec202f7f645705e6",
+        "1878": "9462a078fb006f71c621f62960b872f8d366db61",
+        "1885": "e07f0fb9d37faa074933c97d71dd744ec309841b",
+        "1891": "d4721f8b6803ea05213c8bcdfa652cbb5ad586f6",
+        "1895": "69dc5eb2de7d3f0de07066526d8732dbb7bafc28",
+        "1901": "ece26e3dcaa1a54d13128db40e69a144f9650bda",
+        "1918": "0cd43705eb2bdaf7607a5daa8c304ceaf604cc39",
+        "1924": "72f7f4221c54e45b868bbff85a605018d475ab25",
+        "1928": "1403eb1ab5e8513a8cae3f05487375f6de4d7342",
+        "1933": "4c36fb720f6122fb2f7b7b9c93e80d9d0543f4e3",
+        "1944": "fd59c9ad74ed3ba598b43631a361a9359a1ae41e",
         "1947": "3f1875ff542e6798929dfbef94c926a6a39df7cb",
+        "1950": "a9935f94968c1e2f7c7e4af981601254396e34e1",
+        "1955": "a148b383f43cbb5ceb8a23cc2d36054da4ac784b",
+        "1958": "38ad9b60d975619da4776e543455209cd3634b34",
+        "1988": "25c529013c762918619dbb04947ab55601cebefa",
+        "1997": "2837b28da113e9205c91b0dc89fe7ff068e0b3eb",
+        "1999": "3b402d9c05a4258115f6901dad7b634b1a3f920c",
+        "2006": "adadbc808fa632d0b4d3c7c4d6d79bb71c87f617",
+        "2013": "0ac04d3d2509bbef8dfa478587e907c1f85940a2",
+        "2014": "7e974d79b9f560af9cae32a5c2c65da40b6db4ca",
         "2025": "0544c882c641319083049b5778372a219be92c45",
         "2028": "770c6242cda1ac87868bf9aaf764af454c73b2ef",
         "2078": "dab4e493f6f01df735522f7ff9662468b81fa70a",
