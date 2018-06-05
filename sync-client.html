@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Synchronous Client &mdash; caproto 0.1.0a1+183.g1ce37f1 documentation</title>
+  <title>Synchronous Client &mdash; caproto 0.1.0a1+185.gf3a01a8 documentation</title>
   
 
   
@@ -59,7 +59,7 @@
             
             
               <div class="version">
-                0.1.0a1+183.g1ce37f1
+                0.1.0a1+185.gf3a01a8
               </div>
             
           
@@ -216,7 +216,7 @@ data structures.</p>
 <span class="gh">Out[6]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=0)</span>
 
 <span class="gp">In [7]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                         Out[7]: (b&#39;&#39;, &lt;memory at 0x1460ea9824c8&gt;)</span>
+<span class="go">                                                                                                         Out[7]: (b&#39;&#39;, &lt;memory at 0x2aeed96ec108&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
@@ -229,7 +229,7 @@ once) or one copy (if the data bridged multiple receipts).</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">before</span><span class="p">,</span> <span class="n">after</span> <span class="o">=</span> <span class="n">put</span><span class="p">(</span><span class="s1">&#39;random_walk:dt&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 <span class="gp">In [9]: </span><span class="n">before</span><span class="o">.</span><span class="n">data</span>
-<span class="gh">Out[9]: </span><span class="go">array([1.])</span>
+<span class="gh">Out[9]: </span><span class="go">array([3.])</span>
 
 <span class="gp">In [10]: </span><span class="n">after</span><span class="o">.</span><span class="n">data</span>
 <span class="go">                    Out[10]: array([1.])</span>
@@ -452,7 +452,7 @@ clients should do this.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+183.g1ce37f1',
+            VERSION:'0.1.0a1+185.gf3a01a8',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
