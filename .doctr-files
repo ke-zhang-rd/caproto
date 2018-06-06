@@ -13,6 +13,7 @@
 ./_sources/index.rst.txt
 ./_sources/install.rst.txt
 ./_sources/iocs.rst.txt
+./_sources/ports.rst.txt
 ./_sources/pyepics-compat-client.rst.txt
 ./_sources/references.rst.txt
 ./_sources/release-notes.rst.txt
@@ -67,6 +68,7 @@
 ./install.html
 ./iocs.html
 ./objects.inv
+./ports.html
 ./pyepics-compat-client.html
 ./references.html
 ./release-notes.html

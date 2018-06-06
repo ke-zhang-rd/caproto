@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0.1.0a1+188.g70a42a4 documentation</title>
+  <title>caproto._utils &mdash; caproto 0.1.0a1+203.gcc355f7 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+188.g70a42a4
+                0.1.0a1+203.gcc355f7
               </div>
             
           
@@ -173,6 +173,7 @@
 <span class="kn">import</span> <span class="nn">array</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">socket</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">enum</span>
@@ -205,7 +206,7 @@
     <span class="s1">&#39;get_netifaces_addresses&#39;</span><span class="p">,</span>
     <span class="s1">&#39;broadcast_address_list_from_interfaces&#39;</span><span class="p">,</span>
     <span class="s1">&#39;ensure_bytes&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;find_available_tcp_port&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;random_ports&#39;</span><span class="p">,</span>
     <span class="s1">&#39;bcast_socket&#39;</span><span class="p">,</span>
     <span class="s1">&#39;buffer_list_slice&#39;</span><span class="p">,</span>
     <span class="s1">&#39;incremental_buffer_list_slice&#39;</span><span class="p">,</span>
@@ -392,25 +393,25 @@
     <span class="k">return</span> <span class="n">addr_list</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_server_address_list</span><span class="p">(</span><span class="n">default_port</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Get the server interface addresses based on environment variables</span>
+<span class="k">def</span> <span class="nf">get_server_address_list</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Get the server interfaces based on environment variables</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    list of (addr, port)</span>
+<span class="sd">    list of interfaces</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">intf_addrs</span> <span class="o">=</span> <span class="n">get_environment_variables</span><span class="p">()[</span><span class="s1">&#39;EPICS_CAS_INTF_ADDR_LIST&#39;</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">intf_addrs</span><span class="p">:</span>
-        <span class="k">return</span> <span class="p">[(</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">default_port</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">]</span>
 
-    <span class="k">def</span> <span class="nf">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">strip_port</span><span class="p">(</span><span class="n">addr</span><span class="p">):</span>
         <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">addr</span><span class="p">:</span>
             <span class="n">addr</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">specified_port</span> <span class="o">=</span> <span class="n">addr</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">specified_port</span><span class="p">))</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">addr</span><span class="p">,</span> <span class="n">default_port</span><span class="p">)</span>
+            <span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Port specified in EPICS_CAS_INTF_ADDR_LIST was ignored.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">addr</span>
 
-    <span class="k">return</span> <span class="p">[</span><span class="n">get_addr_port</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">intf_addrs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">strip_port</span><span class="p">(</span><span class="n">addr</span><span class="p">)</span> <span class="k">for</span> <span class="n">addr</span> <span class="ow">in</span> <span class="n">intf_addrs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)]</span>
 
 
 <span class="k">def</span> <span class="nf">get_beacon_address_list</span><span class="p">():</span>
@@ -491,37 +492,10 @@
                                <span class="n">f</span><span class="s2">&quot;{type(s)}&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">find_available_tcp_port</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">starting_port</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Find the next available TCP server port</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    host : str, optional</span>
-<span class="sd">        Host/interface to bind on; defaults to 0.0.0.0</span>
-<span class="sd">    starting_port : int, optional</span>
-<span class="sd">        Port to try first</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="kn">import</span> <span class="nn">random</span>
-    <span class="k">if</span> <span class="n">starting_port</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="n">EPICS_CA2_PORT</span>
-        <span class="n">starting_port</span> <span class="o">=</span> <span class="n">EPICS_CA2_PORT</span> <span class="o">+</span> <span class="mi">1</span>
-
-    <span class="n">port</span> <span class="o">=</span> <span class="n">starting_port</span>
-    <span class="n">stashed_ex</span> <span class="o">=</span> <span class="kc">None</span>
-
-    <span class="k">for</span> <span class="n">attempt</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">s</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">)</span>
-            <span class="n">s</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
-        <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-            <span class="n">stashed_ex</span> <span class="o">=</span> <span class="n">ex</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">s</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">port</span>
-
-        <span class="n">port</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">49152</span><span class="p">,</span> <span class="mi">65535</span><span class="p">)</span>
-
-    <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;No available ports and/or bind failed&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">stashed_ex</span>
+<span class="k">def</span> <span class="nf">random_ports</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Yield `num` random port numbers.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
+        <span class="k">yield</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">49152</span><span class="p">,</span> <span class="mi">65535</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">bcast_socket</span><span class="p">(</span><span class="n">socket_module</span><span class="o">=</span><span class="n">socket</span><span class="p">):</span>
@@ -922,7 +896,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+188.g70a42a4',
+            VERSION:'0.1.0a1+203.gcc355f7',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
