@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.1.0a1+185.gf3a01a8 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.1.0a1+188.g70a42a4 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+185.gf3a01a8
+                0.1.0a1+188.g70a42a4
               </div>
             
           
@@ -800,14 +800,17 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    broadcaster : SharedBroadcaster</span>
+<span class="sd">    broadcaster : SharedBroadcaster, optional</span>
+<span class="sd">        If None is specified, a fresh one is instantiated.</span>
 <span class="sd">    host_name : string, optional</span>
 <span class="sd">        uses value of ``socket.gethostname()`` by default</span>
 <span class="sd">    client_name : string, optional</span>
 <span class="sd">        uses value of ``getpass.getuser()`` by default</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">broadcaster</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">broadcaster</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">host_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">client_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">broadcaster</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">broadcaster</span> <span class="o">=</span> <span class="n">SharedBroadcaster</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span> <span class="o">=</span> <span class="n">broadcaster</span>
         <span class="k">if</span> <span class="n">host_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">host_name</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">gethostname</span><span class="p">()</span>
@@ -1884,7 +1887,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0a1+185.gf3a01a8',
+            VERSION:'0.1.0a1+188.g70a42a4',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
