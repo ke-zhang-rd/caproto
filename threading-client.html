@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Threading Client &mdash; caproto 0.1.0a1+206.g7acae95 documentation</title>
+  <title>Threading Client &mdash; caproto 0.1.0a1+244.gcad4aeb documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -59,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+206.g7acae95
+                0.1.0a1+244.gcad4aeb
               </div>
             
           
@@ -218,7 +217,7 @@ state:</p>
 </div>
 <p>The Context displays aggregate information about the state of all connections.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">ctx</span>
-<span class="gh">Out[5]: </span><span class="go">&lt;Context searches_pending=0 circuits=0 pvs=2 idle=0&gt;</span>
+<span class="gh">Out[5]: </span><span class="go">&lt;Context searches_pending=2 circuits=0 pvs=2 idle=0&gt;</span>
 </pre></div>
 </div>
 </div>
@@ -251,7 +250,7 @@ data structures.</p>
 <span class="gh">Out[10]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=1)</span>
 
 <span class="gp">In [11]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x14f3f3e86f48&gt;)</span>
+<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x153f85ac8288&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
@@ -304,12 +303,12 @@ define a second callback</p>
 
 <span class="gp">In [21]: </span><span class="n">values</span>
 <span class="go">           Out[21]: </span>
-<span class="go">[4.301702867717043,</span>
-<span class="go"> 4.59779027695597,</span>
-<span class="go"> 4.769633334006008,</span>
-<span class="go"> 5.411350435489054,</span>
-<span class="go"> 5.882584350665266,</span>
-<span class="go"> 6.74029504238483]</span>
+<span class="go">[3.3393619105077823,</span>
+<span class="go"> 3.9038713898916693,</span>
+<span class="go"> 4.551355807732018,</span>
+<span class="go"> 4.923275977167982,</span>
+<span class="go"> 5.689369395823722,</span>
+<span class="go"> 5.797839581236433]</span>
 </pre></div>
 </div>
 <p>At any point we can remove a specific callback function</p>
@@ -350,7 +349,7 @@ requested. In order to reduce the load on the network, a PV can be temporarily
 made “idle” (disconnected). It will silently, automatically reconnect the next
 time it is used.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [24]: </span><span class="n">x</span>
-<span class="gh">Out[24]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 64598), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="gh">Out[24]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 64689), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
 <span class="gp">In [25]: </span><span class="n">x</span><span class="o">.</span><span class="n">go_idle</span><span class="p">()</span>
 
@@ -358,10 +357,10 @@ time it is used.</p>
 <span class="gh">Out[26]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 (idle)&gt;</span>
 
 <span class="gp">In [27]: </span><span class="n">x</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                     Out[27]: ReadNotifyResponse(data=array([6.74029504]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
+<span class="go">                                                     Out[27]: ReadNotifyResponse(data=array([5.79783958]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
 
 <span class="gp">In [28]: </span><span class="n">x</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[28]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 64598), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[28]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 64689), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 </pre></div>
 </div>
 <p>Notice that when the PV was read it automatically reconnected, requiring no
@@ -509,7 +508,7 @@ request will be processed when they are complete.</p>
 
 <dl class="method">
 <dt id="caproto.threading.client.PV.subscribe">
-<code class="descname">subscribe</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#PV.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.PV.subscribe" title="Permalink to this definition">¶</a></dt>
+<code class="descname">subscribe</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>low=0.0</em>, <em>high=0.0</em>, <em>to=0.0</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#PV.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.PV.subscribe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start a new subscription to which user callback may be added.</p>
 </dd></dl>
 
@@ -538,12 +537,38 @@ for an address (and a VirtualCircuit) to be assigned.</p>
 
 <dl class="class">
 <dt id="caproto.threading.client.Subscription">
-<em class="property">class </em><code class="descclassname">caproto.threading.client.</code><code class="descname">Subscription</code><span class="sig-paren">(</span><em>pv</em>, <em>sub_args</em>, <em>sub_kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.threading.client.</code><code class="descname">Subscription</code><span class="sig-paren">(</span><em>pv</em>, <em>data_type</em>, <em>data_count</em>, <em>low</em>, <em>high</em>, <em>to</em>, <em>mask</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription" title="Permalink to this definition">¶</a></dt>
 <dd><p>Represents one subscription, specified by a PV and configurational parameters</p>
 <p>It may fan out to zero, one, or multiple user-registered callback
 functions.</p>
 <p>This object should never be instantiated directly by user code; rather
 it should be made by calling the <code class="docutils literal notranslate"><span class="pre">subscribe()</span></code> method on a <code class="docutils literal notranslate"><span class="pre">PV</span></code> object.</p>
+<dl class="method">
+<dt id="caproto.threading.client.Subscription.add_callback">
+<code class="descname">add_callback</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.add_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.add_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a callback to receive responses.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable</span></dt>
+<dd><p class="first last">Expected signature: <code class="docutils literal notranslate"><span class="pre">func(response)</span></code></p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>token</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd><p class="first last">Integer token that can be passed to <a class="reference internal" href="#caproto.threading.client.Subscription.remove_callback" title="caproto.threading.client.Subscription.remove_callback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove_callback()</span></code></a>.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="caproto.threading.client.Subscription.clear">
 <code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.clear" title="Permalink to this definition">¶</a></dt>
@@ -555,6 +580,12 @@ it should be made by calling the <code class="docutils literal notranslate"><spa
 <code class="descname">process</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.process" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a fast operation that submits jobs to the Context’s
 ThreadPoolExecutor and then returns.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.threading.client.Subscription.remove_callback">
+<code class="descname">remove_callback</code><span class="sig-paren">(</span><em>cb_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.remove_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.remove_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove callback using token that was returned by <a class="reference internal" href="#caproto.threading.client.Subscription.add_callback" title="caproto.threading.client.Subscription.add_callback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_callback()</span></code></a>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -620,7 +651,7 @@ this is rarely necessary.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+206.g7acae95',
+            VERSION:'0.1.0a1+244.gcad4aeb',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -635,10 +666,7 @@ this is rarely necessary.</p>
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Core API Documentation &mdash; caproto 0.1.0a1+206.g7acae95 documentation</title>
+  <title>Core API Documentation &mdash; caproto 0.1.0a1+244.gcad4aeb documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -59,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+206.g7acae95
+                0.1.0a1+244.gcad4aeb
               </div>
             
           
@@ -586,13 +585,13 @@ subscription on this Virtual Circuit.</p>
 <dl class="class">
 <dt id="caproto.ReadRequest">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ReadRequest</code><span class="sig-paren">(</span><em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ReadRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ReadRequest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deprecated by Channel Access: See <a class="reference internal" href="#caproto.ReadNotifyRequest" title="caproto.ReadNotifyRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code></a>.</p>
+<dd><p>Deprecated by Channel Access since 3.13. See <a class="reference internal" href="#caproto.ReadNotifyRequest" title="caproto.ReadNotifyRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code></a>.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="caproto.ReadResponse">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ReadResponse</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>sid</em>, <em>ioid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ReadResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ReadResponse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Deprecated by Channel Access: See <a class="reference internal" href="#caproto.ReadNotifyResponse" title="caproto.ReadNotifyResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyResponse</span></code></a>.</p>
+<dd><p>Deprecated by Channel Access since 3.13. See <a class="reference internal" href="#caproto.ReadNotifyResponse" title="caproto.ReadNotifyResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyResponse</span></code></a>.</p>
 </dd></dl>
 
 <dl class="class">
@@ -1518,8 +1517,8 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 
 <dl class="method">
 <dt id="caproto.ClientChannel.read">
-<code class="descname">read</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>ioid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadNotifyRequest" title="caproto.ReadNotifyRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code></a>.</p>
+<code class="descname">read</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>ioid=None</em>, <em>use_notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadRequest" title="caproto.ReadRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadRequest</span></code></a> or <a class="reference internal" href="#caproto.ReadNotifyRequest" title="caproto.ReadNotifyRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1534,6 +1533,14 @@ native data type, which can be checked in the Channel’s attribute
 <dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
+</dd>
+<dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Input/output ID. If None, one is generated.</p>
+</dd>
+<dt><strong>use_notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">True by default. If True, send a <code class="docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code> instead of
+a <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code> has been deprecated by
+Channel Access in 3.13 and is not well-supported by caproto.</p>
 </dd>
 </dl>
 </td>
@@ -1550,8 +1557,8 @@ count, which can be checked in the Channel’s attribute
 
 <dl class="method">
 <dt id="caproto.ClientChannel.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>metadata=None</em>, <em>ioid=None</em>, <em>use_notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.write" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a valid <a class="reference internal" href="#caproto.WriteNotifyRequest" title="caproto.WriteNotifyRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">WriteNotifyRequest</span></code></a>.</p>
+<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>metadata=None</em>, <em>ioid=None</em>, <em>use_notify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <code class="xref py py-class docutils literal notranslate"><span class="pre">WriteRequest</span> <span class="pre">or</span> <span class="pre">`:class:`WriteNotifyRequest</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1571,6 +1578,13 @@ count, which can be checked in the Channel’s attribute
 </dd>
 <dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
 <dd><p class="first last">Status and control metadata for the values</p>
+</dd>
+<dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Input/output ID. If None, one is generated.</p>
+</dd>
+<dt><strong>use_notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">False by default. If True, send a <code class="docutils literal notranslate"><span class="pre">WriteNotifyRequest</span></code> instead of
+a <code class="docutils literal notranslate"><span class="pre">WriteRequest</span></code>.</p>
 </dd>
 </dl>
 </td>
@@ -1773,8 +1787,8 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 
 <dl class="method">
 <dt id="caproto.ServerChannel.read">
-<code class="descname">read</code><span class="sig-paren">(</span><em>data</em>, <em>ioid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=1</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadNotifyResponse" title="caproto.ReadNotifyResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyResponse</span></code></a>.</p>
+<code class="descname">read</code><span class="sig-paren">(</span><em>data</em>, <em>ioid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=1</em>, <em>*</em>, <em>metadata=None</em>, <em>use_notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadResponse" title="caproto.ReadResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadResponse</span></code></a> or <a class="reference internal" href="#caproto.ReadNotifyResponse" title="caproto.ReadNotifyResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyResponse</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1800,11 +1814,16 @@ count, which can be checked in the Channel’s attribute
 <dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
 <dd><p class="first last">Status and control metadata for the values</p>
 </dd>
+<dt><strong>use_notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dd><p class="first last">True by default. If True, send a <code class="docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code> instead of
+a <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code> has been deprecated by
+Channel Access in 3.13 and is not well-supported by caproto.</p>
+</dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>ReadNotifyResponse</strong></dt>
+<dt><strong>ReadResponse or ReadNotifyResponse</strong></dt>
 <dd></dd>
 </dl>
 </td>
@@ -1852,7 +1871,7 @@ count, which can be checked in the Channel’s attribute
 
 <dl class="method">
 <dt id="caproto.ServerChannel.subscribe">
-<code class="descname">subscribe</code><span class="sig-paren">(</span><em>data</em>, <em>subscriptionid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status_code=32</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.subscribe" title="Permalink to this definition">¶</a></dt>
+<code class="descname">subscribe</code><span class="sig-paren">(</span><em>data</em>, <em>subscriptionid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status_code=&lt;CAStatus.ECA_NEWCONN: CAStatusCode(name='ECA_NEWCONN'</em>, <em>code=32</em>, <em>code_with_severity=259</em>, <em>severity=&lt;CASeverity.INFO: 3&gt;</em>, <em>success=1</em>, <em>defunct=True</em>, <em>description='New or resumed network connection')&gt;</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.subscribe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.EventAddResponse" title="caproto.EventAddResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventAddResponse</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1873,8 +1892,8 @@ native data type, which can be checked in the Channel’s attribute
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
 </dd>
-<dt><strong>status_code</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
-<dd><p class="first last">Default is 32 (???).</p>
+<dt><strong>status_code</strong> <span class="classifier-delimiter">:</span> <span class="classifier">CAStatus or corresponding integer code</span></dt>
+<dd><p class="first last">Default is <code class="docutils literal notranslate"><span class="pre">CAStatus.ECA_NEWCONN</span></code></p>
 </dd>
 <dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
 <dd><p class="first last">Status and control metadata for the values</p>
@@ -2242,6 +2261,9 @@ where <code class="docutils literal notranslate"><span class="pre">&lt;id&gt;</s
 <code class="docutils literal notranslate"><span class="pre">caproto.color_log_handler</span></code> to the <code class="docutils literal notranslate"><span class="pre">'caproto'</span></code> logger, which uses ANSI
 color codes to color-code the log messages by log level.</p>
 <p>To conveniently switch to a version without the colors:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caproto</span><span class="o">.</span><span class="n">color_logs</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>  <span class="c1"># color_log_handler -&gt; plain_log_handler</span>
+</pre></div>
+</div>
 <p>You can, of course, configure the handlers manually in the standard fashion
 supported by Python, using <code class="docutils literal notranslate"><span class="pre">logging.getLogger('caproto').handlers</span></code>.</p>
 </div>
@@ -2289,7 +2311,7 @@ supported by Python, using <code class="docutils literal notranslate"><span clas
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+206.g7acae95',
+            VERSION:'0.1.0a1+244.gcad4aeb',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -2304,10 +2326,7 @@ supported by Python, using <code class="docutils literal notranslate"><span clas
 
   
 
-  
-  
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

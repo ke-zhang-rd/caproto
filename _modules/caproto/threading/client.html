@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.1.0a1+206.g7acae95 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.1.0a1+244.gcad4aeb documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -57,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0a1+206.g7acae95
+                0.1.0a1+244.gcad4aeb
               </div>
             
           
@@ -1203,6 +1202,7 @@
             <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected</span>  <span class="c1"># double check that the state machine agrees</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">ReadNotifyResponse</span><span class="p">,</span>
+                                  <span class="n">ca</span><span class="o">.</span><span class="n">ReadResponse</span><span class="p">,</span>
                                   <span class="n">ca</span><span class="o">.</span><span class="n">WriteNotifyResponse</span><span class="p">)):</span>
             <span class="n">ioid_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ioids</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">)</span>
             <span class="n">deadline</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;deadline&#39;</span><span class="p">]</span>
@@ -1487,7 +1487,7 @@
 
     <span class="nd">@ensure_connected</span>
     <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+             <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_notify</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Request a fresh reading.</span>
 
 <span class="sd">        Can do one or both of:</span>
@@ -1497,11 +1497,11 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        wait : boolean</span>
-<span class="sd">            If True (default) block until a matching WriteNotifyResponse is</span>
+<span class="sd">            If True (default) block until a matching response is</span>
 <span class="sd">            received from the server. Raises TimeoutError if that response is</span>
 <span class="sd">            not received within the time specified by the `timeout` parameter.</span>
 <span class="sd">        callback : callable or None</span>
-<span class="sd">            Called with the WriteNotifyResponse as its argument when received.</span>
+<span class="sd">            Called with the response as its argument when received.</span>
 <span class="sd">        timeout : number or None</span>
 <span class="sd">            Number of seconds to wait before raising TimeoutError. Default is</span>
 <span class="sd">            2.</span>
@@ -1513,11 +1513,15 @@
 <span class="sd">            Requested number of values. Default is the channel&#39;s native data</span>
 <span class="sd">            count, which can be checked in the Channel&#39;s attribute</span>
 <span class="sd">            :attr:`native_data_count`.</span>
+<span class="sd">        use_notify: boolean, optional</span>
+<span class="sd">            Send a ``ReadNotifyRequest`` instead of a ``ReadRequest``. True by</span>
+<span class="sd">            default.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ioid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">_ioid_counter</span><span class="p">()</span>
         <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ioid</span><span class="o">=</span><span class="n">ioid</span><span class="p">,</span>
                                     <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
-                                    <span class="n">data_count</span><span class="o">=</span><span class="n">data_count</span><span class="p">)</span>
+                                    <span class="n">data_count</span><span class="o">=</span><span class="n">data_count</span><span class="p">,</span>
+                                    <span class="n">use_notify</span><span class="o">=</span><span class="n">use_notify</span><span class="p">)</span>
         <span class="c1"># Stash the ioid to match the response to the request.</span>
 
         <span class="n">event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -1635,15 +1639,19 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span>
 
-<div class="viewcode-block" id="PV.subscribe"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="PV.subscribe"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                  <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="s2">&quot;Start a new subscription to which user callback may be added.&quot;</span>
         <span class="c1"># A Subscription is uniquely identified by the Signature created by its</span>
         <span class="c1"># args and kwargs.</span>
-        <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">SUBSCRIBE_SIG</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">arguments</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="n">bound</span> <span class="o">=</span> <span class="n">SUBSCRIBE_SIG</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">bound</span><span class="o">.</span><span class="n">arguments</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">sub</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-            <span class="n">sub</span> <span class="o">=</span> <span class="n">Subscription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+            <span class="n">sub</span> <span class="o">=</span> <span class="n">Subscription</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                               <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span>
+                               <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">sub</span>
         <span class="c1"># The actual EPICS messages will not be sent until the user adds</span>
         <span class="c1"># callbacks via sub.add_callback(user_func).</span>
@@ -1666,12 +1674,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
-        <span class="c1"># TODO thread safety</span>
-        <span class="n">cb_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_id</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_callback_id</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="k">def</span> <span class="nf">removed</span><span class="p">(</span><span class="n">_</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">cb_id</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">cb_id</span><span class="p">)</span>  <span class="c1"># defined below inside the lock</span>
 
         <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">ismethod</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
             <span class="n">ref</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakMethod</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">removed</span><span class="p">)</span>
@@ -1680,6 +1685,8 @@
             <span class="n">ref</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">removed</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+            <span class="n">cb_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_callback_id</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">[</span><span class="n">cb_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">ref</span>
         <span class="k">return</span> <span class="n">cb_id</span>
 
@@ -1720,12 +1727,16 @@
 <span class="sd">    This object should never be instantiated directly by user code; rather</span>
 <span class="sd">    it should be made by calling the ``subscribe()`` method on a ``PV`` object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">sub_args</span><span class="p">,</span> <span class="n">sub_kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pv</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">mask</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span>
         <span class="c1"># Stash everything, but do not send any EPICS messages until the first</span>
         <span class="c1"># user callback is attached.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sub_args</span> <span class="o">=</span> <span class="n">sub_args</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sub_kwargs</span> <span class="o">=</span> <span class="n">sub_kwargs</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_type</span> <span class="o">=</span> <span class="n">data_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_count</span> <span class="o">=</span> <span class="n">data_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">low</span> <span class="o">=</span> <span class="n">low</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high</span> <span class="o">=</span> <span class="n">high</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to</span> <span class="o">=</span> <span class="n">to</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subscriptionid</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">most_recent_response</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1757,9 +1768,13 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="n">subscriptionid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">_subscriptionid_counter</span><span class="p">()</span>
-            <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_args</span><span class="p">,</span>
-                                                <span class="n">subscriptionid</span><span class="o">=</span><span class="n">subscriptionid</span><span class="p">,</span>
-                                                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">sub_kwargs</span><span class="p">)</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+                                                <span class="n">data_count</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
+                                                <span class="n">low</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+                                                <span class="n">high</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
+                                                <span class="n">to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to</span><span class="p">,</span>
+                                                <span class="n">mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span>
+                                                <span class="n">subscriptionid</span><span class="o">=</span><span class="n">subscriptionid</span><span class="p">)</span>
             <span class="n">subscriptionid</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">subscriptionid</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subscriptionid</span> <span class="o">=</span> <span class="n">subscriptionid</span>
         <span class="c1"># The circuit_manager needs to know the subscriptionid so that it can</span>
@@ -1808,7 +1823,20 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">most_recent_response</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+<div class="viewcode-block" id="Subscription.add_callback"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.add_callback">[docs]</a>    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a callback to receive responses.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        func : callable</span>
+<span class="sd">            Expected signature: ``func(response)``</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        token : int</span>
+<span class="sd">            Integer token that can be passed to :meth:`remove_callback`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">cb_id</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptionid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1828,14 +1856,17 @@
                     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                         <span class="nb">print</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">cb_id</span>
+        <span class="k">return</span> <span class="n">cb_id</span></div>
 
-    <span class="k">def</span> <span class="nf">remove_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cb_id</span><span class="p">):</span>
+<div class="viewcode-block" id="Subscription.remove_callback"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.remove_callback">[docs]</a>    <span class="k">def</span> <span class="nf">remove_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cb_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove callback using token that was returned by :meth:`add_callback`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">cb_id</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
                 <span class="c1"># Go dormant.</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_unsubscribe</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_unsubscribe</span><span class="p">()</span></div>
 
     <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -1887,7 +1918,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0a1+206.g7acae95',
+            VERSION:'0.1.0a1+244.gcad4aeb',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -1902,10 +1933,7 @@
 
   
 
-  
-  
-    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0.1.0a1+206.g7acae95 documentation</title>
+  <title>caproto._commands &mdash; caproto 0.1.0a1+244.gcad4aeb documentation</title>
   
 
   
@@ -24,8 +24,7 @@
 
   
 
-  
-    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -57,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0a1+206.g7acae95
+                0.1.0a1+244.gcad4aeb
               </div>
             
           
@@ -194,6 +193,7 @@
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">struct</span>
 <span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">from</span> <span class="nn">._headers</span> <span class="k">import</span> <span class="p">(</span><span class="n">MessageHeader</span><span class="p">,</span> <span class="n">ExtendedMessageHeader</span><span class="p">,</span>
                        <span class="n">AccessRightsResponseHeader</span><span class="p">,</span> <span class="n">ClearChannelRequestHeader</span><span class="p">,</span>
                        <span class="n">ClearChannelResponseHeader</span><span class="p">,</span> <span class="n">ClientNameRequestHeader</span><span class="p">,</span>
@@ -606,7 +606,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Use header.dbr_type to pack payload bytes into the right strucutre.</span>
+<span class="sd">        Use header.dbr_type to pack payload bytes into the right structure.</span>
 
 <span class="sd">        Some Command types allocate a different meaning to the header.dbr_type</span>
 <span class="sd">        field, and these override this method in their subclass.</span>
@@ -1228,7 +1228,7 @@
 
 
 <div class="viewcode-block" id="ReadRequest"><a class="viewcode-back" href="../../api.html#caproto.ReadRequest">[docs]</a><span class="k">class</span> <span class="nc">ReadRequest</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
-    <span class="s2">&quot;Deprecated by Channel Access: See :class:`ReadNotifyRequest`.&quot;</span>
+    <span class="s2">&quot;Deprecated by Channel Access since 3.13. See :class:`ReadNotifyRequest`.&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1244,13 +1244,23 @@
 
 
 <div class="viewcode-block" id="ReadResponse"><a class="viewcode-back" href="../../api.html#caproto.ReadResponse">[docs]</a><span class="k">class</span> <span class="nc">ReadResponse</span><span class="p">(</span><span class="n">Message</span><span class="p">):</span>
-    <span class="s2">&quot;Deprecated by Channel Access: See :class:`ReadNotifyResponse`.&quot;</span>
+    <span class="s2">&quot;Deprecated by Channel Access since 3.13. See :class:`ReadNotifyResponse`.&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">3</span>
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">True</span>
 
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;ReadResponse was deprecated by ChannelAccess in 3.13, &quot;</span>
+                      <span class="s2">&quot;and is not well-supported by caproto. De-serialization &quot;</span>
+                      <span class="s2">&quot;may not be correct.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">from_wire</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">payload_bytes</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="n">sender_address</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                  <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;ReadResponse was deprecated by ChannelAccess in 3.13, &quot;</span>
+                      <span class="s2">&quot;and is not well-supported by caproto. Serialization &quot;</span>
+                      <span class="s2">&quot;may not be correct.&quot;</span><span class="p">)</span>
         <span class="n">size</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span> <span class="o">=</span> <span class="n">data_payload</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="n">header</span> <span class="o">=</span> <span class="n">ReadResponseHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">)</span>
@@ -1888,7 +1898,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+206.g7acae95',
+            VERSION:'0.1.0a1+244.gcad4aeb',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
@@ -1903,10 +1913,7 @@
 
   
 
-  
-  
-    <script type="text/javascript" src="../../_static/js/theme.js"></script>
-  
+  <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
   <script type="text/javascript">
       jQuery(function () {
