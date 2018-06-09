@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Core API Documentation &mdash; caproto 0.1.0a1+294.gbf03b35 documentation</title>
+  <title>Core API Documentation &mdash; caproto 0.1.0a1+303.g8111374 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+294.gbf03b35
+                0.1.0a1+303.g8111374
               </div>
             
           
@@ -371,37 +371,37 @@ this response with the original request.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="caproto.RsrvIsUpResponse">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">RsrvIsUpResponse</code><span class="sig-paren">(</span><em>version</em>, <em>server_port</em>, <em>beacon_id</em>, <em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#RsrvIsUpResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.RsrvIsUpResponse" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.Beacon">
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">Beacon</code><span class="sig-paren">(</span><em>version</em>, <em>server_port</em>, <em>beacon_id</em>, <em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#Beacon"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Beacon" title="Permalink to this definition">¶</a></dt>
 <dd><p>Heartbeat beacon sent by the server.</p>
 <p>Fields:</p>
 <dl class="attribute">
-<dt id="caproto.RsrvIsUpResponse.version">
-<code class="descname">version</code><a class="headerlink" href="#caproto.RsrvIsUpResponse.version" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.Beacon.version">
+<code class="descname">version</code><a class="headerlink" href="#caproto.Beacon.version" title="Permalink to this definition">¶</a></dt>
 <dd><p>The version of the Channel Access protocol.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="caproto.RsrvIsUpResponse.server_port">
-<code class="descname">server_port</code><a class="headerlink" href="#caproto.RsrvIsUpResponse.server_port" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.Beacon.server_port">
+<code class="descname">server_port</code><a class="headerlink" href="#caproto.Beacon.server_port" title="Permalink to this definition">¶</a></dt>
 <dd><p>Port number.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="caproto.RsrvIsUpResponse.beacon_id">
-<code class="descname">beacon_id</code><a class="headerlink" href="#caproto.RsrvIsUpResponse.beacon_id" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.Beacon.beacon_id">
+<code class="descname">beacon_id</code><a class="headerlink" href="#caproto.Beacon.beacon_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sequentially incremented integer.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="caproto.RsrvIsUpResponse.address">
-<code class="descname">address</code><a class="headerlink" href="#caproto.RsrvIsUpResponse.address" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.Beacon.address">
+<code class="descname">address</code><a class="headerlink" href="#caproto.Beacon.address" title="Permalink to this definition">¶</a></dt>
 <dd><p>IP address encoded as integer.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="caproto.RsrvIsUpResponse.address_string">
-<code class="descname">address_string</code><a class="headerlink" href="#caproto.RsrvIsUpResponse.address_string" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.Beacon.address_string">
+<code class="descname">address_string</code><a class="headerlink" href="#caproto.Beacon.address_string" title="Permalink to this definition">¶</a></dt>
 <dd><p>IP address as string.</p>
 </dd></dl>
 
@@ -491,7 +491,7 @@ subscription on this Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.EventAddResponse">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventAddResponse</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>status_code</em>, <em>subscriptionid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventAddResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventAddResponse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventAddResponse</code><span class="sig-paren">(</span><em>data</em>, <em>data_type</em>, <em>data_count</em>, <em>status</em>, <em>subscriptionid</em>, <em>*</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventAddResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventAddResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Notify the client of a change in a Channel’s value.</p>
 <p>Fields:</p>
 <dl class="attribute">
@@ -519,8 +519,8 @@ subscription on this Virtual Circuit.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="caproto.EventAddResponse.status_code">
-<code class="descname">status_code</code><a class="headerlink" href="#caproto.EventAddResponse.status_code" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.EventAddResponse.status">
+<code class="descname">status</code><a class="headerlink" href="#caproto.EventAddResponse.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>As per Channel Access spec, 1 is success; 0 or &gt;1 are various failures.</p>
 </dd></dl>
 
@@ -622,7 +622,7 @@ subscription on this Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.ErrorResponse">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ErrorResponse</code><span class="sig-paren">(</span><em>original_request</em>, <em>cid</em>, <em>status_code</em>, <em>error_message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ErrorResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ErrorResponse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ErrorResponse</code><span class="sig-paren">(</span><em>original_request</em>, <em>cid</em>, <em>status</em>, <em>error_message</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#ErrorResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ErrorResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Notify client of a server-side error, including some details about error.</p>
 <p>Fields:</p>
 <dl class="attribute">
@@ -632,8 +632,8 @@ subscription on this Virtual Circuit.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="caproto.ErrorResponse.status_code">
-<code class="descname">status_code</code><a class="headerlink" href="#caproto.ErrorResponse.status_code" title="Permalink to this definition">¶</a></dt>
+<dt id="caproto.ErrorResponse.status">
+<code class="descname">status</code><a class="headerlink" href="#caproto.ErrorResponse.status" title="Permalink to this definition">¶</a></dt>
 <dd><p>As per Channel Access spec, 1 is success; 0 or &gt;1 are various failures.</p>
 </dd></dl>
 
@@ -1517,7 +1517,7 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 
 <dl class="method">
 <dt id="caproto.ClientChannel.read">
-<code class="descname">read</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>ioid=None</em>, <em>use_notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.read" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>ioid=None</em>, <em>notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadRequest" title="caproto.ReadRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadRequest</span></code></a> or <a class="reference internal" href="#caproto.ReadNotifyRequest" title="caproto.ReadNotifyRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1537,7 +1537,7 @@ count, which can be checked in the Channel’s attribute
 <dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd><p class="first last">Input/output ID. If None, one is generated.</p>
 </dd>
-<dt><strong>use_notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dt><strong>notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
 <dd><p class="first last">True by default. If True, send a <code class="docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code> instead of
 a <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code> has been deprecated by
 Channel Access in 3.13 and is not well-supported by caproto.</p>
@@ -1557,7 +1557,7 @@ Channel Access in 3.13 and is not well-supported by caproto.</p>
 
 <dl class="method">
 <dt id="caproto.ClientChannel.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>metadata=None</em>, <em>ioid=None</em>, <em>use_notify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.write" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>metadata=None</em>, <em>ioid=None</em>, <em>notify=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <code class="xref py py-class docutils literal notranslate"><span class="pre">WriteRequest</span> <span class="pre">or</span> <span class="pre">`:class:`WriteNotifyRequest</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1582,7 +1582,7 @@ count, which can be checked in the Channel’s attribute
 <dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd><p class="first last">Input/output ID. If None, one is generated.</p>
 </dd>
-<dt><strong>use_notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dt><strong>notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
 <dd><p class="first last">False by default. If True, send a <code class="docutils literal notranslate"><span class="pre">WriteNotifyRequest</span></code> instead of
 a <code class="docutils literal notranslate"><span class="pre">WriteRequest</span></code>.</p>
 </dd>
@@ -1787,7 +1787,7 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 
 <dl class="method">
 <dt id="caproto.ServerChannel.read">
-<code class="descname">read</code><span class="sig-paren">(</span><em>data</em>, <em>ioid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=1</em>, <em>*</em>, <em>metadata=None</em>, <em>use_notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.read" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read</code><span class="sig-paren">(</span><em>data</em>, <em>ioid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=1</em>, <em>*</em>, <em>metadata=None</em>, <em>notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadResponse" title="caproto.ReadResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadResponse</span></code></a> or <a class="reference internal" href="#caproto.ReadNotifyResponse" title="caproto.ReadNotifyResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReadNotifyResponse</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1814,7 +1814,7 @@ count, which can be checked in the Channel’s attribute
 <dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
 <dd><p class="first last">Status and control metadata for the values</p>
 </dd>
-<dt><strong>use_notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
+<dt><strong>notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean, optional</span></dt>
 <dd><p class="first last">True by default. If True, send a <code class="docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code> instead of
 a <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code>. Note that <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code> has been deprecated by
 Channel Access in 3.13 and is not well-supported by caproto.</p>
@@ -1871,7 +1871,7 @@ count, which can be checked in the Channel’s attribute
 
 <dl class="method">
 <dt id="caproto.ServerChannel.subscribe">
-<code class="descname">subscribe</code><span class="sig-paren">(</span><em>data</em>, <em>subscriptionid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status_code=&lt;CAStatus.ECA_NEWCONN: CAStatusCode(name='ECA_NEWCONN'</em>, <em>code=32</em>, <em>code_with_severity=259</em>, <em>severity=&lt;CASeverity.INFO: 3&gt;</em>, <em>success=1</em>, <em>defunct=True</em>, <em>description='New or resumed network connection')&gt;</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.subscribe" title="Permalink to this definition">¶</a></dt>
+<code class="descname">subscribe</code><span class="sig-paren">(</span><em>data</em>, <em>subscriptionid</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>status=&lt;CAStatus.ECA_NEWCONN: CAStatusCode(name='ECA_NEWCONN'</em>, <em>code=32</em>, <em>code_with_severity=259</em>, <em>severity=&lt;CASeverity.INFO: 3&gt;</em>, <em>success=1</em>, <em>defunct=True</em>, <em>description='New or resumed network connection')&gt;</em>, <em>metadata=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.subscribe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.EventAddResponse" title="caproto.EventAddResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventAddResponse</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1892,7 +1892,7 @@ native data type, which can be checked in the Channel’s attribute
 count, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
 </dd>
-<dt><strong>status_code</strong> <span class="classifier-delimiter">:</span> <span class="classifier">CAStatus or corresponding integer code</span></dt>
+<dt><strong>status</strong> <span class="classifier-delimiter">:</span> <span class="classifier">CAStatus or corresponding integer code</span></dt>
 <dd><p class="first last">Default is <code class="docutils literal notranslate"><span class="pre">CAStatus.ECA_NEWCONN</span></code></p>
 </dd>
 <dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
@@ -2311,7 +2311,7 @@ supported by Python, using <code class="docutils literal notranslate"><span clas
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+294.gbf03b35',
+            VERSION:'0.1.0a1+303.g8111374',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
