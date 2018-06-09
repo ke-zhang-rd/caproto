@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0.1.0a1+254.g9a4dc11 documentation</title>
+  <title>caproto._circuit &mdash; caproto 0.1.0a1+282.g8860c11 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0a1+254.g9a4dc11
+                0.1.0a1+282.g8860c11
               </div>
             
           
@@ -191,7 +191,9 @@
                         <span class="n">read_from_bytestream</span><span class="p">,)</span>
 <span class="kn">from</span> <span class="nn">._state</span> <span class="k">import</span> <span class="p">(</span><span class="n">ChannelState</span><span class="p">,</span> <span class="n">CircuitState</span><span class="p">,</span> <span class="n">get_exception</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">DISCONNECTED</span><span class="p">,</span> <span class="n">CaprotoKeyError</span><span class="p">,</span>
-                     <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">CaprotoRuntimeError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">)</span>
+                     <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">CaprotoRuntimeError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">,</span>
+                     <span class="n">parse_channel_filter</span><span class="p">,</span> <span class="n">parse_record_field</span><span class="p">,</span>
+                     <span class="n">ChannelFilter</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">SubscriptionType</span><span class="p">,</span> <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">,</span> <span class="n">MAX_ID</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._status</span> <span class="k">import</span> <span class="n">CAStatus</span>
@@ -578,8 +580,15 @@
     <span class="c1"># methods for composing requests and repsponses, respectively. All of the</span>
     <span class="c1"># important code is here in the base class.</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;caproto.ch.</span><span class="si">{name}</span><span class="s1">.</span><span class="si">{circuit.priority}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">protocol_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="n">modifiers</span> <span class="o">=</span> <span class="n">parse_record_field</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">modifiers</span>
+        <span class="k">if</span> <span class="n">modifiers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_filter</span> <span class="o">=</span> <span class="n">parse_channel_filter</span><span class="p">(</span><span class="n">modifiers</span><span class="o">.</span><span class="n">filter_</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">channel_filter</span> <span class="o">=</span> <span class="n">ChannelFilter</span><span class="p">(</span>
+                <span class="n">ts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dbnd</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">arr</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span> <span class="o">=</span> <span class="n">circuit</span>
         <span class="k">if</span> <span class="n">cid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_channel_id</span><span class="p">()</span>
@@ -1107,7 +1116,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+254.g9a4dc11',
+            VERSION:'0.1.0a1+282.g8860c11',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
