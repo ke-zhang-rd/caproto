@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0.1.0a1+294.gbf03b35 documentation</title>
+  <title>caproto._circuit &mdash; caproto 0.1.0a1+303.g8111374 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0a1+294.gbf03b35
+                0.1.0a1+303.g8111374
               </div>
             
           
@@ -747,7 +747,7 @@
         <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="ClientChannel.read"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ioid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-             <span class="n">use_notify</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+             <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`ReadRequest` or :class:`ReadNotifyRequest`.</span>
 
@@ -763,7 +763,7 @@
 <span class="sd">            :attr:`native_data_count`.</span>
 <span class="sd">        ioid : integer, optional</span>
 <span class="sd">            Input/output ID. If None, one is generated.</span>
-<span class="sd">        use_notify : boolean, optional</span>
+<span class="sd">        notify : boolean, optional</span>
 <span class="sd">            True by default. If True, send a ``ReadNotifyRequest`` instead of</span>
 <span class="sd">            a ``ReadRequest``. Note that ``ReadRequest`` has been deprecated by</span>
 <span class="sd">            Channel Access in 3.13 and is not well-supported by caproto.</span>
@@ -775,12 +775,12 @@
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ioid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ioid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_ioid</span><span class="p">()</span>
-        <span class="bp">cls</span> <span class="o">=</span> <span class="n">ReadNotifyRequest</span> <span class="k">if</span> <span class="n">use_notify</span> <span class="k">else</span> <span class="n">ReadRequest</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="n">ReadNotifyRequest</span> <span class="k">if</span> <span class="n">notify</span> <span class="k">else</span> <span class="n">ReadRequest</span>
         <span class="n">command</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="ClientChannel.write"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-              <span class="n">ioid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_notify</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+              <span class="n">ioid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`WriteRequest or `:class:`WriteNotifyRequest`.</span>
 
@@ -799,7 +799,7 @@
 <span class="sd">            Status and control metadata for the values</span>
 <span class="sd">        ioid : integer, optional</span>
 <span class="sd">            Input/output ID. If None, one is generated.</span>
-<span class="sd">        use_notify : boolean, optional</span>
+<span class="sd">        notify : boolean, optional</span>
 <span class="sd">            False by default. If True, send a ``WriteNotifyRequest`` instead of</span>
 <span class="sd">            a ``WriteRequest``.</span>
 
@@ -813,7 +813,7 @@
         <span class="k">if</span> <span class="n">ioid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ioid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_ioid</span><span class="p">()</span>
 
-        <span class="bp">cls</span> <span class="o">=</span> <span class="n">WriteNotifyRequest</span> <span class="k">if</span> <span class="n">use_notify</span> <span class="k">else</span> <span class="n">WriteRequest</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="n">WriteNotifyRequest</span> <span class="k">if</span> <span class="n">notify</span> <span class="k">else</span> <span class="n">WriteRequest</span>
         <span class="n">command</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span>
                       <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
@@ -946,7 +946,7 @@
         <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="ServerChannel.read"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-             <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_notify</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+             <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`ReadResponse` or :class:`ReadNotifyResponse`.</span>
 
@@ -966,7 +966,7 @@
 <span class="sd">            Default is 1 (success).</span>
 <span class="sd">        metadata : ``ctypes.BigEndianStructure`` or tuple</span>
 <span class="sd">            Status and control metadata for the values</span>
-<span class="sd">        use_notify : boolean, optional</span>
+<span class="sd">        notify : boolean, optional</span>
 <span class="sd">            True by default. If True, send a ``ReadNotifyRequest`` instead of</span>
 <span class="sd">            a ``ReadRequest``. Note that ``ReadRequest`` has been deprecated by</span>
 <span class="sd">            Channel Access in 3.13 and is not well-supported by caproto.</span>
@@ -976,7 +976,7 @@
 <span class="sd">        ReadResponse or ReadNotifyResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
-        <span class="bp">cls</span> <span class="o">=</span> <span class="n">ReadNotifyResponse</span> <span class="k">if</span> <span class="n">use_notify</span> <span class="k">else</span> <span class="n">ReadResponse</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="n">ReadNotifyResponse</span> <span class="k">if</span> <span class="n">notify</span> <span class="k">else</span> <span class="n">ReadResponse</span>
         <span class="n">command</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span>
                       <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
@@ -1008,7 +1008,7 @@
         <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="ServerChannel.subscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                  <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status_code</span><span class="o">=</span><span class="n">CAStatus</span><span class="o">.</span><span class="n">ECA_NEWCONN</span><span class="p">,</span>
+                  <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">status</span><span class="o">=</span><span class="n">CAStatus</span><span class="o">.</span><span class="n">ECA_NEWCONN</span><span class="p">,</span>
                   <span class="n">metadata</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`EventAddResponse`.</span>
@@ -1025,7 +1025,7 @@
 <span class="sd">            Requested number of values. Default is the channel&#39;s native data</span>
 <span class="sd">            count, which can be checked in the Channel&#39;s attribute</span>
 <span class="sd">            :attr:`native_data_count`.</span>
-<span class="sd">        status_code : CAStatus or corresponding integer code</span>
+<span class="sd">        status : CAStatus or corresponding integer code</span>
 <span class="sd">            Default is ``CAStatus.ECA_NEWCONN``</span>
 <span class="sd">        metadata : ``ctypes.BigEndianStructure`` or tuple</span>
 <span class="sd">            Status and control metadata for the values</span>
@@ -1035,7 +1035,7 @@
 <span class="sd">        EventAddResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">EventAddResponse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status_code</span><span class="p">,</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">EventAddResponse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span>
                                    <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
@@ -1120,7 +1120,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0a1+294.gbf03b35',
+            VERSION:'0.1.0a1+303.g8111374',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
