@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Threading Client &mdash; caproto 0.1.0a1+282.g8860c11 documentation</title>
+  <title>Threading Client &mdash; caproto 0.1.0a1+294.gbf03b35 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+282.g8860c11
+                0.1.0a1+294.gbf03b35
               </div>
             
           
@@ -227,18 +227,18 @@ state:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">res</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
 <span class="gp">In [7]: </span><span class="n">res</span>
-<span class="gh">Out[7]: </span><span class="go">ReadNotifyResponse(data=array([3.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
+<span class="gh">Out[7]: </span><span class="go">ReadNotifyResponse(data=array([1.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
 </pre></div>
 </div>
 <p>This object is a human-friendly representation of the server’s response. The
 raw bytes of that response are:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="nb">bytes</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01@\x08\x00\x00\x00\x00\x00\x00&#39;</span>
+<span class="gh">Out[8]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01?\xf0\x00\x00\x00\x00\x00\x00&#39;</span>
 </pre></div>
 </div>
 <p>Access particular fields in the response using attribute (“dot”) access on <code class="docutils literal notranslate"><span class="pre">res</span></code>.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">res</span><span class="o">.</span><span class="n">data</span>
-<span class="gh">Out[9]: </span><span class="go">array([3.])</span>
+<span class="gh">Out[9]: </span><span class="go">array([1.])</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -250,7 +250,7 @@ data structures.</p>
 <span class="gh">Out[10]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=1)</span>
 
 <span class="gp">In [11]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x2b12bbb0aa08&gt;)</span>
+<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x14f6596c1108&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
@@ -299,15 +299,16 @@ define a second callback</p>
 </div>
 <p>After some time has passed, we will have accumulated some responses.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
-<span class="gh">Out[20]: </span><span class="go">5</span>
+<span class="gh">Out[20]: </span><span class="go">6</span>
 
 <span class="gp">In [21]: </span><span class="n">values</span>
 <span class="go">           Out[21]: </span>
-<span class="go">[0.5476395362411324,</span>
-<span class="go"> 0.938245173176509,</span>
-<span class="go"> 1.4319889272137045,</span>
-<span class="go"> 1.851735762164759,</span>
-<span class="go"> 1.9093519280815212]</span>
+<span class="go">[4.191264064606107,</span>
+<span class="go"> 4.403433775540913,</span>
+<span class="go"> 5.05419665881189,</span>
+<span class="go"> 5.288190306554378,</span>
+<span class="go"> 5.375846971935298,</span>
+<span class="go"> 5.731590579627145]</span>
 </pre></div>
 </div>
 <p>At any point we can remove a specific callback function</p>
@@ -348,7 +349,7 @@ requested. In order to reduce the load on the network, a PV can be temporarily
 made “idle” (disconnected). It will silently, automatically reconnect the next
 time it is used.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [24]: </span><span class="n">x</span>
-<span class="gh">Out[24]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 57146), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="gh">Out[24]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 64297), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
 <span class="gp">In [25]: </span><span class="n">x</span><span class="o">.</span><span class="n">go_idle</span><span class="p">()</span>
 
@@ -356,10 +357,10 @@ time it is used.</p>
 <span class="gh">Out[26]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 (idle)&gt;</span>
 
 <span class="gp">In [27]: </span><span class="n">x</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                     Out[27]: ReadNotifyResponse(data=array([1.90935193]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
+<span class="go">                                                     Out[27]: ReadNotifyResponse(data=array([5.73159058]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
 
 <span class="gp">In [28]: </span><span class="n">x</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[28]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 57146), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[28]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 64297), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 </pre></div>
 </div>
 <p>Notice that when the PV was read it automatically reconnected, requiring no
@@ -506,9 +507,60 @@ request will be processed when they are complete.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="caproto.threading.client.PV.read">
+<code class="descname">read</code><span class="sig-paren">(</span><em>*</em>, <em>wait=True</em>, <em>callback=None</em>, <em>timeout=2</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>use_notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#PV.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.PV.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request a fresh reading.</p>
+<p>Can do one or both of:
+- Block while waiting for the response, and return it.
+- Pass the response to callback, with or without blocking.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>wait</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd><p class="first last">If True (default) block until a matching response is
+received from the server. Raises TimeoutError if that response is
+not received within the time specified by the <cite>timeout</cite> parameter.</p>
+</dd>
+<dt><strong>callback</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable or None</span></dt>
+<dd><p class="first last">Called with the response as its argument when received.</p>
+</dd>
+<dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">number or None</span></dt>
+<dd><p class="first last">Number of seconds to wait before raising TimeoutError. Default is
+2.</p>
+</dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
+<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
+native data type, which can be checked in the Channel’s attribute
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
+count, which can be checked in the Channel’s attribute
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
+</dd>
+<dt><strong>use_notify: boolean, optional</strong></dt>
+<dd><p class="first last">Send a <code class="docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code>. True by
+default.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="caproto.threading.client.PV.subscribe">
 <code class="descname">subscribe</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>low=0.0</em>, <em>high=0.0</em>, <em>to=0.0</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#PV.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.PV.subscribe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start a new subscription to which user callback may be added.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.threading.client.PV.unsubscribe_all">
+<code class="descname">unsubscribe_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#PV.unsubscribe_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.PV.unsubscribe_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear all subscriptions. (Remove all user callbacks from them.)</p>
 </dd></dl>
 
 <dl class="method">
@@ -524,6 +576,55 @@ for an address (and a VirtualCircuit) to be assigned.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
 <dd><p class="first last">Seconds before a TimeoutError is raised. Default is 2.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.threading.client.PV.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>data</em>, <em>*</em>, <em>wait=True</em>, <em>callback=None</em>, <em>timeout=2</em>, <em>use_notify=None</em>, <em>data_type=None</em>, <em>data_count=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#PV.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.PV.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a new value. Optionally, request confirmation from the server.</p>
+<p>Can do one or both of:
+- Block while waiting for the response, and return it.
+- Pass the response to callback, with or without blocking.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Iterable</span></dt>
+<dd><p class="first last">values to write</p>
+</dd>
+<dt><strong>wait</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd><p class="first last">If True (default) block until a matching WriteNotifyResponse is
+received from the server. Raises TimeoutError if that response is
+not received within the time specified by the <cite>timeout</cite> parameter.</p>
+</dd>
+<dt><strong>callback</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable or None</span></dt>
+<dd><p class="first last">Called with the WriteNotifyResponse as its argument when received.</p>
+</dd>
+<dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">number or None</span></dt>
+<dd><p class="first last">Number of seconds to wait before raising TimeoutError. Default is
+2.</p>
+</dd>
+<dt><strong>use_notify</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean or None</span></dt>
+<dd><p class="first last">If None (default), set to True if wait=True or callback is set.
+Can be manually set to True or False. Will raise ValueError if set
+to False while wait=True or callback is set.</p>
+</dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
+<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
+native data type, which can be checked in the Channel’s attribute
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
+count, which can be checked in the Channel’s attribute
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
 </dd>
 </dl>
 </td>
@@ -572,6 +673,12 @@ it should be made by calling the <code class="docutils literal notranslate"><spa
 <dt id="caproto.threading.client.Subscription.clear">
 <code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.clear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Remove all callbacks.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.threading.client.Subscription.compose_command">
+<code class="descname">compose_command</code><span class="sig-paren">(</span><em>timeout=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.compose_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.compose_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is used by the Context to re-subscribe in bulk after dropping.</p>
 </dd></dl>
 
 <dl class="method">
@@ -650,7 +757,7 @@ this is rarely necessary.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+282.g8860c11',
+            VERSION:'0.1.0a1+294.gbf03b35',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

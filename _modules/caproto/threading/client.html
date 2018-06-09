@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.1.0a1+282.g8860c11 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.1.0a1+294.gbf03b35 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0a1+282.g8860c11
+                0.1.0a1+294.gbf03b35
               </div>
             
           
@@ -179,6 +179,7 @@
 <span class="kn">import</span> <span class="nn">array</span>
 <span class="kn">import</span> <span class="nn">concurrent.futures</span>
 <span class="kn">import</span> <span class="nn">errno</span>
+<span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">getpass</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
@@ -213,6 +214,7 @@
 
 
 <span class="k">def</span> <span class="nf">ensure_connected</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">inner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">PV</span><span class="p">):</span>
             <span class="n">pv</span> <span class="o">=</span> <span class="bp">self</span>
@@ -1287,7 +1289,8 @@
         <span class="c1"># Ensure that this method is idempotent.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Entered VCM._disconnected&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Virtual circuit with </span><span class="si">%s</span><span class="s1"> has disconnected.&#39;</span><span class="p">,</span>
+                       <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">))</span>
         <span class="c1"># Update circuit state. This will be reflected on all PVs, which</span>
         <span class="c1"># continue to hold a reference to this disconnected circuit.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
@@ -1322,7 +1325,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_disconnected</span><span class="p">:</span>
             <span class="c1"># If the user didn&#39;t request disconnection, kick off attempt to</span>
             <span class="c1"># reconnect all PVs via fresh circuit(s).</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;VCM: Attempting reconnection&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Kicking off reconnection attempts for </span><span class="si">%d</span><span class="s1"> PVs &#39;</span>
+                           <span class="s1">&#39;disconnected from </span><span class="si">%s</span><span class="s1">....&#39;</span><span class="p">,</span>
+                           <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">),</span>
+                           <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">reconnect</span><span class="p">(((</span><span class="n">chan</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
                                     <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
 
@@ -1499,7 +1505,7 @@
                 <span class="o">...</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_idle</span> <span class="o">=</span> <span class="kc">True</span></div>
 
-    <span class="nd">@ensure_connected</span>
+<div class="viewcode-block" id="PV.read"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.read">[docs]</a>    <span class="nd">@ensure_connected</span>
     <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
              <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">use_notify</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Request a fresh reading.</span>
@@ -1565,9 +1571,9 @@
                 <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.name!r}</span><span class="s2"> within </span><span class="si">{timeout}</span><span class="s2">-second timeout.&quot;</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span></div>
 
-    <span class="nd">@ensure_connected</span>
+<div class="viewcode-block" id="PV.write"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.write">[docs]</a>    <span class="nd">@ensure_connected</span>
     <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">wait</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
               <span class="n">use_notify</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1651,7 +1657,7 @@
                 <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.name!r}</span><span class="s2"> within </span><span class="si">{timeout}</span><span class="s2">-second timeout. The ioid of &quot;</span>
                 <span class="n">f</span><span class="s2">&quot;the expected response is </span><span class="si">{ioid}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
-        <span class="k">return</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="PV.subscribe"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1671,9 +1677,10 @@
         <span class="c1"># callbacks via sub.add_callback(user_func).</span>
         <span class="k">return</span> <span class="n">sub</span></div>
 
-    <span class="k">def</span> <span class="nf">unsubscribe_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="PV.unsubscribe_all"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.unsubscribe_all">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s2">&quot;Clear all subscriptions. (Remove all user callbacks from them.)&quot;</span>
         <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-            <span class="n">sub</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div>
+            <span class="n">sub</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span></div></div>
 
     <span class="c1"># def __hash__(self):</span>
     <span class="c1">#     return id((self.context, self.circuit_manager, self.name))</span>
@@ -1775,7 +1782,7 @@
             <span class="n">ctx</span><span class="o">.</span><span class="n">activate_subscriptions_now</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">has_callbacks</span>
 
-    <span class="nd">@ensure_connected</span>
+<div class="viewcode-block" id="Subscription.compose_command"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.compose_command">[docs]</a>    <span class="nd">@ensure_connected</span>
     <span class="k">def</span> <span class="nf">compose_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="s2">&quot;This is used by the Context to re-subscribe in bulk after dropping.&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
@@ -1794,7 +1801,7 @@
         <span class="c1"># The circuit_manager needs to know the subscriptionid so that it can</span>
         <span class="c1"># route responses to this request.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">[</span><span class="n">subscriptionid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
-        <span class="k">return</span> <span class="n">command</span>
+        <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="Subscription.clear"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1931,7 +1938,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0a1+282.g8860c11',
+            VERSION:'0.1.0a1+294.gbf03b35',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

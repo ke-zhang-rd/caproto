@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Core API Documentation &mdash; caproto 0.1.0a1+282.g8860c11 documentation</title>
+  <title>Core API Documentation &mdash; caproto 0.1.0a1+294.gbf03b35 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+282.g8860c11
+                0.1.0a1+294.gbf03b35
               </div>
             
           
@@ -1524,7 +1524,7 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1566,7 +1566,7 @@ Channel Access in 3.13 and is not well-supported by caproto.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">tuple, <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>, <code class="docutils literal notranslate"><span class="pre">array.array</span></code>, or bytes</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1608,7 +1608,7 @@ a <code class="docutils literal notranslate"><span class="pre">WriteRequest</spa
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1798,7 +1798,7 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <dd></dd>
 <dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1843,7 +1843,7 @@ Channel Access in 3.13 and is not well-supported by caproto.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>ioid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1882,7 +1882,7 @@ count, which can be checked in the Channel’s attribute
 <dd></dd>
 <dt><strong>subscriptionid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -1922,7 +1922,7 @@ count, which can be checked in the Channel’s attribute
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>subscriptionid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
 <dd></dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
 <dd><p class="first last">Requested Channel Access data type. Default is the channel’s
 native data type, which can be checked in the Channel’s attribute
 <code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
@@ -2311,7 +2311,7 @@ supported by Python, using <code class="docutils literal notranslate"><span clas
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+282.g8860c11',
+            VERSION:'0.1.0a1+294.gbf03b35',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
