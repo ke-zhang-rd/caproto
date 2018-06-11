@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Input-Output Controllers &mdash; caproto 0.1.0a1+305.g99b0a0f documentation</title>
+  <title>Input-Output Controllers &mdash; caproto 0.1.0a1+327.g7bc264f documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+305.g99b0a0f
+                0.1.0a1+327.g7bc264f
               </div>
             
           
@@ -93,11 +93,16 @@
 <li class="toctree-l1"><a class="reference internal" href="pyepics-compat-client.html">Pyepics-Compatible Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="async-clients.html">Asynchronous Clients</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Input-Output Controllers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#simple-ioc">Simple IOC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#write-to-a-file-when-a-pv-is-written-to">Write to a File When a PV is Written To</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#update-tallies-when-each-pv-is-read">Update Tallies When Each PV is Read</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#macros-for-pv-names">Macros for PV names</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#inline-style-read-and-write-customization">“Inline” Style Read and Write Customization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#why-write-an-ioc-using-caproto">Why Write an IOC Using Caproto?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#using-the-ioc-examples">Using the IOC Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#simple-ioc">Simple IOC</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write-to-a-file-when-a-pv-is-written-to">Write to a File When a PV is Written To</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#update-tallies-when-each-pv-is-read">Update Tallies When Each PV is Read</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#macros-for-pv-names">Macros for PV names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inline-style-read-and-write-customization">“Inline” Style Read and Write Customization</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="servers.html">Servers</a></li>
@@ -111,7 +116,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
 
             
@@ -178,9 +183,78 @@
             
   <div class="section" id="input-output-controllers">
 <h1>Input-Output Controllers<a class="headerlink" href="#input-output-controllers" title="Permalink to this headline">¶</a></h1>
+<p>EPICS Input-Output Controllers (IOCs) expose an EPICS server. Behind the
+server, they may connect to a device driver, data-processing code, and/or
+an EPICS client for chaining with other servers.</p>
+<p>In this section, we will review some of the example IOCs that are included with
+caproto, intended as demonstrations of what is possible.</p>
+<div class="section" id="why-write-an-ioc-using-caproto">
+<h2>Why Write an IOC Using Caproto?<a class="headerlink" href="#why-write-an-ioc-using-caproto" title="Permalink to this headline">¶</a></h2>
+<p>Caproto makes it is easy to launch a protocol-compliant Channel Access server
+in just a couple lines of Python. This opens up some interesting possibilities:</p>
+<ul class="simple">
+<li>In Python, it is easy to invoke standard web protocols. For example, writing
+an EPICS server around a device that speaks JSON may be easier with caproto
+than with any previously-existing tools.</li>
+<li>Many scientists who rely on EPICS but may not understand the details of
+EPICS already know some Python for the data analysis work. Caproto may make
+it easier for scientists and controls engineers to collaborate.</li>
+<li>As with its clients, caproto’s servers handle a human-friendly encapsulation
+of every message sent and received, which can be valuable for development,
+logging, and debugging.</li>
+</ul>
+</div>
+<div class="section" id="using-the-ioc-examples">
+<h2>Using the IOC Examples<a class="headerlink" href="#using-the-ioc-examples" title="Permalink to this headline">¶</a></h2>
+<p>They can be started like so:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.simple
+<span class="o">[</span>I <span class="m">16</span>:51:09.751 server:93<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">16</span>:51:09.752 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:54966
+<span class="o">[</span>I <span class="m">16</span>:51:09.753 server:121<span class="o">]</span> Server startup complete.
+</pre></div>
+</div>
+<p>and stopped using Ctrl+C:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>^C
+<span class="o">[</span>I <span class="m">16</span>:51:10.828 server:129<span class="o">]</span> Server task cancelled. Must shut down.
+<span class="o">[</span>I <span class="m">16</span>:51:10.828 server:132<span class="o">]</span> Server exiting....
+</pre></div>
+</div>
+<p>Use <code class="docutils literal"><span class="pre">--list-pvs</span></code> to display which PVs they serve:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.simple --list-pvs
+<span class="o">[</span>I <span class="m">16</span>:52:36.087 server:93<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">16</span>:52:36.089 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:62005
+<span class="o">[</span>I <span class="m">16</span>:52:36.089 server:121<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">16</span>:52:36.089 server:123<span class="o">]</span> PVs available:
+    simple:A
+    simple:B
+</pre></div>
+</div>
+<p>and use <code class="docutils literal"><span class="pre">--prefix</span></code> to conveniently customize the PV prefix:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.simple --list-pvs --prefix my_custom_prefix:
+<span class="o">[</span>I <span class="m">16</span>:54:14.528 server:93<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">16</span>:54:14.530 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:55810
+<span class="o">[</span>I <span class="m">16</span>:54:14.530 server:121<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">16</span>:54:14.530 server:123<span class="o">]</span> PVs available:
+    my_custom_prefix:A
+    my_custom_prefix:B
+</pre></div>
+</div>
+<p>Type <code class="docutils literal"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">caproto.ioc_examples.simple</span> <span class="pre">-h</span></code> for more options.</p>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>Below, we will use caproto’s threading client to interact with caproto IOC.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">Context</span>
+
+<span class="gp">In [2]: </span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>  <span class="c1"># a client Context used to explore the servers below</span>
+</pre></div>
+</div>
+<p>Of course, standard epics-base clients or other caproto clients may also be
+used.</p>
 <div class="section" id="simple-ioc">
-<h2>Simple IOC<a class="headerlink" href="#simple-ioc" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<h3>Simple IOC<a class="headerlink" href="#simple-ioc" title="Permalink to this headline">¶</a></h3>
+<p>This IOC has two PVs that simply store a value.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">from</span> <span class="nn">caproto.server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">ioc_arg_parser</span><span class="p">,</span> <span class="n">run</span>
 
 
@@ -198,45 +272,36 @@
     <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ simple.py example1:
-PVs: <span class="o">[</span><span class="s1">&#39;example1:A&#39;</span>, <span class="s1">&#39;example1:B&#39;</span><span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.simple --list-pvs
+<span class="o">[</span>I <span class="m">18</span>:08:47.628 server:93<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">18</span>:08:47.630 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:56840
+<span class="o">[</span>I <span class="m">18</span>:08:47.630 server:121<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">18</span>:08:47.630 server:123<span class="o">]</span> PVs available:
+    simple:A
+    simple:B
 </pre></div>
 </div>
-<p>Now there are simple read/writable PVs named ‘example1:A’ and ‘example1:B’.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">get_pv</span>
-<span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">ImportError</span><span class="g g-Whitespace">                               </span>Traceback (most recent call last)
-<span class="nn">&lt;ipython-input-1-5c14b2fde07a&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">get_pv</span>
+<p>Using the threading client context we created above, we can read these values
+and write to them.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;simple:A&#39;</span><span class="p">,</span> <span class="s1">&#39;simple:B&#39;</span><span class="p">)</span>
 
-<span class="ne">ImportError</span>: cannot import name &#39;get_pv&#39; from &#39;caproto.threading.client&#39; (/home/travis/virtualenv/python3.7-dev/lib/python3.7/site-packages/caproto/threading/client.py)
+<span class="gp">In [4]: </span><span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gh">Out[4]: </span><span class="go">ReadNotifyResponse(data=array([1], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
 
-<span class="gp">In [2]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:A&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                   ---------------------------------------------------------------------------</span>
-<span class="go">NameError                                 Traceback (most recent call last)</span>
-<span class="go">&lt;ipython-input-2-c392af11430d&gt; in &lt;module&gt;()</span>
-<span class="go">----&gt; 1 get_pv(&#39;example1:A&#39;).get()</span>
+<span class="gp">In [5]: </span><span class="n">b</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                             Out[5]: ReadNotifyResponse(data=array([2], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=2, metadata=None)</span>
 
-<span class="go">NameError: name &#39;get_pv&#39; is not defined</span>
+<span class="gp">In [6]: </span><span class="n">b</span><span class="o">.</span><span class="n">write</span><span class="p">([</span><span class="mi">5</span><span class="p">],</span> <span class="n">wait</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Out[6]: WriteNotifyResponse(data_type=&lt;ChannelType.LONG: 5&gt;, data_count=0, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3)</span>
 
-<span class="gp">In [3]: </span><span class="n">get_pv</span><span class="p">(</span><span class="s1">&#39;example1:B&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    ---------------------------------------------------------------------------</span>
-<span class="go">NameError                                 Traceback (most recent call last)</span>
-<span class="go">&lt;ipython-input-3-d942c0c2e3b2&gt; in &lt;module&gt;()</span>
-<span class="go">----&gt; 1 get_pv(&#39;example1:B&#39;).get()</span>
-
-<span class="go">NameError: name &#39;get_pv&#39; is not defined</span>
-</pre></div>
-</div>
-<p>To run a second instance of the same IOC with a different prefix:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ simple_ioc.py example2:
-PVs: <span class="o">[</span><span class="s1">&#39;example2:A&#39;</span>, <span class="s1">&#39;example2:B&#39;</span><span class="o">]</span>
+<span class="gp">In [7]: </span><span class="n">b</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Out[7]: ReadNotifyResponse(data=array([5], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=4, metadata=None)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="write-to-a-file-when-a-pv-is-written-to">
-<h2>Write to a File When a PV is Written To<a class="headerlink" href="#write-to-a-file-when-a-pv-is-written-to" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<h3>Write to a File When a PV is Written To<a class="headerlink" href="#write-to-a-file-when-a-pv-is-written-to" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
@@ -274,14 +339,40 @@ PVs: <span class="o">[</span><span class="s1">&#39;example2:A&#39;</span>, <span
     <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ custom_write.py example3:
-PVs: <span class="o">[</span><span class="s1">&#39;example3:A&#39;</span>, <span class="s1">&#39;example3:B&#39;</span><span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.custom_write --list-pvs
+<span class="o">[</span>I <span class="m">18</span>:12:07.282 server:93<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">18</span>:12:07.284 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:57539
+<span class="o">[</span>I <span class="m">18</span>:12:07.284 server:121<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">18</span>:12:07.284 server:123<span class="o">]</span> PVs available:
+    custom_write:A
+    custom_write:B
 </pre></div>
 </div>
+<p>On the machine where the server redies, we will see files update whenever any
+client writes.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;custom_write:A&#39;</span><span class="p">,</span> <span class="s1">&#39;custom_write:B&#39;</span><span class="p">)</span>
+
+<span class="gp">In [9]: </span><span class="n">a</span><span class="o">.</span><span class="n">write</span><span class="p">([</span><span class="mi">5</span><span class="p">],</span> <span class="n">wait</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gh">Out[9]: </span><span class="go">WriteNotifyResponse(data_type=&lt;ChannelType.LONG: 5&gt;, data_count=0, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1)</span>
+
+<span class="gp">In [10]: </span><span class="k">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/A&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">                                                                                                                                                                                                                                                                 [5]</span>
+
+<span class="gp">In [11]: </span><span class="n">a</span><span class="o">.</span><span class="n">write</span><span class="p">([</span><span class="mi">10</span><span class="p">],</span> <span class="n">wait</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="go">                                                                                                                                                                                                                                                                     Out[11]: WriteNotifyResponse(data_type=&lt;ChannelType.LONG: 5&gt;, data_count=0, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=2)</span>
+
+<span class="gp">In [12]: </span><span class="k">print</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/A&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">())</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       [10]</span>
+</pre></div>
+</div>
+<p>It is easy to imagine extending this example to write a socket or a serial
+device rather than a file.</p>
 </div>
 <div class="section" id="update-tallies-when-each-pv-is-read">
-<h2>Update Tallies When Each PV is Read<a class="headerlink" href="#update-tallies-when-each-pv-is-read" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<h3>Update Tallies When Each PV is Read<a class="headerlink" href="#update-tallies-when-each-pv-is-read" title="Permalink to this headline">¶</a></h3>
+<p>Above, we hooked into the IOC’s writing behavior to customize it. Here, we
+customize its reading behavior.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">from</span> <span class="nn">caproto.server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">ioc_arg_parser</span><span class="p">,</span> <span class="n">run</span>
 <span class="kn">import</span> <span class="nn">collections</span>
 
@@ -315,14 +406,31 @@ PVs: <span class="o">[</span><span class="s1">&#39;example3:A&#39;</span>, <span
     <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ reading_counter.py example4:
-PVs: <span class="o">[</span><span class="s1">&#39;example4:A&#39;</span>, <span class="s1">&#39;example4:B&#39;</span><span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.reading_counter --list-pvs
+<span class="o">[</span>I <span class="m">18</span>:26:38.169 server:93<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">18</span>:26:38.170 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:52687
+<span class="o">[</span>I <span class="m">18</span>:26:38.171 server:121<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">18</span>:26:38.171 server:123<span class="o">]</span> PVs available:
+    reading_counter:A
+    reading_counter:B
+</pre></div>
+</div>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;reading_counter:A&#39;</span><span class="p">,</span> <span class="s1">&#39;reading_counter:B&#39;</span><span class="p">)</span>
+
+<span class="gp">In [14]: </span><span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+<span class="gh">Out[14]: </span><span class="go">array([1], dtype=int32)</span>
+
+<span class="gp">In [15]: </span><span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+<span class="go">                                 Out[15]: array([2], dtype=int32)</span>
+
+<span class="gp">In [16]: </span><span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+<span class="go">                                                                  Out[16]: array([3], dtype=int32)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="macros-for-pv-names">
-<h2>Macros for PV names<a class="headerlink" href="#macros-for-pv-names" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<h3>Macros for PV names<a class="headerlink" href="#macros-for-pv-names" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">from</span> <span class="nn">caproto.server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">ioc_arg_parser</span><span class="p">,</span> <span class="n">run</span>
 
 
@@ -345,15 +453,47 @@ PVs: <span class="o">[</span><span class="s1">&#39;example4:A&#39;</span>, <span
     <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ macros.py example5: XF11ID detector
-PVs: <span class="o">[</span><span class="s1">&#39;example5:XF11ID:detector.VAL&#39;</span>, <span class="s1">&#39;example5:XF11ID:detector.RBV&#39;</span><span class="o">]</span>
+<p>The help string for this IOC contains two extra entries at the bottom:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.macros -h
+usage: macros.py <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--prefix PREFIX<span class="o">]</span> <span class="o">[</span>-q <span class="p">|</span> -v<span class="o">]</span> <span class="o">[</span>--list-pvs<span class="o">]</span>
+                <span class="o">[</span>--async-lib <span class="o">{</span>asyncio,curio,trio<span class="o">}]</span>
+                <span class="o">[</span>--interfaces INTERFACES <span class="o">[</span>INTERFACES ...<span class="o">]]</span>
+                <span class="o">[</span>--beamline BEAMLINE<span class="o">]</span> <span class="o">[</span>--thing THING<span class="o">]</span>
+
+Run an IOC with PVs that have macro-ified names.
+
+optional arguments:
+
+&lt;...snipped...&gt;
+
+--beamline BEAMLINE   Macro substitution, optional
+--thing THING         Macro substitution, optional
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.macros --beamline XF31ID --thing detector --list-pvs
+<span class="o">[</span>I <span class="m">18</span>:44:39.528 server:93<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">18</span>:44:39.530 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:56365
+<span class="o">[</span>I <span class="m">18</span>:44:39.531 server:121<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">18</span>:44:39.531 server:123<span class="o">]</span> PVs available:
+    macros:XF31ID:detector.VAL
+    macros:XF31ID:detector.RBV
+</pre></div>
+</div>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">pv</span><span class="p">,</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;macros:XF31ID:detector.VAL&#39;</span><span class="p">)</span>
+
+<span class="gp">In [18]: </span><span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gh">Out[18]: </span><span class="go">ReadNotifyResponse(data=array([0], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
 </pre></div>
 </div>
 <p>Observe that the command line arguments fill in the PV names.</p>
 </div>
 <div class="section" id="inline-style-read-and-write-customization">
-<h2>“Inline” Style Read and Write Customization<a class="headerlink" href="#inline-style-read-and-write-customization" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<h3>“Inline” Style Read and Write Customization<a class="headerlink" href="#inline-style-read-and-write-customization" title="Permalink to this headline">¶</a></h3>
+<p>This example shows custom write and read behavior similar to what we have seen
+before, but implemented “inline” rather than siloed into a separate method.
+This may be useful, from a readability point of view, for implementing one-off
+behavior.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
 <span class="kn">from</span> <span class="nn">caproto.server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">ioc_arg_parser</span><span class="p">,</span> <span class="n">run</span>
 <span class="kn">import</span> <span class="nn">random</span>
 
@@ -387,19 +527,37 @@ PVs: <span class="o">[</span><span class="s1">&#39;example5:XF11ID:detector.VAL&
     <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ inline_style.py example6:
-PVs: <span class="o">[</span><span class="s1">&#39;example6:random_int&#39;</span>, <span class="s1">&#39;example6:random_str&#39;</span>, <span class="s1">&#39;example6:A&#39;</span><span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.inline_style --list-pvs
+<span class="o">[</span>I <span class="m">18</span>:47:05.344 server:93<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">18</span>:47:05.346 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:64443
+<span class="o">[</span>I <span class="m">18</span>:47:05.346 server:121<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">18</span>:47:05.346 server:123<span class="o">]</span> PVs available:
+    inline_style:random_int
+    inline_style:random_str
+    inline_style:A
 </pre></div>
 </div>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get example6:random_int
-example6:random                           <span class="m">87</span>
-$ caproto-get example6:random_int
-example6:random                           <span class="m">92</span>
-$ caproto-get example6:random_str
-example6:random_str                       b<span class="s1">&#39;b&#39;</span>
-$ caproto-get example6:random_str
-example6:random_str                       b<span class="s1">&#39;a&#39;</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="n">randint</span><span class="p">,</span> <span class="n">randstr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;inline_style:random_int&#39;</span><span class="p">,</span> <span class="s1">&#39;inline_style:random_str&#39;</span><span class="p">)</span>
+
+<span class="gp">In [20]: </span><span class="n">randint</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gh">Out[20]: </span><span class="go">ReadNotifyResponse(data=array([64], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
+
+<span class="gp">In [21]: </span><span class="n">randint</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                               Out[21]: ReadNotifyResponse(data=array([48], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=2, metadata=None)</span>
+
+<span class="gp">In [22]: </span><span class="n">randint</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              Out[22]: ReadNotifyResponse(data=array([92], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
+
+<span class="gp">In [23]: </span><span class="n">randstr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             Out[23]: ReadNotifyResponse(data=[b&#39;c&#39;], data_type=&lt;ChannelType.STRING: 0&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=4, metadata=None)</span>
+
+<span class="gp">In [24]: </span><span class="n">randstr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Out[24]: ReadNotifyResponse(data=[b&#39;b&#39;], data_type=&lt;ChannelType.STRING: 0&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=5, metadata=None)</span>
+
+<span class="gp">In [25]: </span><span class="n">randstr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Out[25]: ReadNotifyResponse(data=[b&#39;c&#39;], data_type=&lt;ChannelType.STRING: 0&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=6, metadata=None)</span>
 </pre></div>
+</div>
 </div>
 </div>
 </div>
@@ -446,7 +604,7 @@ example6:random_str                       b<span class="s1">&#39;a&#39;</span>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+305.g99b0a0f',
+            VERSION:'0.1.0a1+327.g7bc264f',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

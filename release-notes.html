@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release Notes &mdash; caproto 0.1.0a1+305.g99b0a0f documentation</title>
+  <title>Release History &mdash; caproto 0.1.0a1+327.g7bc264f documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+305.g99b0a0f
+                0.1.0a1+327.g7bc264f
               </div>
             
           
@@ -103,7 +103,10 @@
 <ul class="current">
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Release Notes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v0-1-next">v0.1 (NEXT)</a></li>
+</ul>
+</li>
 </ul>
 
             
@@ -149,7 +152,7 @@
     
       <li><a href="index.html">Docs</a> &raquo;</li>
         
-      <li>Release Notes</li>
+      <li>Release History</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -168,13 +171,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="release-notes">
-<h1>Release Notes<a class="headerlink" href="#release-notes" title="Permalink to this headline">¶</a></h1>
-<p>v0.1 (NEXT)</p>
+  <div class="section" id="release-history">
+<h1>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v0-1-next">
+<h2>v0.1 (NEXT)<a class="headerlink" href="#v0-1-next" title="Permalink to this headline">¶</a></h2>
+<p>This initial release contains some fairly stable components and some very
+experimental ones.</p>
 <ul class="simple">
-<li>Initial release. The client and server implementations are highly
-experimental. The core protocol code is fairly stable.</li>
+<li>The core protocol code, the synchronous client, the threading client, and the
+pyepics-compatible client are fairly stable.</li>
+<li>The high-level interface to IOCs has no known issues but could in a future
+release of caproto, as we gain experience from its use.</li>
+<li>The three server implementations are thoroughly tested, but their low level
+API is likely to change in a future release.</li>
+<li>The asynchronous client implementations (trio client and curio client) are
+highly experimental. They lack feature-parity with the other clients and have
+some known bugs. They may be heavily revised or removed in a future release
+of caproto.</li>
 </ul>
+</div>
 </div>
 
 
@@ -217,7 +232,7 @@ experimental. The core protocol code is fairly stable.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+305.g99b0a0f',
+            VERSION:'0.1.0a1+327.g7bc264f',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

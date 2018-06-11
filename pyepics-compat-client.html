@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pyepics-Compatible Client &mdash; caproto 0.1.0a1+305.g99b0a0f documentation</title>
+  <title>Pyepics-Compatible Client &mdash; caproto 0.1.0a1+327.g7bc264f documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+305.g99b0a0f
+                0.1.0a1+327.g7bc264f
               </div>
             
           
@@ -108,7 +108,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
 
             
@@ -177,10 +177,11 @@
 <h1>Pyepics-Compatible Client<a class="headerlink" href="#pyepics-compatible-client" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="what-is-this">
 <h2>What is This?<a class="headerlink" href="#what-is-this" title="Permalink to this headline">¶</a></h2>
-<p>Caproto includes a client that is a drop-in replacement for pyepics. It is
-implemented as a shim on top of caproto’s main <a class="reference internal" href="threading-client.html"><span class="doc">Threading Client</span></a>.
-Caproto’s pyepics-compatible client is tested against a representative sample
-of the pyepics test suite.</p>
+<p><a class="reference external" href="http://cars9.uchicago.edu/software/python/pyepics3/">Pyepics</a> is a
+well-established Python wrapper of libca. Caproto includes a client that is a
+drop-in replacement for pyepics. It is implemented as a shim on top of
+caproto’s main <a class="reference internal" href="threading-client.html"><span class="doc">Threading Client</span></a>.  Caproto’s pyepics-compatible client is
+tested against a representative sample of the pyepics test suite.</p>
 <p>Why would you ever want to use caproto’s pyepics instead of actual pyepics?  It
 may be advantageous to run existing user code written for pyepics on top of
 caproto — for example, to leverage caproto’s verbose logging or portability.</p>
@@ -189,14 +190,15 @@ pyepics-compatible one? Caproto’s main threading client makes different design
 choices, consistent with the rest of caproto:</p>
 <ol class="arabic simple">
 <li>Caproto’s threading client provides a lower-level API, handing the user
-response objects as opposed to values.</li>
-<li>Caproto pulls apart the subscription process into two steps—defining a
+objects encapsulating the complete response from the server as opposed to
+just the value.</li>
+<li>Caproto pulls apart the subscription process into two steps—specifying a
 subscription and adding a user callback function to one—whereas pyepics
 elides them.</li>
 </ol>
 <p>Caproto is speed-competitive with pyepics. Because it controls the
 entire network stack, rather than calling out to libca, it can batch requests
-into UDP datagrams and TCP packets more efficiently, leading to ~100X speedup
+into UDP datagrams and TCP packets more efficiently, leading to a ~250X speedup
 in connecting a large number of channels in bulk.</p>
 <p>The authors of caproto are heavy pyepics users and occasional contributors.
 This module is intended as a friendly bridge to pyepics.</p>
@@ -207,13 +209,13 @@ This module is intended as a friendly bridge to pyepics.</p>
 <a class="reference external" href="http://cars9.uchicago.edu/software/python/pyepics3/">pyepics doucmentation</a>.
 This is a brief demonstration of caproto’s pyepics-compat client.</p>
 <p>In a separate shell, start one of caproto’s demo IOCs.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.random_walk
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.random_walk
 PVs: <span class="o">[</span><span class="s1">&#39;random_walk:dt&#39;</span>, <span class="s1">&#39;random_walk:x&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 <p>Now, in Python we will talk to it using caproto’s pyepics-compatible client.
-Get and put to <code class="docutils literal notranslate"><span class="pre">random_walk:dt</span></code>:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">caproto.threading.pyepics_compat</span> <span class="kn">as</span> <span class="nn">epics</span>
+Get and put to <code class="docutils literal"><span class="pre">random_walk:dt</span></code>:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">import</span> <span class="nn">caproto.threading.pyepics_compat</span> <span class="kn">as</span> <span class="nn">epics</span>
 
 <span class="gp">In [2]: </span><span class="n">pv_name</span> <span class="o">=</span> <span class="s1">&#39;random_walk:dt&#39;</span>
 
@@ -233,33 +235,32 @@ Get and put to <code class="docutils literal notranslate"><span class="pre">rand
 <span class="gh">Out[8]: </span><span class="go">1.0</span>
 </pre></div>
 </div>
-<p>Subscribe a user-defined callback function to <code class="docutils literal notranslate"><span class="pre">random_walk:x</span></code>:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<p>Subscribe a user-defined callback function to <code class="docutils literal"><span class="pre">random_walk:x</span></code>:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="gp">   ...: </span>    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;received value&#39;</span> <span class="p">,</span> <span class="n">value</span><span class="p">)</span>
 <span class="gp">   ...: </span>
 </pre></div>
 </div>
-<p>Note that pyepics recommends using <code class="docutils literal notranslate"><span class="pre">epics.get_pv(...)</span></code> instead of
-<code class="docutils literal notranslate"><span class="pre">epics.PV(...)</span></code> and so do we, but both usages are supported.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">x_pv</span> <span class="o">=</span> <span class="n">epics</span><span class="o">.</span><span class="n">PV</span><span class="p">(</span><span class="s1">&#39;random_walk:x&#39;</span><span class="p">)</span>
+<p>Note that pyepics recommends using <code class="docutils literal"><span class="pre">epics.get_pv(...)</span></code> instead of
+<code class="docutils literal"><span class="pre">epics.PV(...)</span></code> and so do we, but both usages are supported.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">x_pv</span> <span class="o">=</span> <span class="n">epics</span><span class="o">.</span><span class="n">PV</span><span class="p">(</span><span class="s1">&#39;random_walk:x&#39;</span><span class="p">)</span>
 
 <span class="gp">In [11]: </span><span class="n">x_pv</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 <span class="gh">Out[11]: </span><span class="go">0</span>
 
 <span class="gp">In [12]: </span><span class="kn">import</span> <span class="nn">time</span><span class="p">;</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># give some time for responses to come in</span>
-<span class="go">           received value 0.704873141384448</span>
-<span class="go">received value 1.073507705265333</span>
-<span class="go">received value 2.0616773914437445</span>
-<span class="go">received value 2.694865595953788</span>
-<span class="go">received value 3.1658096113943657</span>
+<span class="go">           received value 0.33733344215696304</span>
+<span class="go">received value 0.520839160733316</span>
+<span class="go">received value 1.3785108011390639</span>
+<span class="go">received value 2.368095133642634</span>
 
 <span class="gp">In [13]: </span><span class="n">x_pv</span><span class="o">.</span><span class="n">clear_callbacks</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>The underlying caproto PV and Context objects from caproto’s main
 <a class="reference internal" href="threading-client.html"><span class="doc">Threading Client</span></a>. are accessible:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">pv</span><span class="o">.</span><span class="n">_caproto_pv</span>
-<span class="gh">Out[14]: </span><span class="go">&lt;PV name=&#39;random_walk:dt&#39; priority=0 address=(&#39;127.0.0.1&#39;, 63103), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">pv</span><span class="o">.</span><span class="n">_caproto_pv</span>
+<span class="gh">Out[14]: </span><span class="go">&lt;PV name=&#39;random_walk:dt&#39; priority=0 address=(&#39;127.0.0.1&#39;, 49325), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
 <span class="gp">In [15]: </span><span class="n">pv</span><span class="o">.</span><span class="n">_caproto_pv</span><span class="o">.</span><span class="n">context</span>
 <span class="go">                                                                                                                                            Out[15]: &lt;Context searches_pending=0 circuits=1 pvs=2 idle=0&gt;</span>
@@ -312,7 +313,7 @@ caproto’s test suite is more comprehensive.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+305.g99b0a0f',
+            VERSION:'0.1.0a1+327.g7bc264f',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

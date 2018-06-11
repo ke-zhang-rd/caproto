@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Threading Client &mdash; caproto 0.1.0a1+305.g99b0a0f documentation</title>
+  <title>Threading Client &mdash; caproto 0.1.0a1+327.g7bc264f documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+305.g99b0a0f
+                0.1.0a1+327.g7bc264f
               </div>
             
           
@@ -92,7 +92,8 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Threading Client</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#tutorial">Tutorial</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#connect">Connect</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#read-and-write">Read and Write</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#read">Read</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#write">Write</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#subscribe-monitor">Subscribe (“Monitor”)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#go-idle">Go Idle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#loggers-for-debugging">Loggers for Debugging</a></li>
@@ -115,7 +116,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
 
             
@@ -187,58 +188,59 @@ threading module to manage concurrency.</p>
 <div class="section" id="tutorial">
 <h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
 <p>In a separate shell, start one of caproto’s demo IOCs.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.random_walk
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.random_walk
 PVs: <span class="o">[</span><span class="s1">&#39;random_walk:dt&#39;</span>, <span class="s1">&#39;random_walk:x&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 <div class="section" id="connect">
 <h3>Connect<a class="headerlink" href="#connect" title="Permalink to this headline">¶</a></h3>
 <p>Now, in Python we will talk to it using caproto’s threading client. Start by
-creating a <a class="reference internal" href="#caproto.threading.client.Context" title="caproto.threading.client.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a>.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">Context</span>
+creating a <a class="reference internal" href="#caproto.threading.client.Context" title="caproto.threading.client.Context"><code class="xref py py-class docutils literal"><span class="pre">Context</span></code></a>.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">Context</span>
 
 <span class="gp">In [2]: </span><span class="n">ctx</span> <span class="o">=</span> <span class="n">Context</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>The <a class="reference internal" href="#caproto.threading.client.Context" title="caproto.threading.client.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> object tracks the state of connections in progress.
+<p>The <a class="reference internal" href="#caproto.threading.client.Context" title="caproto.threading.client.Context"><code class="xref py py-class docutils literal"><span class="pre">Context</span></code></a> object caches connections, manages automatic
+re-connection, and tracks the state of connections in progress.
 We can use it to request new connections. Formulating requests for many PVs in
 a large batch is efficient. In this example we’ll just ask for two PVs.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">x</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;random_walk:x&#39;</span><span class="p">,</span> <span class="s1">&#39;random_walk:dt&#39;</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [3]: </span><span class="n">x</span><span class="p">,</span> <span class="n">dt</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;random_walk:x&#39;</span><span class="p">,</span> <span class="s1">&#39;random_walk:dt&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><a class="reference internal" href="#caproto.threading.client.Context.get_pvs" title="caproto.threading.client.Context.get_pvs"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Context.get_pvs()</span></code></a>  accepts an arbitrary number of PV names and
-immediately returns a collection of <a class="reference internal" href="#caproto.threading.client.PV" title="caproto.threading.client.PV"><code class="xref py py-class docutils literal notranslate"><span class="pre">PV</span></code></a> objects representing each name.
+<p><a class="reference internal" href="#caproto.threading.client.Context.get_pvs" title="caproto.threading.client.Context.get_pvs"><code class="xref py py-meth docutils literal"><span class="pre">Context.get_pvs()</span></code></a>  accepts an arbitrary number of PV names and
+immediately returns a collection of <a class="reference internal" href="#caproto.threading.client.PV" title="caproto.threading.client.PV"><code class="xref py py-class docutils literal"><span class="pre">PV</span></code></a> objects representing each name.
 In a background thread, the Context searches for an EPICS server that provides
 that PV name and then connects to it. The PV object displays its connection
 state:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="n">dt</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="n">dt</span>
 <span class="gh">Out[4]: </span><span class="go">&lt;PV name=&#39;random_walk:dt&#39; priority=0 (searching....)&gt;</span>
 </pre></div>
 </div>
 <p>The Context displays aggregate information about the state of all connections.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">ctx</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">ctx</span>
 <span class="gh">Out[5]: </span><span class="go">&lt;Context searches_pending=2 circuits=0 pvs=2 idle=0&gt;</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="read-and-write">
-<h3>Read and Write<a class="headerlink" href="#read-and-write" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="read">
+<h3>Read<a class="headerlink" href="#read" title="Permalink to this headline">¶</a></h3>
 <p>Now, to read a PV:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">res</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">res</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
 <span class="gp">In [7]: </span><span class="n">res</span>
-<span class="gh">Out[7]: </span><span class="go">ReadNotifyResponse(data=array([1.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
+<span class="gh">Out[7]: </span><span class="go">ReadNotifyResponse(data=array([3.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
 </pre></div>
 </div>
 <p>This object is a human-friendly representation of the server’s response. The
 raw bytes of that response are:</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="nb">bytes</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01?\xf0\x00\x00\x00\x00\x00\x00&#39;</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="nb">bytes</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="gh">Out[8]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01@\x08\x00\x00\x00\x00\x00\x00&#39;</span>
 </pre></div>
 </div>
-<p>Access particular fields in the response using attribute (“dot”) access on <code class="docutils literal notranslate"><span class="pre">res</span></code>.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">res</span><span class="o">.</span><span class="n">data</span>
-<span class="gh">Out[9]: </span><span class="go">array([1.])</span>
+<p>Access particular fields in the response using attribute (“dot”) access on <code class="docutils literal"><span class="pre">res</span></code>.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">res</span><span class="o">.</span><span class="n">data</span>
+<span class="gh">Out[9]: </span><span class="go">array([3.])</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -246,46 +248,77 @@ raw bytes of that response are:</p>
 <p><strong>Performance Note</strong></p>
 <p>The underlying metadata and data are stored in efficient, contiguous-memory
 data structures.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">res</span><span class="o">.</span><span class="n">header</span>  <span class="c1"># a ctypes.BigEndianStructure</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="n">res</span><span class="o">.</span><span class="n">header</span>  <span class="c1"># a ctypes.BigEndianStructure</span>
 <span class="gh">Out[10]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=1)</span>
 
 <span class="gp">In [11]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x1473c32294c8&gt;)</span>
+<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x14a06ab11b88&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
-intermediate copies. Accessing the <code class="docutils literal notranslate"><span class="pre">res.data</span></code> — which returns a
-<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <code class="docutils literal notranslate"><span class="pre">array.array</span></code> — provides a view onto that same
+intermediate copies. Accessing the <code class="docutils literal"><span class="pre">res.data</span></code> — which returns a
+<code class="docutils literal"><span class="pre">numpy.ndarray</span></code> or <code class="docutils literal"><span class="pre">array.array</span></code> — provides a view onto that same
 memory with no copying (if the data was received from the socket all at
 once) or one copy (if the data bridged multiple receipts).</p>
 </div>
-<p>Let us set the value to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">dt</span><span class="o">.</span><span class="n">write</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
+</div>
+<div class="section" id="write">
+<h3>Write<a class="headerlink" href="#write" title="Permalink to this headline">¶</a></h3>
+<p>Let us set the value to <code class="docutils literal"><span class="pre">1</span></code>.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="n">dt</span><span class="o">.</span><span class="n">write</span><span class="p">([</span><span class="mi">1</span><span class="p">])</span>
 <span class="gh">Out[12]: </span><span class="go">WriteNotifyResponse(data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=0, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=2)</span>
 </pre></div>
 </div>
+<p>By default, we send <code class="docutils literal"><span class="pre">WriteNotifyResponse</span></code>, wait for a response, and return
+it. There are a couple others ways we can handle writes:</p>
+<ul>
+<li><p class="first">Return immediately, not asking for or waiting for a response.</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">dt</span><span class="o">.</span><span class="n">write</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">wait</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+<li><p class="first">Return immediately, not waiting for a response, but handing the response
+(when it arrived) to some callback function, processed on a background
+thread.</p>
+<blockquote>
+<div><div class="highlight-python"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s1">&#39;got a response:&#39;</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+
+<span class="n">dt</span><span class="o">.</span><span class="n">write</span><span class="p">([</span><span class="mi">1</span><span class="p">],</span> <span class="n">wait</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">callback</span><span class="o">=</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</li>
+</ul>
+<p>See the <a class="reference internal" href="#caproto.threading.client.PV.write" title="caproto.threading.client.PV.write"><code class="xref py py-meth docutils literal"><span class="pre">PV.write()</span></code></a> for more.</p>
 </div>
 <div class="section" id="subscribe-monitor">
 <h3>Subscribe (“Monitor”)<a class="headerlink" href="#subscribe-monitor" title="Permalink to this headline">¶</a></h3>
-<p>Let us now monitor a channel. The server updates the <code class="docutils literal notranslate"><span class="pre">random_walk:x</span></code> channel
-periodically. (The period is set by <code class="docutils literal notranslate"><span class="pre">random_walk:dt</span></code>.) We can subscribe to
+<p>Let us now monitor a channel. The server updates the <code class="docutils literal"><span class="pre">random_walk:x</span></code> channel
+periodically at some period set by <code class="docutils literal"><span class="pre">random_walk:dt</span></code>. We can subscribe to
 updates and fan them out to one or more user-defined callback functions.
-The user-defined function msut accept one positional argument.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+First, we define a <a class="reference internal" href="#caproto.threading.client.Subscription" title="caproto.threading.client.Subscription"><code class="xref py py-class docutils literal"><span class="pre">Subscription</span></code></a>.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">sub</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">subscribe</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Next, we define a callback function, a function that will be called whenever
+the server sends an update. It must accept one positional argument.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
 
-<span class="gp">In [14]: </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+<span class="gp">In [15]: </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
 <span class="gp">   ....: </span>    <span class="n">responses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 <span class="gp">   ....: </span>
 </pre></div>
 </div>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="n">sub</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">subscribe</span><span class="p">()</span>
-
-<span class="gp">In [16]: </span><span class="n">token</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<p>We register this function with <code class="docutils literal"><span class="pre">sub</span></code>.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="n">token</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">token</span></code> is just an integer which we can use to unsubscribe later. We can
-define a second callback</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
+<p>The <code class="docutils literal"><span class="pre">token</span></code> is just an integer which we can use to remove <code class="docutils literal"><span class="pre">f</span></code> later. We can
+define a second callback:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">values</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="gp">In [18]: </span><span class="k">def</span> <span class="nf">g</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
 <span class="gp">   ....: </span>    <span class="n">values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -293,63 +326,67 @@ define a second callback</p>
 </pre></div>
 </div>
 <p>and add it to the same subscription, putting no additional load on the network.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">g</span><span class="p">)</span>
 <span class="gh">Out[19]: </span><span class="go">1</span>
 </pre></div>
 </div>
 <p>After some time has passed, we will have accumulated some responses.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
-<span class="gh">Out[20]: </span><span class="go">6</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
+<span class="gh">Out[20]: </span><span class="go">4</span>
 
 <span class="gp">In [21]: </span><span class="n">values</span>
 <span class="go">           Out[21]: </span>
-<span class="go">[3.7089071205163684,</span>
-<span class="go"> 4.64427496114508,</span>
-<span class="go"> 4.857819562037896,</span>
-<span class="go"> 4.96611618810587,</span>
-<span class="go"> 5.649935415086006,</span>
-<span class="go"> 5.727020974951897]</span>
+<span class="go">[0.9530164542104574,</span>
+<span class="go"> 1.7999091060335317,</span>
+<span class="go"> 2.4943733286798278,</span>
+<span class="go"> 3.0298256555255985]</span>
 </pre></div>
 </div>
-<p>At any point we can remove a specific callback function</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [22]: </span><span class="n">sub</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<p>At any point we can remove a specific callback function:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [22]: </span><span class="n">sub</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>or clear all the callbacks on a subscription</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [23]: </span><span class="n">sub</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<p>or clear all the callbacks on a subscription:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [23]: </span><span class="n">sub</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>In order to minimize load on the network, a <a class="reference internal" href="#caproto.threading.client.Subscription" title="caproto.threading.client.Subscription"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscription</span></code></a> waits to
+<p>In order to minimize load on the network, a <a class="reference internal" href="#caproto.threading.client.Subscription" title="caproto.threading.client.Subscription"><code class="xref py py-class docutils literal"><span class="pre">Subscription</span></code></a> waits to
 request updates from the server until the first user callback is added. Thus,
 the first callback added by the user is guaranteed to get the first response
 received from the server. If all user callbacks are later removed, either
-explicitly (via <code class="docutils literal notranslate"><span class="pre">remove_callback</span></code> or <code class="docutils literal notranslate"><span class="pre">clear</span></code>) or implicitly via Python
+explicitly (via <code class="docutils literal"><span class="pre">remove_callback</span></code> or <code class="docutils literal"><span class="pre">clear</span></code>) or implicitly via Python
 garbage collection, the Subscription automatically cancels future updates from
 the server.  If a callback is then later added, the Subscription silently
 re-initiates updates. All of this is transparent to the user.</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p>The callback registry in <a class="reference internal" href="#caproto.threading.client.Subscription" title="caproto.threading.client.Subscription"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscription</span></code></a>  only holds weak references
+<p>The callback registry in <a class="reference internal" href="#caproto.threading.client.Subscription" title="caproto.threading.client.Subscription"><code class="xref py py-class docutils literal"><span class="pre">Subscription</span></code></a>  only holds weak references
 to the user callback functions. If there are no other references to the
-function, it will be silently removed and garbage collected. Therefore,
+function, it will be silently garbage collected and removed. Therefore,
 constructions like this do not work:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 </pre></div>
 </div>
-<p class="last">The lambda function will be promptly removed and garbage collected. This
-can be surprising, but it is a standard approach for avoiding the
+<p>The lambda function will be promptly garbage collected by Python and
+removed from <code class="docutils literal"><span class="pre">sub</span></code> by caproto. To avoid that, make a reference before
+passing the function to <a class="reference internal" href="#caproto.threading.client.Subscription.add_callback" title="caproto.threading.client.Subscription.add_callback"><code class="xref py py-meth docutils literal"><span class="pre">Subscription.add_callback()</span></code></a>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">cb</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+<span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
+</pre></div>
+</div>
+<p class="last">This can be surprising, but it is a standard approach for avoiding the
 accidental costly accumulation of abandoned callbacks.</p>
 </div>
 </div>
 <div class="section" id="go-idle">
 <h3>Go Idle<a class="headerlink" href="#go-idle" title="Permalink to this headline">¶</a></h3>
-<p>Once created, PVs are cached for the lifetime of the <a class="reference internal" href="#caproto.threading.client.Context" title="caproto.threading.client.Context"><code class="xref py py-class docutils literal notranslate"><span class="pre">Context</span></code></a> and
+<p>Once created, PVs are cached for the lifetime of the <a class="reference internal" href="#caproto.threading.client.Context" title="caproto.threading.client.Context"><code class="xref py py-class docutils literal"><span class="pre">Context</span></code></a> and
 returned again to the user if a PV with the same name and priority is
 requested. In order to reduce the load on the network, a PV can be temporarily
 made “idle” (disconnected). It will silently, automatically reconnect the next
 time it is used.</p>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [24]: </span><span class="n">x</span>
-<span class="gh">Out[24]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 63103), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [24]: </span><span class="n">x</span>
+<span class="gh">Out[24]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 62816), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
 <span class="gp">In [25]: </span><span class="n">x</span><span class="o">.</span><span class="n">go_idle</span><span class="p">()</span>
 
@@ -357,18 +394,18 @@ time it is used.</p>
 <span class="gh">Out[26]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 (idle)&gt;</span>
 
 <span class="gp">In [27]: </span><span class="n">x</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                     Out[27]: ReadNotifyResponse(data=array([5.72702097]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
+<span class="go">                                                     Out[27]: ReadNotifyResponse(data=array([3.02982566]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
 
 <span class="gp">In [28]: </span><span class="n">x</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[28]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 63103), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[28]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 62816), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 </pre></div>
 </div>
 <p>Notice that when the PV was read it automatically reconnected, requiring no
 action from the user.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">go_idle()</span></code> method is merely a <em>request</em> and is not guaranteed to have
+<p>The <code class="docutils literal"><span class="pre">go_idle()</span></code> method is merely a <em>request</em> and is not guaranteed to have
 any effect. If a PV has active subscriptions, it will ignore the request: it
 must stay active to continue servicing user callbacks. Therefore, it is safe
-call <code class="docutils literal notranslate"><span class="pre">go_idle()</span></code> on any PV at any time, knowing that the PV will decline to
+call <code class="docutils literal"><span class="pre">go_idle()</span></code> on any PV at any time, knowing that the PV will decline to
 disconnect if it is being actively used and that, if it is currently unused, it
 will transparently reconnect the next time it is used.</p>
 </div>
@@ -376,27 +413,27 @@ will transparently reconnect the next time it is used.</p>
 <h3>Loggers for Debugging<a class="headerlink" href="#loggers-for-debugging" title="Permalink to this headline">¶</a></h3>
 <p>Various Python loggers are available. They inherit Python’s default of
 silencing log messages below the WARNING level. To receive more information
-about a given PV, turn up the verbosity of the <code class="docutils literal notranslate"><span class="pre">PV.log</span></code> logger:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+about a given PV, turn up the verbosity of the <code class="docutils literal"><span class="pre">PV.log</span></code> logger:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>To see the individual requests sent and responses received by the TCP
-connection support <code class="docutils literal notranslate"><span class="pre">x</span></code> (and any other PVs on that same Virtual Circuit) use
-the <code class="docutils literal notranslate"><span class="pre">PV.circuit_manager.log</span></code> logger:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+connection supporting <code class="docutils literal"><span class="pre">x</span></code> (and any other PVs on that same Virtual Circuit)
+use the <code class="docutils literal"><span class="pre">PV.circuit_manager.log</span></code> logger:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>For updates about the overall state of the Context (number of unanswered
-searches still await responses, etc.) use <code class="docutils literal notranslate"><span class="pre">Context.log</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+searches still awaiting responses, etc.) use <code class="docutils literal"><span class="pre">Context.log</span></code>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">ctx</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>or, equivalently:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Finally, to turn on <em>maximal</em> debugging, use:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -405,43 +442,6 @@ searches still await responses, etc.) use <code class="docutils literal notransl
 </div>
 <div class="section" id="api-documentation">
 <h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
-<dl class="class">
-<dt id="caproto.threading.client.SharedBroadcaster">
-<em class="property">class </em><code class="descclassname">caproto.threading.client.</code><code class="descname">SharedBroadcaster</code><span class="sig-paren">(</span><em>*</em>, <em>registration_retry_time=10.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
-<dt id="caproto.threading.client.SharedBroadcaster.get_cached_search_result">
-<code class="descname">get_cached_search_result</code><span class="sig-paren">(</span><em>name</em>, <em>*</em>, <em>threshold=10.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster.get_cached_search_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster.get_cached_search_result" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns address if found, raises KeyError if missing or stale.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="caproto.threading.client.SharedBroadcaster.received">
-<code class="descname">received</code><span class="sig-paren">(</span><em>bytes_recv</em>, <em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster.received"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster.received" title="Permalink to this definition">¶</a></dt>
-<dd><p>Receive and process and next command broadcasted over UDP.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="caproto.threading.client.SharedBroadcaster.search">
-<code class="descname">search</code><span class="sig-paren">(</span><em>results_queue</em>, <em>names</em>, <em>*</em>, <em>timeout=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster.search" title="Permalink to this definition">¶</a></dt>
-<dd><p>Search for PV names.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">results_queue</span></code> will receive <code class="docutils literal notranslate"><span class="pre">(address,</span> <span class="pre">names)</span></code> (the address of
-a server and a list of name(s) that it has) when results are received.</p>
-<p>If a cached result is already known, it will be put immediately into
-<code class="docutils literal notranslate"><span class="pre">results_queue</span></code> from this thread during this method’s execution.</p>
-<p>If not, a SearchRequest will be sent from another thread. If necessary,
-the request will be re-sent periodically. When a matching response is
-received (by yet another thread) <code class="docutils literal notranslate"><span class="pre">(address,</span> <span class="pre">names)</span></code> will be put into
-the <code class="docutils literal notranslate"><span class="pre">results_queue</span></code>.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="caproto.threading.client.SharedBroadcaster.send">
-<code class="descname">send</code><span class="sig-paren">(</span><em>port</em>, <em>*commands</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster.send" title="Permalink to this definition">¶</a></dt>
-<dd><p>Process a command and transport it over the UDP socket.</p>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="class">
 <dt id="caproto.threading.client.Context">
 <em class="property">class </em><code class="descclassname">caproto.threading.client.</code><code class="descname">Context</code><span class="sig-paren">(</span><em>broadcaster=None</em>, <em>*</em>, <em>host_name=None</em>, <em>client_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Context" title="Permalink to this definition">¶</a></dt>
@@ -455,10 +455,10 @@ the <code class="docutils literal notranslate"><span class="pre">results_queue</
 <dd><p class="first last">If None is specified, a fresh one is instantiated.</p>
 </dd>
 <dt><strong>host_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
-<dd><p class="first last">uses value of <code class="docutils literal notranslate"><span class="pre">socket.gethostname()</span></code> by default</p>
+<dd><p class="first last">uses value of <code class="docutils literal"><span class="pre">socket.gethostname()</span></code> by default</p>
 </dd>
 <dt><strong>client_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
-<dd><p class="first last">uses value of <code class="docutils literal notranslate"><span class="pre">getpass.getuser()</span></code> by default</p>
+<dd><p class="first last">uses value of <code class="docutils literal"><span class="pre">getpass.getuser()</span></code> by default</p>
 </dd>
 </dl>
 </td>
@@ -466,19 +466,39 @@ the <code class="docutils literal notranslate"><span class="pre">results_queue</
 </tbody>
 </table>
 <dl class="method">
-<dt id="caproto.threading.client.Context.get_circuit_manager">
-<code class="descname">get_circuit_manager</code><span class="sig-paren">(</span><em>address</em>, <em>priority</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Context.get_circuit_manager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Context.get_circuit_manager" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a VirtualCircuitManager for this address, priority. (It manages
-a caproto.VirtualCircuit and a TCP socket.)</p>
-<p>Make a new one if necessary.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="caproto.threading.client.Context.get_pvs">
 <code class="descname">get_pvs</code><span class="sig-paren">(</span><em>*names</em>, <em>priority=0</em>, <em>connection_state_callback=None</em>, <em>access_rights_callback=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Context.get_pvs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Context.get_pvs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of PV objects.</p>
 <p>These objects may not be connected at first. Channel creation occurs on
 a background thread.</p>
+<p>PVs are uniquely defined by their name and priority. If a PV with the
+same name and priority is requested twice, the same (cached) object is
+returned. Any callbacks included here are added to added alongside any
+existing ones.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>*names</strong> <span class="classifier-delimiter">:</span> <span class="classifier">strings</span></dt>
+<dd><p class="first last">any number of PV names</p>
+</dd>
+<dt><strong>priority</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd><p class="first last">Used by the server to triage subscription responses when under high
+load. 0 is lowest; 99 is highest.</p>
+</dd>
+<dt><strong>connection_state_callback</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable</span></dt>
+<dd><p class="first last">Expected signature: <code class="docutils literal"><span class="pre">f(state)</span></code> where <code class="docutils literal"><span class="pre">state</span></code> is a string</p>
+</dd>
+<dt><strong>access_rights_callback</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable</span></dt>
+<dd><p class="first last">Expected signature: <code class="docutils literal"><span class="pre">f(access_rights)</span></code> where <code class="docutils literal"><span class="pre">access_rights</span></code> is
+a member of the caproto <code class="docutils literal"><span class="pre">AccessRights</span></code> enum</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -490,7 +510,7 @@ a background thread.</p>
 <p>This object may exist prior to connection and persists across any
 subsequent re-connections.</p>
 <p>This object should never be instantiated directly by user code; rather it
-should be created by calling the <code class="docutils literal notranslate"><span class="pre">get_pvs</span></code> method on a <code class="docutils literal notranslate"><span class="pre">Context</span></code>
+should be created by calling the <code class="docutils literal"><span class="pre">get_pvs</span></code> method on a <code class="docutils literal"><span class="pre">Context</span></code>
 object.</p>
 <dl class="method">
 <dt id="caproto.threading.client.PV.go_idle">
@@ -527,21 +547,20 @@ not received within the time specified by the <cite>timeout</cite> parameter.</p
 <dd><p class="first last">Called with the response as its argument when received.</p>
 </dd>
 <dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">number or None</span></dt>
-<dd><p class="first last">Number of seconds to wait before raising TimeoutError. Default is
-2.</p>
+<dd><p class="first last">Number of seconds to wait before raising TimeoutError. Default is</p>
 </dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
-<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
-native data type, which can be checked in the Channel’s attribute
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
+<dd><p class="first last">Request specific data type or a class of data types, matched to the
+channel’s native data type. Default is Channel’s native data type.
+2.</p>
 </dd>
 <dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
+<code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
 </dd>
 <dt><strong>notify: boolean, optional</strong></dt>
-<dd><p class="first last">Send a <code class="docutils literal notranslate"><span class="pre">ReadNotifyRequest</span></code> instead of a <code class="docutils literal notranslate"><span class="pre">ReadRequest</span></code>. True by
+<dd><p class="first last">Send a <code class="docutils literal"><span class="pre">ReadNotifyRequest</span></code> instead of a <code class="docutils literal"><span class="pre">ReadRequest</span></code>. True by
 default.</p>
 </dd>
 </dl>
@@ -555,6 +574,53 @@ default.</p>
 <dt id="caproto.threading.client.PV.subscribe">
 <code class="descname">subscribe</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>low=0.0</em>, <em>high=0.0</em>, <em>to=0.0</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#PV.subscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.PV.subscribe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start a new subscription to which user callback may be added.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
+<dd><p class="first last">Request specific data type or a class of data types, matched to the
+channel’s native data type. Default is Channel’s native data type.</p>
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
+count, which can be checked in the Channel’s attribute
+<code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
+</dd>
+<dt><strong>low, high, to</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
+<dd><p class="first last">deprecated by Channel Access, not yet implemented by caproto</p>
+</dd>
+<dt><strong>mask</strong> <span class="classifier-delimiter">:</span> <span class="classifier">SubscriptionType, optional</span></dt>
+<dd><p class="first last">Subscribe to selective updates.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>subscription</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Subscription</span></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Define a subscription.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">subscribe</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Add a user callback. The subscription will be transparently activated
+(i.e. an <code class="docutils literal"><span class="pre">EventAddRequest</span></code> will be sent) when the first user callback
+is added.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">my_func</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Multiple callbacks may be added to the same subscription.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">another_func</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See the docstring for <a class="reference internal" href="#caproto.threading.client.Subscription" title="caproto.threading.client.Subscription"><code class="xref py py-class docutils literal"><span class="pre">Subscription</span></code></a> for more.</p>
 </dd></dl>
 
 <dl class="method">
@@ -616,15 +682,14 @@ not received within the time specified by the <cite>timeout</cite> parameter.</p
 Can be manually set to True or False. Will raise ValueError if set
 to False while wait=True or callback is set.</p>
 </dd>
-<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">a ChannelType or corresponding integer ID, optional</span></dt>
-<dd><p class="first last">Requested Channel Access data type. Default is the channel’s
-native data type, which can be checked in the Channel’s attribute
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_type</span></code>.</p>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
+<dd><p class="first last">Write specific data type or a class of data types, matched to the
+channel’s native data type. Default is Channel’s native data type.</p>
 </dd>
 <dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
+<code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
 </dd>
 </dl>
 </td>
@@ -642,7 +707,7 @@ count, which can be checked in the Channel’s attribute
 <p>It may fan out to zero, one, or multiple user-registered callback
 functions.</p>
 <p>This object should never be instantiated directly by user code; rather
-it should be made by calling the <code class="docutils literal notranslate"><span class="pre">subscribe()</span></code> method on a <code class="docutils literal notranslate"><span class="pre">PV</span></code> object.</p>
+it should be made by calling the <code class="docutils literal"><span class="pre">subscribe()</span></code> method on a <code class="docutils literal"><span class="pre">PV</span></code> object.</p>
 <dl class="method">
 <dt id="caproto.threading.client.Subscription.add_callback">
 <code class="descname">add_callback</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.add_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.add_callback" title="Permalink to this definition">¶</a></dt>
@@ -653,14 +718,14 @@ it should be made by calling the <code class="docutils literal notranslate"><spa
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable</span></dt>
-<dd><p class="first last">Expected signature: <code class="docutils literal notranslate"><span class="pre">func(response)</span></code></p>
+<dd><p class="first last">Expected signature: <code class="docutils literal"><span class="pre">func(response)</span></code></p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>token</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">Integer token that can be passed to <a class="reference internal" href="#caproto.threading.client.Subscription.remove_callback" title="caproto.threading.client.Subscription.remove_callback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove_callback()</span></code></a>.</p>
+<dd><p class="first last">Integer token that can be passed to <a class="reference internal" href="#caproto.threading.client.Subscription.remove_callback" title="caproto.threading.client.Subscription.remove_callback"><code class="xref py py-meth docutils literal"><span class="pre">remove_callback()</span></code></a>.</p>
 </dd>
 </dl>
 </td>
@@ -676,26 +741,27 @@ it should be made by calling the <code class="docutils literal notranslate"><spa
 </dd></dl>
 
 <dl class="method">
-<dt id="caproto.threading.client.Subscription.compose_command">
-<code class="descname">compose_command</code><span class="sig-paren">(</span><em>timeout=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.compose_command"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.compose_command" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is used by the Context to re-subscribe in bulk after dropping.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="caproto.threading.client.Subscription.process">
-<code class="descname">process</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.process" title="Permalink to this definition">¶</a></dt>
-<dd><p>This is a fast operation that submits jobs to the Context’s
-ThreadPoolExecutor and then returns.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="caproto.threading.client.Subscription.remove_callback">
-<code class="descname">remove_callback</code><span class="sig-paren">(</span><em>cb_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.remove_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.remove_callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove callback using token that was returned by <a class="reference internal" href="#caproto.threading.client.Subscription.add_callback" title="caproto.threading.client.Subscription.add_callback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_callback()</span></code></a>.</p>
+<code class="descname">remove_callback</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Subscription.remove_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Subscription.remove_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove callback using token that was returned by <a class="reference internal" href="#caproto.threading.client.Subscription.add_callback" title="caproto.threading.client.Subscription.add_callback"><code class="xref py py-meth docutils literal"><span class="pre">add_callback()</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>token</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
+<dd><p class="first last">Token returned by <a class="reference internal" href="#caproto.threading.client.Subscription.add_callback" title="caproto.threading.client.Subscription.add_callback"><code class="xref py py-meth docutils literal"><span class="pre">add_callback()</span></code></a>.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
 
+<p>The following are internal components. There API may change in the future.</p>
 <dl class="class">
 <dt id="caproto.threading.client.VirtualCircuitManager">
 <em class="property">class </em><code class="descclassname">caproto.threading.client.</code><code class="descname">VirtualCircuitManager</code><span class="sig-paren">(</span><em>context</em>, <em>circuit</em>, <em>selector</em>, <em>timeout=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#VirtualCircuitManager"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.VirtualCircuitManager" title="Permalink to this definition">¶</a></dt>
@@ -708,6 +774,43 @@ this is rarely necessary.</p>
 <code class="descname">received</code><span class="sig-paren">(</span><em>bytes_recv</em>, <em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#VirtualCircuitManager.received"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.VirtualCircuitManager.received" title="Permalink to this definition">¶</a></dt>
 <dd><p>Receive and process and next command from the virtual circuit.</p>
 <p>This will be run on the recv thread</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="caproto.threading.client.SharedBroadcaster">
+<em class="property">class </em><code class="descclassname">caproto.threading.client.</code><code class="descname">SharedBroadcaster</code><span class="sig-paren">(</span><em>*</em>, <em>registration_retry_time=10.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="caproto.threading.client.SharedBroadcaster.get_cached_search_result">
+<code class="descname">get_cached_search_result</code><span class="sig-paren">(</span><em>name</em>, <em>*</em>, <em>threshold=10.0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster.get_cached_search_result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster.get_cached_search_result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns address if found, raises KeyError if missing or stale.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.threading.client.SharedBroadcaster.received">
+<code class="descname">received</code><span class="sig-paren">(</span><em>bytes_recv</em>, <em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster.received"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster.received" title="Permalink to this definition">¶</a></dt>
+<dd><p>Receive and process and next command broadcasted over UDP.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.threading.client.SharedBroadcaster.search">
+<code class="descname">search</code><span class="sig-paren">(</span><em>results_queue</em>, <em>names</em>, <em>*</em>, <em>timeout=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster.search"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search for PV names.</p>
+<p>The <code class="docutils literal"><span class="pre">results_queue</span></code> will receive <code class="docutils literal"><span class="pre">(address,</span> <span class="pre">names)</span></code> (the address of
+a server and a list of name(s) that it has) when results are received.</p>
+<p>If a cached result is already known, it will be put immediately into
+<code class="docutils literal"><span class="pre">results_queue</span></code> from this thread during this method’s execution.</p>
+<p>If not, a SearchRequest will be sent from another thread. If necessary,
+the request will be re-sent periodically. When a matching response is
+received (by yet another thread) <code class="docutils literal"><span class="pre">(address,</span> <span class="pre">names)</span></code> will be put into
+the <code class="docutils literal"><span class="pre">results_queue</span></code>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.threading.client.SharedBroadcaster.send">
+<code class="descname">send</code><span class="sig-paren">(</span><em>port</em>, <em>*commands</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#SharedBroadcaster.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.SharedBroadcaster.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Process a command and transport it over the UDP socket.</p>
 </dd></dl>
 
 </dd></dl>
@@ -757,7 +860,7 @@ this is rarely necessary.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+305.g99b0a0f',
+            VERSION:'0.1.0a1+327.g7bc264f',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

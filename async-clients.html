@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Asynchronous Clients &mdash; caproto 0.1.0a1+305.g99b0a0f documentation</title>
+  <title>Asynchronous Clients &mdash; caproto 0.1.0a1+327.g7bc264f documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+305.g99b0a0f
+                0.1.0a1+327.g7bc264f
               </div>
             
           
@@ -104,7 +104,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
 
             
@@ -173,9 +173,13 @@
 <h1>Asynchronous Clients<a class="headerlink" href="#asynchronous-clients" title="Permalink to this headline">¶</a></h1>
 <p>The asynchronous clients are arguably the most interesting implementations in
 caproto, or at least the most original. However, they are still very
-experimental and lack feature parity with the threading client. They may be
-removed or heavily revised in a future release of caproto.</p>
-<p>DOCUMENTATION TO DO</p>
+experimental. They have some known issues, and they lack feature parity with
+the threading client. They will be heavily revised in a future release of
+caproto.</p>
+<p>Developers interested in exploring them can poke around the modules
+<code class="docutils literal"><span class="pre">caproto.curio.client</span></code> and <code class="docutils literal"><span class="pre">caproto.trio.client</span></code>. The conceptual design is
+analogous to the threading client, but using the respective async frameworks,
+curio and trio.</p>
 </div>
 
 
@@ -220,7 +224,7 @@ removed or heavily revised in a future release of caproto.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+305.g99b0a0f',
+            VERSION:'0.1.0a1+327.g7bc264f',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

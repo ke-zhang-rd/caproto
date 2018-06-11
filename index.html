@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0.1.0a1+305.g99b0a0f documentation</title>
+  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0.1.0a1+327.g7bc264f documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0a1+305.g99b0a0f
+                0.1.0a1+327.g7bc264f
               </div>
             
           
@@ -103,7 +103,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
 
             
@@ -191,19 +191,19 @@ go back to a 1988 meeting funded by the Reagan-era Strategic Defense Initiative
 <div class="section" id="try-caproto-in-three-lines">
 <h2>Try caproto in three lines<a class="headerlink" href="#try-caproto-in-three-lines" title="Permalink to this headline">¶</a></h2>
 <p>First verify that you have Python 3.6+.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 --version
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 --version
 </pre></div>
 </div>
 <p>If necessary, install it by your method of choice (apt, Homebrew, conda, etc.).
 Now on to caproto:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m pip install <span class="s2">&quot;caproto[complete]&quot;</span>  <span class="c1"># install caproto (and its optional dependencies)</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install <span class="s2">&quot;caproto[complete]&quot;</span>  <span class="c1"># install caproto (and its optional dependencies)</span>
 python3 -m caproto.ioc_examples.simple <span class="p">&amp;</span>  <span class="c1"># background a demo server</span>
 caproto-put simple:A <span class="m">42</span>  <span class="c1"># run a command-line client</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="reasons-this-isn-t-as-crazy-as-it-sounds">
-<h2>11 Reasons This Isn’t As Crazy as It Sounds<a class="headerlink" href="#reasons-this-isn-t-as-crazy-as-it-sounds" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="reasons-to-use-caproto-and-1-big-reason-not-to">
+<h2>10 Reasons To Use Caproto and 1 Big Reason Not To<a class="headerlink" href="#reasons-to-use-caproto-and-1-big-reason-not-to" title="Permalink to this headline">¶</a></h2>
 <p>Most existing EPICS tools are built on a well-established C library, <em>libca</em>.
 Why rewrite it from scratch in Python instead of just wrapping C?</p>
 <ol class="arabic">
@@ -218,7 +218,7 @@ embodying every CA message sent and received.</p>
 <li><p class="first"><strong>Efficient</strong>: Data is read directly from sockets into contiguous-memory
 ctypes structures.</p>
 <ul class="simple">
-<li>Zero-copy into <code class="docutils literal notranslate"><span class="pre">ctypes</span></code> and <code class="docutils literal notranslate"><span class="pre">array.array</span></code> or <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</li>
+<li>Zero-copy into <code class="docutils literal"><span class="pre">ctypes</span></code> and <code class="docutils literal"><span class="pre">array.array</span></code> or <code class="docutils literal"><span class="pre">numpy.ndarray</span></code>.</li>
 <li>Only pay a performance cost of human-friendly introspection if and when
 you use it.</li>
 </ul>
@@ -252,6 +252,11 @@ epics-base tools (tested against 3.14, 3.15, 3.16, R7).</p>
 CA protocol documentation.</p>
 </li>
 </ol>
+<p>All that said, some applications of EPICS — such as running an accelerator
+— rely on the battle-tested reliability of EPICS’ reference implementation.
+We would advise those kinds of users to steer well clear of caproto. It is best
+suited to applications to reward convenience, fast iteration, and
+accessibility.</p>
 </div>
 <div class="section" id="vital-statistics">
 <h2>Vital Statistics<a class="headerlink" href="#vital-statistics" title="Permalink to this headline">¶</a></h2>
@@ -310,11 +315,9 @@ learning exercises.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="async-clients.html">Asynchronous Clients</a></li>
 <li class="toctree-l1"><a class="reference internal" href="iocs.html">Input-Output Controllers</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="iocs.html#simple-ioc">Simple IOC</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iocs.html#write-to-a-file-when-a-pv-is-written-to">Write to a File When a PV is Written To</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iocs.html#update-tallies-when-each-pv-is-read">Update Tallies When Each PV is Read</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iocs.html#macros-for-pv-names">Macros for PV names</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iocs.html#inline-style-read-and-write-customization">“Inline” Style Read and Write Customization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iocs.html#why-write-an-ioc-using-caproto">Why Write an IOC Using Caproto?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iocs.html#using-the-ioc-examples">Using the IOC Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iocs.html#examples">Examples</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="servers.html">Servers</a></li>
@@ -347,7 +350,10 @@ learning exercises.</p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release-notes.html#v0-1-next">v0.1 (NEXT)</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -393,7 +399,7 @@ learning exercises.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+305.g99b0a0f',
+            VERSION:'0.1.0a1+327.g7bc264f',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

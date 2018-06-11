@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Servers &mdash; caproto 0.1.0a1+305.g99b0a0f documentation</title>
+  <title>Servers &mdash; caproto 0.1.0a1+327.g7bc264f documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+305.g99b0a0f
+                0.1.0a1+327.g7bc264f
               </div>
             
           
@@ -104,7 +104,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
 
             
@@ -171,7 +171,23 @@
             
   <div class="section" id="servers">
 <h1>Servers<a class="headerlink" href="#servers" title="Permalink to this headline">¶</a></h1>
-<p>TO DO</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">If your goal is to write IOCs, see <a class="reference internal" href="iocs.html"><span class="doc">Input-Output Controllers</span></a>.</p>
+</div>
+<p>Caproto includes three implementations of a Channel Access server for three
+different Python concurrency libraries:</p>
+<ul class="simple">
+<li>asyncio (built in to Python)</li>
+<li>curio</li>
+<li>trio</li>
+</ul>
+<p>The <a class="reference internal" href="iocs.html"><span class="doc">IOC code</span></a> abstracts out the particular server implementation,
+so IOC authors do not need to interact with the server API directly. The
+low-level server API is still experimental and subject to change, and it is not
+yet documented here. We refer interested developers to the source code in
+<code class="docutils literal"><span class="pre">caproto.asyncio.server</span></code>, <code class="docutils literal"><span class="pre">caproto.curio.server</span></code>, and
+<code class="docutils literal"><span class="pre">caproto.trio.server</span></code>.</p>
 </div>
 
 
@@ -216,7 +232,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+305.g99b0a0f',
+            VERSION:'0.1.0a1+327.g7bc264f',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.1.0a1+305.g99b0a0f documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.1.0a1+327.g7bc264f documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0a1+305.g99b0a0f
+                0.1.0a1+327.g7bc264f
               </div>
             
           
@@ -102,7 +102,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../references.html">References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../release-notes.html">Release History</a></li>
 </ul>
 
             
@@ -880,6 +880,25 @@
 
 <span class="sd">        These objects may not be connected at first. Channel creation occurs on</span>
 <span class="sd">        a background thread.</span>
+
+<span class="sd">        PVs are uniquely defined by their name and priority. If a PV with the</span>
+<span class="sd">        same name and priority is requested twice, the same (cached) object is</span>
+<span class="sd">        returned. Any callbacks included here are added to added alongside any</span>
+<span class="sd">        existing ones.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        *names : strings</span>
+<span class="sd">            any number of PV names</span>
+<span class="sd">        priority : integer</span>
+<span class="sd">            Used by the server to triage subscription responses when under high</span>
+<span class="sd">            load. 0 is lowest; 99 is highest.</span>
+<span class="sd">        connection_state_callback : callable</span>
+<span class="sd">            Expected signature: ``f(state)`` where ``state`` is a string</span>
+<span class="sd">        access_rights_callback : callable</span>
+<span class="sd">            Expected signature: ``f(access_rights)`` where ``access_rights`` is</span>
+<span class="sd">            a member of the caproto ``AccessRights`` enum</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_disconnected</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ContextDisconnectedError</span><span class="p">(</span><span class="s2">&quot;This Context is no longer usable.&quot;</span><span class="p">)</span>
@@ -999,7 +1018,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Context search-results processing thread has exited.&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Context.get_circuit_manager"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Context.get_circuit_manager">[docs]</a>    <span class="k">def</span> <span class="nf">get_circuit_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">get_circuit_manager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a VirtualCircuitManager for this address, priority. (It manages</span>
 <span class="sd">        a caproto.VirtualCircuit and a TCP socket.)</span>
@@ -1014,7 +1033,7 @@
                                             <span class="n">priority</span><span class="o">=</span><span class="n">priority</span><span class="p">)</span>
                 <span class="n">cm</span> <span class="o">=</span> <span class="n">VirtualCircuitManager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">circuit_managers</span><span class="p">[(</span><span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="p">)]</span> <span class="o">=</span> <span class="n">cm</span>
-            <span class="k">return</span> <span class="n">cm</span></div>
+            <span class="k">return</span> <span class="n">cm</span>
 
     <span class="k">def</span> <span class="nf">_activate_subscriptions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
@@ -1524,11 +1543,10 @@
 <span class="sd">            Called with the response as its argument when received.</span>
 <span class="sd">        timeout : number or None</span>
 <span class="sd">            Number of seconds to wait before raising TimeoutError. Default is</span>
+<span class="sd">        data_type : {&#39;native&#39;, &#39;status&#39;, &#39;time&#39;, &#39;graphic&#39;, &#39;control&#39;} or ChannelType or int ID, optional</span>
+<span class="sd">            Request specific data type or a class of data types, matched to the</span>
+<span class="sd">            channel&#39;s native data type. Default is Channel&#39;s native data type.</span>
 <span class="sd">            2.</span>
-<span class="sd">        data_type : a ChannelType or corresponding integer ID, optional</span>
-<span class="sd">            Requested Channel Access data type. Default is the channel&#39;s</span>
-<span class="sd">            native data type, which can be checked in the Channel&#39;s attribute</span>
-<span class="sd">            :attr:`native_data_type`.</span>
 <span class="sd">        data_count : integer, optional</span>
 <span class="sd">            Requested number of values. Default is the channel&#39;s native data</span>
 <span class="sd">            count, which can be checked in the Channel&#39;s attribute</span>
@@ -1600,10 +1618,9 @@
 <span class="sd">            If None (default), set to True if wait=True or callback is set.</span>
 <span class="sd">            Can be manually set to True or False. Will raise ValueError if set</span>
 <span class="sd">            to False while wait=True or callback is set.</span>
-<span class="sd">        data_type : a ChannelType or corresponding integer ID, optional</span>
-<span class="sd">            Requested Channel Access data type. Default is the channel&#39;s</span>
-<span class="sd">            native data type, which can be checked in the Channel&#39;s attribute</span>
-<span class="sd">            :attr:`native_data_type`.</span>
+<span class="sd">        data_type : {&#39;native&#39;, &#39;status&#39;, &#39;time&#39;, &#39;graphic&#39;, &#39;control&#39;} or ChannelType or int ID, optional</span>
+<span class="sd">            Write specific data type or a class of data types, matched to the</span>
+<span class="sd">            channel&#39;s native data type. Default is Channel&#39;s native data type.</span>
 <span class="sd">        data_count : integer, optional</span>
 <span class="sd">            Requested number of values. Default is the channel&#39;s native data</span>
 <span class="sd">            count, which can be checked in the Channel&#39;s attribute</span>
@@ -1661,7 +1678,46 @@
 
 <div class="viewcode-block" id="PV.subscribe"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="s2">&quot;Start a new subscription to which user callback may be added.&quot;</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Start a new subscription to which user callback may be added.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_type : {&#39;native&#39;, &#39;status&#39;, &#39;time&#39;, &#39;graphic&#39;, &#39;control&#39;} or ChannelType or int ID, optional</span>
+<span class="sd">            Request specific data type or a class of data types, matched to the</span>
+<span class="sd">            channel&#39;s native data type. Default is Channel&#39;s native data type.</span>
+<span class="sd">        data_count : integer, optional</span>
+<span class="sd">            Requested number of values. Default is the channel&#39;s native data</span>
+<span class="sd">            count, which can be checked in the Channel&#39;s attribute</span>
+<span class="sd">            :attr:`native_data_count`.</span>
+<span class="sd">        low, high, to : float, optional</span>
+<span class="sd">            deprecated by Channel Access, not yet implemented by caproto</span>
+<span class="sd">        mask :  SubscriptionType, optional</span>
+<span class="sd">            Subscribe to selective updates.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        subscription : Subscription</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+
+<span class="sd">        Define a subscription.</span>
+
+<span class="sd">        &gt;&gt;&gt; sub = pv.subscribe()</span>
+
+<span class="sd">        Add a user callback. The subscription will be transparently activated</span>
+<span class="sd">        (i.e. an ``EventAddRequest`` will be sent) when the first user callback</span>
+<span class="sd">        is added.</span>
+
+<span class="sd">        &gt;&gt;&gt; sub.add_callback(my_func)</span>
+
+<span class="sd">        Multiple callbacks may be added to the same subscription.</span>
+
+<span class="sd">        &gt;&gt;&gt; sub.add_callback(another_func)</span>
+
+<span class="sd">        See the docstring for :class:`Subscription` for more.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># A Subscription is uniquely identified by the Signature created by its</span>
         <span class="c1"># args and kwargs.</span>
         <span class="n">bound</span> <span class="o">=</span> <span class="n">SUBSCRIBE_SIG</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">mask</span><span class="p">)</span>
@@ -1711,9 +1767,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">[</span><span class="n">cb_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">ref</span>
         <span class="k">return</span> <span class="n">cb_id</span>
 
-    <span class="k">def</span> <span class="nf">remove_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cb_id</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">remove_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">cb_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1782,7 +1838,7 @@
             <span class="n">ctx</span><span class="o">.</span><span class="n">activate_subscriptions_now</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">has_callbacks</span>
 
-<div class="viewcode-block" id="Subscription.compose_command"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.compose_command">[docs]</a>    <span class="nd">@ensure_connected</span>
+    <span class="nd">@ensure_connected</span>
     <span class="k">def</span> <span class="nf">compose_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="s2">&quot;This is used by the Context to re-subscribe in bulk after dropping.&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
@@ -1801,7 +1857,7 @@
         <span class="c1"># The circuit_manager needs to know the subscriptionid so that it can</span>
         <span class="c1"># route responses to this request.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">[</span><span class="n">subscriptionid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
-        <span class="k">return</span> <span class="n">command</span></div>
+        <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="Subscription.clear"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1834,14 +1890,14 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Subscription.process"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.process">[docs]</a>    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># TODO here i think we can decouple PV update rates and callback</span>
         <span class="c1"># handling rates, if desirable, to not bog down performance.</span>
         <span class="c1"># As implemented below, updates are blocking further messages from</span>
         <span class="c1"># the CA servers from processing. (-&gt; ThreadPool, etc.)</span>
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">most_recent_response</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">most_recent_response</span> <span class="o">=</span> <span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Subscription.add_callback"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.add_callback">[docs]</a>    <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1878,12 +1934,18 @@
 
         <span class="k">return</span> <span class="n">cb_id</span></div>
 
-<div class="viewcode-block" id="Subscription.remove_callback"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.remove_callback">[docs]</a>    <span class="k">def</span> <span class="nf">remove_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cb_id</span><span class="p">):</span>
+<div class="viewcode-block" id="Subscription.remove_callback"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.remove_callback">[docs]</a>    <span class="k">def</span> <span class="nf">remove_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove callback using token that was returned by :meth:`add_callback`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        token : integer</span>
+<span class="sd">            Token returned by :meth:`add_callback`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
-            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">cb_id</span><span class="p">)</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
                 <span class="c1"># Go dormant.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_unsubscribe</span><span class="p">()</span></div>
@@ -1938,7 +2000,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0a1+305.g99b0a0f',
+            VERSION:'0.1.0a1+327.g7bc264f',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

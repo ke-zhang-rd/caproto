@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Command-Line Client &mdash; caproto 0.1.0a1+305.g99b0a0f documentation</title>
+  <title>Command-Line Client &mdash; caproto 0.1.0a1+327.g7bc264f documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0a1+305.g99b0a0f
+                0.1.0a1+327.g7bc264f
               </div>
             
           
@@ -114,7 +114,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
-<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release Notes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
 
             
@@ -182,31 +182,29 @@
   <div class="section" id="command-line-client">
 <h1>Command-Line Client<a class="headerlink" href="#command-line-client" title="Permalink to this headline">¶</a></h1>
 <p>Installing the caproto Python package places several executable command-line
-utilities next to whichever <code class="docutils literal notranslate"><span class="pre">python3</span></code> binary was used to install caproto.
-They should be available on your <code class="docutils literal notranslate"><span class="pre">PATH</span></code>.</p>
-<p>Type <code class="docutils literal notranslate"><span class="pre">caproto-&lt;TAB&gt;</span></code> to check:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-
-caproto-defaultdictserver  caproto-monitor            caproto-spoof-beamline
-caproto-example-ioc        caproto-put
-caproto-get                caproto-repeater
-</pre></div>
-</div>
+utilities next to whichever <code class="docutils literal"><span class="pre">python3</span></code> binary was used to install caproto.
+They should be available on your <code class="docutils literal"><span class="pre">PATH</span></code>. Type <code class="docutils literal"><span class="pre">caproto-&lt;TAB&gt;</span></code> to check.</p>
 <div class="section" id="tutorial">
 <h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
 <p>Start one of caproto’s demo IOCs.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.random_walk
-PVs: <span class="o">[</span><span class="s1">&#39;random_walk:dt&#39;</span>, <span class="s1">&#39;random_walk:x&#39;</span><span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.random_walk --list-pvs
+<span class="o">[</span>I <span class="m">19</span>:50:37.509 server:93<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">19</span>:50:37.512 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:55704
+<span class="o">[</span>I <span class="m">19</span>:50:37.512 server:121<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">19</span>:50:37.512 server:123<span class="o">]</span> PVs available:
+    random_walk:dt
+    random_walk:x
 </pre></div>
 </div>
 <p>Now, in a separate shell, we will talk to it using caproto’s command-line
 client:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt
 random_walk:dt                       <span class="o">[</span><span class="m">3</span>.<span class="o">]</span>
 </pre></div>
 </div>
-<p>By default, <code class="docutils literal notranslate"><span class="pre">caproto-get</span></code> displays the name and the current value.  For
-comprehensive access to the server’s response, use <code class="docutils literal notranslate"><span class="pre">--format</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt --format<span class="o">=</span><span class="s2">&quot;{response}&quot;</span>
+<p>By default, <code class="docutils literal"><span class="pre">caproto-get</span></code> displays the name and the current value.  For
+comprehensive access to the server’s response, use <code class="docutils literal"><span class="pre">--format</span></code>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt --format<span class="o">=</span><span class="s2">&quot;{response}&quot;</span>
 ReadNotifyResponse<span class="o">(</span><span class="nv">data</span><span class="o">=</span>array<span class="o">([</span><span class="m">3</span>.<span class="o">])</span>, <span class="nv">data_type</span><span class="o">=</span>&lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;,
 <span class="nv">data_count</span><span class="o">=</span><span class="m">1</span>, <span class="nv">status</span><span class="o">=</span>CAStatusCode<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;ECA_NORMAL&#39;</span>, <span class="nv">code</span><span class="o">=</span><span class="m">0</span>,
 <span class="nv">code_with_severity</span><span class="o">=</span><span class="m">1</span>, <span class="nv">severity</span><span class="o">=</span>&lt;CASeverity.SUCCESS: <span class="m">1</span>&gt;, <span class="nv">success</span><span class="o">=</span><span class="m">1</span>,
@@ -215,7 +213,7 @@ ReadNotifyResponse<span class="o">(</span><span class="nv">data</span><span clas
 </pre></div>
 </div>
 <p>Access particular fields in the response using attribute (“dot”) access.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt --format<span class="o">=</span><span class="s2">&quot;{response.data}&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt --format<span class="o">=</span><span class="s2">&quot;{response.data}&quot;</span>
 <span class="o">[</span><span class="m">3</span>.<span class="o">]</span>
 
 $ caproto-get random_walk:dt --format<span class="o">=</span><span class="s2">&quot;{response.status.description}&quot;</span>
@@ -225,9 +223,9 @@ $ caproto-get random_walk:dt --format<span class="o">=</span><span class="s2">&q
 None
 </pre></div>
 </div>
-<p>By default, the server sends no metadata. Obtain metadata by specifically
-requesting a richer data type.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt -d CTRL_FLOAT --format<span class="o">=</span><span class="s2">&quot;{response.metadata}&quot;</span>
+<p>By default, the server sends no metadata. Obtain metadata by requesting a
+richer data type.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt -d control --format<span class="o">=</span><span class="s2">&quot;{response.metadata}&quot;</span>
 DBR_CTRL_FLOAT<span class="o">(</span><span class="nv">status</span><span class="o">=</span>&lt;AlarmStatus.NO_ALARM: <span class="m">0</span>&gt;,
 <span class="nv">severity</span><span class="o">=</span>&lt;AlarmSeverity.NO_ALARM: <span class="m">0</span>&gt;, <span class="nv">upper_disp_limit</span><span class="o">=</span><span class="m">0</span>.0,
 <span class="nv">lower_disp_limit</span><span class="o">=</span><span class="m">0</span>.0, <span class="nv">upper_alarm_limit</span><span class="o">=</span><span class="m">0</span>.0, <span class="nv">upper_warning_limit</span><span class="o">=</span><span class="m">0</span>.0,
@@ -235,9 +233,18 @@ DBR_CTRL_FLOAT<span class="o">(</span><span class="nv">status</span><span class=
 <span class="nv">lower_ctrl_limit</span><span class="o">=</span><span class="m">0</span>.0, <span class="nv">precision</span><span class="o">=</span><span class="m">0</span>, <span class="nv">units</span><span class="o">=</span>b<span class="s1">&#39;&#39;</span><span class="o">)</span>
 </pre></div>
 </div>
-<p>To view the list of data types, use <code class="docutils literal notranslate"><span class="pre">-list-types</span></code>. The <code class="docutils literal notranslate"><span class="pre">-d</span></code> parameter used
-above accepts a data type’s name or its numerical code.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get --list-types
+<p>To view the list of data types, use <code class="docutils literal"><span class="pre">-list-types</span></code>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get --list-types
+Request a general class of types:
+
+native
+status
+<span class="nb">time</span>
+graphic
+control
+
+or one of the following specific types, specified by number or by <span class="o">(</span><span class="k">case</span>-insensitive<span class="o">)</span> name:
+
 <span class="m">0</span>  STRING
 <span class="m">1</span>  INT
 <span class="m">2</span>  FLOAT
@@ -253,75 +260,71 @@ above accepts a data type’s name or its numerical code.</p>
 <span class="m">38</span> CLASS_NAME
 </pre></div>
 </div>
-<p>Access multiple fields.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt -d TIME_FLOAT <span class="se">\</span>
+<p>Display multiple fields.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get random_walk:dt -d <span class="nb">time</span> <span class="se">\</span>
   --format<span class="o">=</span><span class="s2">&quot;{response.metadata.timestamp}   {response.data}&quot;</span>
 <span class="m">1527708484</span>.417967   <span class="o">[</span><span class="m">3</span>.<span class="o">]</span>
 </pre></div>
 </div>
 <p>Query multiple PVs in one command and label the results.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>caproto-get random_walk:dt random_walk:x --format<span class="o">=</span><span class="s2">&quot;{pv_name} {response.data}&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>caproto-get random_walk:dt random_walk:x --format<span class="o">=</span><span class="s2">&quot;{pv_name} {response.data}&quot;</span>
 random_walk:dt <span class="o">[</span><span class="m">3</span>.<span class="o">]</span>
 random_walk:x <span class="o">[</span><span class="m">15</span>.03687<span class="o">]</span>
 </pre></div>
 </div>
-<p>For debugging purposes, display some log messages using <code class="docutils literal notranslate"><span class="pre">-v</span></code> or <code class="docutils literal notranslate"><span class="pre">--verbose</span></code>.
+<p>For debugging purposes, display some log messages using <code class="docutils literal"><span class="pre">-v</span></code> or <code class="docutils literal"><span class="pre">--verbose</span></code>.
 On supported terminals, this output is color-coded and somewhat easier to
 visually parse.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get -v random_walk:x
-<span class="o">[</span>D <span class="m">19</span>:27:02.523 client:167<span class="o">]</span> Spawning caproto-repeater process....
-<span class="o">[</span>D <span class="m">19</span>:27:03.221 repeater:184<span class="o">]</span> Checking <span class="k">for</span> another repeater....
-<span class="o">[</span>I <span class="m">19</span>:27:03.221 repeater:84<span class="o">]</span> Repeater is listening on <span class="m">0</span>.0.0.0:5065
-<span class="o">[</span>D <span class="m">19</span>:27:02.527 client:61<span class="o">]</span> Registering with the Channel Access repeater.
-<span class="o">[</span>D <span class="m">19</span>:27:02.529 client:68<span class="o">]</span> Searching <span class="k">for</span> <span class="s1">&#39;random_walk:x&#39;</span>....
-<span class="o">[</span>D <span class="m">19</span>:27:02.531 client:80<span class="o">]</span> Search request sent to <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">5064</span><span class="o">)</span>.
-<span class="o">[</span>D <span class="m">19</span>:27:02.531 client:80<span class="o">]</span> Search request sent to <span class="o">(</span><span class="s1">&#39;192.168.86.255&#39;</span>, <span class="m">5064</span><span class="o">)</span>.
-<span class="o">[</span>D <span class="m">19</span>:27:02.543 client:154<span class="o">]</span> Channel created.
-<span class="o">[</span>D <span class="m">19</span>:27:02.543 client:320<span class="o">]</span> Detected native data_type &lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;.
-random_walk:x                             <span class="o">[</span><span class="m">2</span>.95033725<span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get -v random_walk:x
+<span class="o">[</span>D <span class="m">20</span>:00:15.753 client:53<span class="o">]</span> Registering with the Channel Access repeater.
+<span class="o">[</span>D <span class="m">20</span>:00:15.755 client:60<span class="o">]</span> Searching <span class="k">for</span> <span class="s1">&#39;random_walk:x&#39;</span>....
+<span class="o">[</span>D <span class="m">20</span>:00:15.758 client:72<span class="o">]</span> Search request sent to <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">5064</span><span class="o">)</span>.
+<span class="o">[</span>D <span class="m">20</span>:00:15.758 client:72<span class="o">]</span> Search request sent to <span class="o">(</span><span class="s1">&#39;172.27.7.255&#39;</span>, <span class="m">5064</span><span class="o">)</span>.
+<span class="o">[</span>D <span class="m">20</span>:00:15.759 client:112<span class="o">]</span> Found random_walk:x at <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">54388</span><span class="o">)</span>
+<span class="o">[</span>I <span class="m">20</span>:00:15.765 client:147<span class="o">]</span> random_walk:x connected
+<span class="o">[</span>D <span class="m">20</span>:00:15.765 client:161<span class="o">]</span> Detected native data_type &lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;.
+random_walk:x                             <span class="o">[</span><span class="m">0</span>.49813506<span class="o">]</span>
 </pre></div>
 </div>
-<p>For extreme debugging, display all of the commands sent and received using <code class="docutils literal notranslate"><span class="pre">-vvv</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get -vvv random_walk:x
-<span class="o">[</span>D <span class="m">19</span>:27:08.557 client:167<span class="o">]</span> Spawning caproto-repeater process....
-<span class="o">[</span>D <span class="m">19</span>:27:08.561 client:61<span class="o">]</span> Registering with the Channel Access repeater.
-<span class="o">[</span>D <span class="m">19</span>:27:08.561 _broadcaster:68<span class="o">]</span> Serializing <span class="m">1</span> commands into one datagram
-<span class="o">[</span>D <span class="m">19</span>:27:08.562 _broadcaster:71<span class="o">]</span> <span class="m">1</span> of <span class="m">1</span> RepeaterRegisterRequest<span class="o">(</span><span class="nv">client_address</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:08.565 client:68<span class="o">]</span> Searching <span class="k">for</span> <span class="s1">&#39;random_walk:x&#39;</span>....
-<span class="o">[</span>D <span class="m">19</span>:27:08.566 _broadcaster:68<span class="o">]</span> Serializing <span class="m">2</span> commands into one datagram
-<span class="o">[</span>D <span class="m">19</span>:27:08.566 _broadcaster:71<span class="o">]</span> <span class="m">1</span> of <span class="m">2</span> VersionRequest<span class="o">(</span><span class="nv">priority</span><span class="o">=</span><span class="m">0</span>, <span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:08.567 _broadcaster:71<span class="o">]</span> <span class="m">2</span> of <span class="m">2</span> SearchRequest<span class="o">(</span><span class="nv">name</span><span class="o">=</span>b<span class="s1">&#39;random_walk:x&#39;</span>, <span class="nv">cid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:08.567 repeater:131<span class="o">]</span> New client <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">60442</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:08.569 client:80<span class="o">]</span> Search request sent to <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">5064</span><span class="o">)</span>.
-<span class="o">[</span>D <span class="m">19</span>:27:08.569 client:80<span class="o">]</span> Search request sent to <span class="o">(</span><span class="s1">&#39;192.168.86.255&#39;</span>, <span class="m">5064</span><span class="o">)</span>.
-<span class="o">[</span>D <span class="m">19</span>:27:08.570 _broadcaster:95<span class="o">]</span> Received datagram from <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">5065</span><span class="o">)</span> with <span class="m">16</span> bytes.
-<span class="o">[</span>D <span class="m">19</span>:27:08.584 _broadcaster:95<span class="o">]</span> Received datagram from <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">5064</span><span class="o">)</span> with <span class="m">40</span> bytes.
-<span class="o">[</span>D <span class="m">19</span>:27:08.598 _circuit:133<span class="o">]</span> Serializing VersionRequest<span class="o">(</span><span class="nv">priority</span><span class="o">=</span><span class="m">0</span>, <span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:08.598 _circuit:133<span class="o">]</span> Serializing HostNameRequest<span class="o">(</span><span class="nv">name</span><span class="o">=</span>b<span class="s1">&#39;daniels-air-3.lan&#39;</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:08.599 _circuit:133<span class="o">]</span> Serializing ClientNameRequest<span class="o">(</span><span class="nv">name</span><span class="o">=</span>b<span class="s1">&#39;dallan&#39;</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:08.600 _circuit:133<span class="o">]</span> Serializing CreateChanRequest<span class="o">(</span><span class="nv">name</span><span class="o">=</span>b<span class="s1">&#39;random_walk:x&#39;</span>, <span class="nv">cid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:09.191 _circuit:162<span class="o">]</span> Received <span class="m">16</span> bytes.
-<span class="o">[</span>D <span class="m">19</span>:27:09.191 _circuit:172<span class="o">]</span> <span class="m">16</span> bytes -&gt; VersionResponse<span class="o">(</span><span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:09.192 _circuit:176<span class="o">]</span> <span class="m">0</span> bytes are cached. Need more bytes to parse next command.
-<span class="o">[</span>D <span class="m">19</span>:27:09.192 _circuit:162<span class="o">]</span> Received <span class="m">32</span> bytes.
-<span class="o">[</span>D <span class="m">19</span>:27:09.192 _circuit:172<span class="o">]</span> <span class="m">16</span> bytes -&gt; AccessRightsResponse<span class="o">(</span><span class="nv">cid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">access_rights</span><span class="o">=</span>&lt;AccessRights.WRITE<span class="p">|</span>READ: <span class="m">3</span>&gt;<span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:09.193 _circuit:172<span class="o">]</span> <span class="m">16</span> bytes -&gt; CreateChanResponse<span class="o">(</span><span class="nv">data_type</span><span class="o">=</span>&lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;, <span class="nv">data_count</span><span class="o">=</span><span class="m">1</span>, <span class="nv">cid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">sid</span><span class="o">=</span><span class="m">1</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:09.193 _circuit:176<span class="o">]</span> <span class="m">0</span> bytes are cached. Need more bytes to parse next command.
-<span class="o">[</span>D <span class="m">19</span>:27:09.193 client:154<span class="o">]</span> Channel created.
-<span class="o">[</span>D <span class="m">19</span>:27:09.193 client:320<span class="o">]</span> Detected native data_type &lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;.
-<span class="o">[</span>D <span class="m">19</span>:27:09.195 _circuit:133<span class="o">]</span> Serializing ReadNotifyRequest<span class="o">(</span><span class="nv">data_type</span><span class="o">=</span>&lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;, <span class="nv">data_count</span><span class="o">=</span><span class="m">0</span>, <span class="nv">sid</span><span class="o">=</span><span class="m">1</span>, <span class="nv">ioid</span><span class="o">=</span><span class="m">0</span><span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:09.198 _circuit:162<span class="o">]</span> Received <span class="m">24</span> bytes.
-<span class="o">[</span>D <span class="m">19</span>:27:09.208 _circuit:172<span class="o">]</span> <span class="m">24</span> bytes -&gt; ReadNotifyResponse<span class="o">(</span><span class="nv">data</span><span class="o">=</span>array<span class="o">([</span><span class="m">4</span>.10904623<span class="o">])</span>, <span class="nv">data_type</span><span class="o">=</span>&lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;, <span class="nv">data_count</span><span class="o">=</span><span class="m">1</span>, <span class="nv">status</span><span class="o">=</span>CAStatusCode<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;ECA_NORMAL&#39;</span>, <span class="nv">code</span><span class="o">=</span><span class="m">0</span>, <span class="nv">code_with_severity</span><span class="o">=</span><span class="m">1</span>, <span class="nv">severity</span><span class="o">=</span>&lt;CASeverity.SUCCESS: <span class="m">1</span>&gt;, <span class="nv">success</span><span class="o">=</span><span class="m">1</span>, <span class="nv">defunct</span><span class="o">=</span>False, <span class="nv">description</span><span class="o">=</span><span class="s1">&#39;Normal successful completion&#39;</span><span class="o">)</span>, <span class="nv">ioid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">metadata</span><span class="o">=</span>None<span class="o">)</span>
-<span class="o">[</span>D <span class="m">19</span>:27:09.274 _circuit:176<span class="o">]</span> <span class="m">0</span> bytes are cached. Need more bytes to parse next command.
-<span class="o">[</span>D <span class="m">19</span>:27:09.274 _circuit:133<span class="o">]</span> Serializing ClearChannelRequest<span class="o">(</span><span class="nv">sid</span><span class="o">=</span><span class="m">1</span>, <span class="nv">cid</span><span class="o">=</span><span class="m">0</span><span class="o">)</span>
-random_walk:x                             <span class="o">[</span><span class="m">4</span>.10904623<span class="o">]</span>
-<span class="o">[</span>D <span class="m">19</span>:27:09.690 repeater:184<span class="o">]</span> Checking <span class="k">for</span> another repeater....
-<span class="o">[</span>I <span class="m">19</span>:27:09.691 repeater:189<span class="o">]</span> Another repeater is already running<span class="p">;</span> exiting.
+<p>For extreme debugging, display all of the commands sent and received using <code class="docutils literal"><span class="pre">-vvv</span></code>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get -vvv random_walk:x
+<span class="o">[</span>D <span class="m">20</span>:00:47.562 repeater:214<span class="o">]</span> Another repeater is already running<span class="p">;</span> will not spawn one.
+<span class="o">[</span>D <span class="m">20</span>:00:47.563 client:53<span class="o">]</span> Registering with the Channel Access repeater.
+<span class="o">[</span>D <span class="m">20</span>:00:47.563 _broadcaster:71<span class="o">]</span> Serializing <span class="m">1</span> commands into one datagram
+<span class="o">[</span>D <span class="m">20</span>:00:47.564 _broadcaster:74<span class="o">]</span> <span class="m">1</span> of <span class="m">1</span> RepeaterRegisterRequest<span class="o">(</span><span class="nv">client_address</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.565 client:60<span class="o">]</span> Searching <span class="k">for</span> <span class="s1">&#39;random_walk:x&#39;</span>....
+<span class="o">[</span>D <span class="m">20</span>:00:47.566 _broadcaster:71<span class="o">]</span> Serializing <span class="m">2</span> commands into one datagram
+<span class="o">[</span>D <span class="m">20</span>:00:47.566 _broadcaster:74<span class="o">]</span> <span class="m">1</span> of <span class="m">2</span> VersionRequest<span class="o">(</span><span class="nv">priority</span><span class="o">=</span><span class="m">0</span>, <span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.566 _broadcaster:74<span class="o">]</span> <span class="m">2</span> of <span class="m">2</span> SearchRequest<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;random_walk:x&#39;</span>, <span class="nv">cid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.567 client:72<span class="o">]</span> Search request sent to <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">5064</span><span class="o">)</span>.
+<span class="o">[</span>D <span class="m">20</span>:00:47.567 client:72<span class="o">]</span> Search request sent to <span class="o">(</span><span class="s1">&#39;172.27.7.255&#39;</span>, <span class="m">5064</span><span class="o">)</span>.
+<span class="o">[</span>D <span class="m">20</span>:00:47.568 _broadcaster:98<span class="o">]</span> Received datagram from <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">5065</span><span class="o">)</span> with <span class="m">16</span> bytes.
+<span class="o">[</span>D <span class="m">20</span>:00:47.568 _broadcaster:98<span class="o">]</span> Received datagram from <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">5064</span><span class="o">)</span> with <span class="m">40</span> bytes.
+<span class="o">[</span>D <span class="m">20</span>:00:47.568 client:112<span class="o">]</span> Found random_walk:x at <span class="o">(</span><span class="s1">&#39;127.0.0.1&#39;</span>, <span class="m">54388</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.572 _circuit:142<span class="o">]</span> Serializing VersionRequest<span class="o">(</span><span class="nv">priority</span><span class="o">=</span><span class="m">0</span>, <span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.573 _circuit:142<span class="o">]</span> Serializing HostNameRequest<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;Daniels-MacBook-Air-3.local&#39;</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.574 _circuit:142<span class="o">]</span> Serializing ClientNameRequest<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;dallan&#39;</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.574 _circuit:142<span class="o">]</span> Serializing CreateChanRequest<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;random_walk:x&#39;</span>, <span class="nv">cid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.575 _circuit:171<span class="o">]</span> Received <span class="m">16</span> bytes.
+<span class="o">[</span>D <span class="m">20</span>:00:47.575 _circuit:181<span class="o">]</span> <span class="m">16</span> bytes -&gt; VersionResponse<span class="o">(</span><span class="nv">version</span><span class="o">=</span><span class="m">13</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.575 _circuit:185<span class="o">]</span> <span class="m">0</span> bytes are cached. Need more bytes to parse next command.
+<span class="o">[</span>D <span class="m">20</span>:00:47.575 _circuit:171<span class="o">]</span> Received <span class="m">32</span> bytes.
+<span class="o">[</span>D <span class="m">20</span>:00:47.575 _circuit:181<span class="o">]</span> <span class="m">16</span> bytes -&gt; AccessRightsResponse<span class="o">(</span><span class="nv">cid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">access_rights</span><span class="o">=</span>&lt;AccessRights.WRITE<span class="p">|</span>READ: <span class="m">3</span>&gt;<span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.576 _circuit:181<span class="o">]</span> <span class="m">16</span> bytes -&gt; CreateChanResponse<span class="o">(</span><span class="nv">data_type</span><span class="o">=</span>&lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;, <span class="nv">data_count</span><span class="o">=</span><span class="m">1</span>, <span class="nv">cid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">sid</span><span class="o">=</span><span class="m">1</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.576 _circuit:185<span class="o">]</span> <span class="m">0</span> bytes are cached. Need more bytes to parse next command.
+<span class="o">[</span>I <span class="m">20</span>:00:47.576 client:147<span class="o">]</span> random_walk:x connected
+<span class="o">[</span>D <span class="m">20</span>:00:47.577 client:161<span class="o">]</span> Detected native data_type &lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;.
+<span class="o">[</span>D <span class="m">20</span>:00:47.577 _circuit:142<span class="o">]</span> Serializing ReadNotifyRequest<span class="o">(</span><span class="nv">data_type</span><span class="o">=</span>&lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;, <span class="nv">data_count</span><span class="o">=</span><span class="m">0</span>, <span class="nv">sid</span><span class="o">=</span><span class="m">1</span>, <span class="nv">ioid</span><span class="o">=</span><span class="m">0</span><span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.578 _circuit:171<span class="o">]</span> Received <span class="m">24</span> bytes.
+<span class="o">[</span>D <span class="m">20</span>:00:47.578 _circuit:181<span class="o">]</span> <span class="m">24</span> bytes -&gt; ReadNotifyResponse<span class="o">(</span><span class="nv">data</span><span class="o">=</span>array<span class="o">([</span><span class="m">5</span>.38826246<span class="o">])</span>, <span class="nv">data_type</span><span class="o">=</span>&lt;ChannelType.DOUBLE: <span class="m">6</span>&gt;, <span class="nv">data_count</span><span class="o">=</span><span class="m">1</span>, <span class="nv">status</span><span class="o">=</span>CAStatusCode<span class="o">(</span><span class="nv">name</span><span class="o">=</span><span class="s1">&#39;ECA_NORMAL&#39;</span>, <span class="nv">code</span><span class="o">=</span><span class="m">0</span>, <span class="nv">code_with_severity</span><span class="o">=</span><span class="m">1</span>, <span class="nv">severity</span><span class="o">=</span>&lt;CASeverity.SUCCESS: <span class="m">1</span>&gt;, <span class="nv">success</span><span class="o">=</span><span class="m">1</span>, <span class="nv">defunct</span><span class="o">=</span>False, <span class="nv">description</span><span class="o">=</span><span class="s1">&#39;Normal successful completion&#39;</span><span class="o">)</span>, <span class="nv">ioid</span><span class="o">=</span><span class="m">0</span>, <span class="nv">metadata</span><span class="o">=</span>None<span class="o">)</span>
+<span class="o">[</span>D <span class="m">20</span>:00:47.579 _circuit:185<span class="o">]</span> <span class="m">0</span> bytes are cached. Need more bytes to parse next command.
+<span class="o">[</span>D <span class="m">20</span>:00:47.579 _circuit:142<span class="o">]</span> Serializing ClearChannelRequest<span class="o">(</span><span class="nv">sid</span><span class="o">=</span><span class="m">1</span>, <span class="nv">cid</span><span class="o">=</span><span class="m">0</span><span class="o">)</span>
+random_walk:x                             <span class="o">[</span><span class="m">5</span>.38826246<span class="o">]</span>
 </pre></div>
 </div>
-<p>For additional options, see <code class="docutils literal notranslate"><span class="pre">caproto-get</span> <span class="pre">-h</span></code> or the documentation below.</p>
-<p>Let us set the value to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-put random_walk:dt <span class="m">1</span>
+<p>For additional options, type <code class="docutils literal"><span class="pre">caproto-get</span> <span class="pre">-h</span></code> or see below.</p>
+<p>Let us set the value to <code class="docutils literal"><span class="pre">1</span></code>.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-put random_walk:dt <span class="m">1</span>
 random_walk:dt                            <span class="o">[</span><span class="m">3</span>.<span class="o">]</span>
 random_walk:dt                            <span class="o">[</span><span class="m">1</span>.<span class="o">]</span>
 </pre></div>
@@ -329,17 +332,24 @@ random_walk:dt                            <span class="o">[</span><span class="m
 <p>The client issues three requests:</p>
 <ol class="arabic simple">
 <li>Read the current value.</li>
-<li>Write <code class="docutils literal notranslate"><span class="pre">1</span></code>.</li>
+<li>Write <code class="docutils literal"><span class="pre">1</span></code>.</li>
 <li>Read the value again.</li>
 </ol>
-<p>This behavior is particular to caproto’s <em>synchronous</em> client, on which this
-command-line interface relies. The other, more sophisticated clients leave it
-up to the caller when and whether to request readings.</p>
-<p>For additional options, see <code class="docutils literal notranslate"><span class="pre">caproto-put</span> <span class="pre">-h</span></code> or the documentation below.</p>
-<p>Let us now monitor a channel. The server updates the <code class="docutils literal notranslate"><span class="pre">random_walk:x</span></code> channel
-periodically. (The period is set by <code class="docutils literal notranslate"><span class="pre">random_walk:dt</span></code>.) We can subscribe
+<p>By default it does actually wait for confirmation that the write has been
+processed by the server before moving on to the final read, so it is possible
+to receive a reading that isn’t up to date. Use <code class="docutils literal"><span class="pre">-c</span></code> to ask the server to
+confirm the write’s success and to wait on that confirmation before doing the
+final read.</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-put -c random_walk:dt <span class="m">2</span>
+random_walk:dt                            <span class="o">[</span><span class="m">1</span>.<span class="o">]</span>
+random_walk:dt                            <span class="o">[</span><span class="m">2</span>.<span class="o">]</span>
+</pre></div>
+</div>
+<p>For additional options, type <code class="docutils literal"><span class="pre">caproto-put</span> <span class="pre">-h</span></code> or see below.</p>
+<p>Let us now monitor a channel. The server updates the <code class="docutils literal"><span class="pre">random_walk:x</span></code> channel
+periodically. (The period is set by <code class="docutils literal"><span class="pre">random_walk:dt</span></code>.) We can subscribe
 to updates. Use Ctrl+C to escape.</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-monitor random_walk:x
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-monitor random_walk:x
 random_walk:x                             <span class="m">2018</span>-05-30 <span class="m">16</span>:05:14 <span class="o">[</span><span class="m">3</span>.21691947<span class="o">]</span>
 random_walk:x                             <span class="m">2018</span>-05-30 <span class="m">16</span>:05:17 <span class="o">[</span><span class="m">4</span>.06274315<span class="o">]</span>
 random_walk:x                             <span class="m">2018</span>-05-30 <span class="m">16</span>:05:18 <span class="o">[</span><span class="m">4</span>.66485147<span class="o">]</span>
@@ -353,10 +363,10 @@ random_walk:x                             <span class="m">2018</span>-05-30 <spa
 random_walk:x                             <span class="m">2018</span>-05-30 <span class="m">16</span>:05:26 <span class="o">[</span><span class="m">8</span>.54049119<span class="o">]</span>
 </pre></div>
 </div>
-<p>Since monitoring involves a time series of multiple readings, the <code class="docutils literal notranslate"><span class="pre">--format</span></code>
-argument for <code class="docutils literal notranslate"><span class="pre">caproto-monitor</span></code> provides additional tokens, <code class="docutils literal notranslate"><span class="pre">{timestamp}</span></code>
-and <code class="docutils literal notranslate"><span class="pre">{timedelta}</span></code>. We can show the hours, minutes, and seconds of each reading:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-monitor random_walk:x --format <span class="s2">&quot;{timestamp:%H:%M:%S} {response.data}&quot;</span>
+<p>Since monitoring involves a time series of multiple readings, the <code class="docutils literal"><span class="pre">--format</span></code>
+argument for <code class="docutils literal"><span class="pre">caproto-monitor</span></code> provides additional tokens, <code class="docutils literal"><span class="pre">{timestamp}</span></code>
+and <code class="docutils literal"><span class="pre">{timedelta}</span></code>. We can show the hours, minutes, and seconds of each reading:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-monitor random_walk:x --format <span class="s2">&quot;{timestamp:%H:%M:%S} {response.data}&quot;</span>
 <span class="m">16</span>:13:00 <span class="o">[</span><span class="m">239</span>.95707401<span class="o">]</span>
 <span class="m">16</span>:13:01 <span class="o">[</span><span class="m">240</span>.49112986<span class="o">]</span>
 <span class="m">16</span>:13:02 <span class="o">[</span><span class="m">241</span>.46992348<span class="o">]</span>
@@ -366,32 +376,33 @@ and <code class="docutils literal notranslate"><span class="pre">{timedelta}</sp
 </pre></div>
 </div>
 <p>and the time-spacing between readings:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-monitor random_walk:x --format <span class="s2">&quot;{timedelta} {response.data}&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-monitor random_walk:x --format <span class="s2">&quot;{timedelta} {response.data}&quot;</span>
 <span class="m">0</span>:00:00.821489 <span class="o">[</span><span class="m">216</span>.31247919<span class="o">]</span>
 <span class="m">0</span>:00:01.001850 <span class="o">[</span><span class="m">216</span>.87041785<span class="o">]</span>
 <span class="m">0</span>:00:01.002946 <span class="o">[</span><span class="m">217</span>.64755049<span class="o">]</span>
 <span class="m">0</span>:00:01.003341 <span class="o">[</span><span class="m">218</span>.41384969<span class="o">]</span>
 <span class="m">0</span>:00:01.004499 <span class="o">[</span><span class="m">219</span>.30221942<span class="o">]</span>
-<span class="m">0</span>:00:01.004556 <span class="o">[</span><span class="m">220</span>.2028958<span class="o">]</span>
 ^C
 </pre></div>
 </div>
-<p>For additional options, see <code class="docutils literal notranslate"><span class="pre">caproto-monitor</span> <span class="pre">-h</span></code> or the documentation below.</p>
+<p>For additional options, type <code class="docutils literal"><span class="pre">caproto-monitor</span> <span class="pre">-h</span></code> or see below.</p>
 </div>
 <div class="section" id="api-documentation">
 <h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
-<p>These are intended to provide a superset of the API provided by their standard
-counterparts in epics-base, <code class="docutils literal notranslate"><span class="pre">caget</span></code>, <code class="docutils literal notranslate"><span class="pre">caput</span></code>, <code class="docutils literal notranslate"><span class="pre">camonitor</span></code>, and
-<code class="docutils literal notranslate"><span class="pre">caRepeater</span></code> so that they can be safely used as drop-in replacements. Some of
-<code class="docutils literal notranslate"><span class="pre">caget</span></code>’s arguments related to string formatting are not yet implemented
-(<a class="reference external" href="https://github.com/NSLS-II/caproto/issues/147">Code contributions welcome!</a>)
-but similar functionality is available via <code class="docutils literal notranslate"><span class="pre">--format</span></code>.</p>
+<p>Caproto’s command-line client is intended to provide a superset of the API
+provided by its counterparts in EPICS’ reference implementation, epics-base:
+<code class="docutils literal"><span class="pre">caget</span></code>, <code class="docutils literal"><span class="pre">caput</span></code>, <code class="docutils literal"><span class="pre">camonitor</span></code>, and <code class="docutils literal"><span class="pre">caRepeater</span></code>. It is our goal to make
+caproto’s variants safe to use as drop-in replacements. As yet, some arguments
+related to string formatting are not yet implemented (<a class="reference external" href="https://github.com/NSLS-II/caproto/issues/147">Code contributions
+welcome!</a>) but similar
+functionality is available via <code class="docutils literal"><span class="pre">--format</span></code>.</p>
 <div class="section" id="caproto-get">
 <h3>caproto-get<a class="headerlink" href="#caproto-get" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-get -h
-usage: caproto-get <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-d DATA_TYPE<span class="o">]</span> <span class="o">[</span>--format FORMAT<span class="o">]</span> <span class="o">[</span>--list-types<span class="o">]</span> <span class="o">[</span>-n<span class="o">]</span>
-                <span class="o">[</span>--no-repeater<span class="o">]</span> <span class="o">[</span>--priority PRIORITY<span class="o">]</span> <span class="o">[</span>--terse<span class="o">]</span>
-                <span class="o">[</span>--timeout TIMEOUT<span class="o">]</span> <span class="o">[</span>--verbose<span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-get -h
+usage: caproto-get <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--verbose<span class="o">]</span> <span class="o">[</span>--format FORMAT<span class="o">]</span> <span class="o">[</span>--timeout TIMEOUT<span class="o">]</span>
+                <span class="o">[</span>--notify<span class="o">]</span> <span class="o">[</span>--priority PRIORITY<span class="o">]</span> <span class="o">[</span>--terse<span class="o">]</span> <span class="o">[</span>--wide<span class="o">]</span>
+                <span class="o">[</span>-d DATA_TYPE<span class="o">]</span> <span class="o">[</span>--list-types<span class="o">]</span> <span class="o">[</span>-n<span class="o">]</span> <span class="o">[</span>--no-color<span class="o">]</span>
+                <span class="o">[</span>--no-repeater<span class="o">]</span>
                 pv_names <span class="o">[</span>pv_names ...<span class="o">]</span>
 
 Read the value of a PV.
@@ -401,32 +412,39 @@ pv_names              PV <span class="o">(</span>channel<span class="o">)</span>
 
 optional arguments:
 -h, --help            show this <span class="nb">help</span> message and <span class="nb">exit</span>
--d DATA_TYPE          Request a certain data type. Accepts numeric code
-                      <span class="o">(</span><span class="s1">&#39;3&#39;</span><span class="o">)</span> or <span class="k">case</span>-insensitive string <span class="o">(</span><span class="s1">&#39;enum&#39;</span><span class="o">)</span>. See --list-
-                      types
+--verbose, -v         Verbose mode. <span class="o">(</span>Use -vvv <span class="k">for</span> more.<span class="o">)</span>
 --format FORMAT       Python format string. Available tokens are <span class="o">{</span>pv_name<span class="o">}</span>
-                      and <span class="o">{</span>response<span class="o">}</span>. Additionally, <span class="k">if</span> this data <span class="nb">type</span>
-                      includes time, <span class="o">{</span>timestamp<span class="o">}</span> and usages like
-                      <span class="o">{</span>timestamp:%Y-%m-%d %H:%M:%S<span class="o">}</span> are supported.
+                        and <span class="o">{</span>response<span class="o">}</span>. Additionally, <span class="k">if</span> this data <span class="nb">type</span>
+                        includes time, <span class="o">{</span>timestamp<span class="o">}</span> and usages like
+                        <span class="o">{</span>timestamp:%Y-%m-%d %H:%M:%S<span class="o">}</span> are supported.
+--timeout TIMEOUT, -w TIMEOUT
+                        Timeout <span class="o">(</span><span class="s1">&#39;wait&#39;</span><span class="o">)</span> in seconds <span class="k">for</span> server responses.
+--notify, -c          This is a vestigial argument that now has no effect in
+                        caget but is provided <span class="k">for</span> <span class="k">for</span> backward-compatibility
+                        with caget invocations.
+--priority PRIORITY, -p PRIORITY
+                        Channel Access Virtual Circuit priority. Lowest is <span class="m">0</span><span class="p">;</span>
+                        highest is <span class="m">99</span>.
+--terse, -t           Display data only. Unpack scalars: <span class="o">[</span><span class="m">3</span>.<span class="o">]</span> -&gt; <span class="m">3</span>.
+--wide, -a, -l        Wide mode, showing <span class="s1">&#39;name timestamp value</span>
+<span class="s1">                        status&#39;</span><span class="o">(</span>implies -d <span class="s1">&#39;time&#39;</span><span class="o">)</span>
+-d DATA_TYPE          Request a class of data <span class="nb">type</span> <span class="o">(</span>native, status, time,
+                        graphic, control<span class="o">)</span> or a specific type. Accepts numeric
+                        code <span class="o">(</span><span class="s1">&#39;3&#39;</span><span class="o">)</span> or <span class="k">case</span>-insensitive string <span class="o">(</span><span class="s1">&#39;enum&#39;</span><span class="o">)</span>. See
+                        --list-types.
 --list-types          List allowed values <span class="k">for</span> -d and exit.
 -n                    Retrieve enums as integers <span class="o">(</span>default is strings<span class="o">)</span>.
+--no-color            Suppress ANSI color codes in log messages.
 --no-repeater         Do not spawn a Channel Access repeater daemon process.
---priority PRIORITY, -p PRIORITY
-                      Channel Access Virtual Circuit priority. Lowest is <span class="m">0</span><span class="p">;</span>
-                      highest is <span class="m">99</span>.
---terse, -t           Display data only. Unpack scalars: <span class="o">[</span><span class="m">3</span>.<span class="o">]</span> -&gt; <span class="m">3</span>.
---timeout TIMEOUT, -w TIMEOUT
-                      Timeout <span class="o">(</span><span class="s1">&#39;wait&#39;</span><span class="o">)</span> in seconds <span class="k">for</span> server responses.
---verbose, -v         Verbose mode. <span class="o">(</span>Use -vvv <span class="k">for</span> more.<span class="o">)</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="caproto-put">
 <h3>caproto-put<a class="headerlink" href="#caproto-put" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-put -h
-usage: caproto-put <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--format FORMAT<span class="o">]</span> <span class="o">[</span>--no-repeater<span class="o">]</span>
-                <span class="o">[</span>--priority PRIORITY<span class="o">]</span> <span class="o">[</span>--terse<span class="o">]</span> <span class="o">[</span>--timeout TIMEOUT<span class="o">]</span>
-                <span class="o">[</span>--verbose<span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-put -h
+usage: caproto-put <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--verbose<span class="o">]</span> <span class="o">[</span>--format FORMAT<span class="o">]</span> <span class="o">[</span>--timeout TIMEOUT<span class="o">]</span>
+                <span class="o">[</span>--notify<span class="o">]</span> <span class="o">[</span>--priority PRIORITY<span class="o">]</span> <span class="o">[</span>--terse<span class="o">]</span> <span class="o">[</span>--wide<span class="o">]</span> <span class="o">[</span>-n<span class="o">]</span>
+                <span class="o">[</span>--no-color<span class="o">]</span> <span class="o">[</span>--no-repeater<span class="o">]</span>
                 pv_name data
 
 Write a value to a PV.
@@ -437,26 +455,33 @@ data                  Value or values to write.
 
 optional arguments:
 -h, --help            show this <span class="nb">help</span> message and <span class="nb">exit</span>
---format FORMAT       Python format string. Available tokens are <span class="o">{</span>pv_name<span class="o">}</span>
-                      and <span class="o">{</span>response<span class="o">}</span>. Additionally, this data <span class="nb">type</span> includes
-                      time, <span class="o">{</span>timestamp<span class="o">}</span> and usages like <span class="o">{</span>timestamp:%Y-%m-%d
-                      %H:%M:%S<span class="o">}</span> are supported.
---no-repeater         Do not spawn a Channel Access repeater daemon process.
---priority PRIORITY, -p PRIORITY
-                      Channel Access Virtual Circuit priority. Lowest is <span class="m">0</span><span class="p">;</span>
-                      highest is <span class="m">99</span>.
---terse, -t           Display data only. Unpack scalars: <span class="o">[</span><span class="m">3</span>.<span class="o">]</span> -&gt; <span class="m">3</span>.
+--verbose, -v         Show DEBUG log messages.
+--format FORMAT       Python format string. Available tokens are <span class="o">{</span>pv_name<span class="o">}</span>,
+                        <span class="o">{</span>response<span class="o">}</span> and <span class="o">{</span>which<span class="o">}</span> <span class="o">(</span>Old/New<span class="o">)</span>.Additionally, this
+                        data <span class="nb">type</span> includes time, <span class="o">{</span>timestamp<span class="o">}</span> and usages like
+                        <span class="o">{</span>timestamp:%Y-%m-%d %H:%M:%S<span class="o">}</span> are supported.
 --timeout TIMEOUT, -w TIMEOUT
-                      Timeout <span class="o">(</span><span class="s1">&#39;wait&#39;</span><span class="o">)</span> in seconds <span class="k">for</span> server responses.
---verbose, -v         Verbose mode. <span class="o">(</span>Use -vvv <span class="k">for</span> more.<span class="o">)</span>
+                        Timeout <span class="o">(</span><span class="s1">&#39;wait&#39;</span><span class="o">)</span> in seconds <span class="k">for</span> server responses.
+--notify, -c          Request notification of completion, and <span class="nb">wait</span> <span class="k">for</span> it.
+--priority PRIORITY, -p PRIORITY
+                        Channel Access Virtual Circuit priority. Lowest is <span class="m">0</span><span class="p">;</span>
+                        highest is <span class="m">99</span>.
+--terse, -t           Display data only. Unpack scalars: <span class="o">[</span><span class="m">3</span>.<span class="o">]</span> -&gt; <span class="m">3</span>.
+--wide, -a, -l        Wide mode, showing <span class="s1">&#39;name timestamp value</span>
+<span class="s1">                        status&#39;</span><span class="o">(</span>implies -d <span class="s1">&#39;time&#39;</span><span class="o">)</span>
+-n                    Retrieve enums as integers <span class="o">(</span>default is strings<span class="o">)</span>.
+--no-color            Suppress ANSI color codes in log messages.
+--no-repeater         Do not spawn a Channel Access repeater daemon process.
 </pre></div>
 </div>
 </div>
 <div class="section" id="caproto-monitor">
 <h3>caproto-monitor<a class="headerlink" href="#caproto-monitor" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-monitor -h
-usage: caproto-monitor <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--format FORMAT<span class="o">]</span> <span class="o">[</span>-m MASK<span class="o">]</span> <span class="o">[</span>-n<span class="o">]</span> <span class="o">[</span>--no-repeater<span class="o">]</span>
-                    <span class="o">[</span>--priority PRIORITY<span class="o">]</span> <span class="o">[</span>--timeout TIMEOUT<span class="o">]</span> <span class="o">[</span>--verbose<span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-monitor -h
+usage: caproto-monitor <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>--format FORMAT<span class="o">]</span> <span class="o">[</span>--verbose<span class="o">]</span>
+                    <span class="o">[</span>--duration DURATION <span class="p">|</span> --maximum MAXIMUM<span class="o">]</span>
+                    <span class="o">[</span>--timeout TIMEOUT<span class="o">]</span> <span class="o">[</span>-m MASK<span class="o">]</span> <span class="o">[</span>--priority PRIORITY<span class="o">]</span>
+                    <span class="o">[</span>-n<span class="o">]</span> <span class="o">[</span>--no-color<span class="o">]</span> <span class="o">[</span>--no-repeater<span class="o">]</span>
                     pv_names <span class="o">[</span>pv_names ...<span class="o">]</span>
 
 Read the value of a PV.
@@ -466,28 +491,34 @@ pv_names              PV <span class="o">(</span>channel<span class="o">)</span>
 
 optional arguments:
 -h, --help            show this <span class="nb">help</span> message and <span class="nb">exit</span>
---format FORMAT       Python format string. Available tokens are <span class="o">{</span>pv_name<span class="o">}</span>
-                      and <span class="o">{</span>response<span class="o">}</span>. Additionally, <span class="k">if</span> this data <span class="nb">type</span>
-                      includes time, <span class="o">{</span>timestamp<span class="o">}</span>, <span class="o">{</span>timedelta<span class="o">}</span> and usages
-                      like <span class="o">{</span>timestamp:%Y-%m-%d %H:%M:%S<span class="o">}</span> are supported.
--m MASK               Channel Access mask. Any combination of <span class="s1">&#39;v&#39;</span> <span class="o">(</span>value<span class="o">)</span>,
-                      <span class="s1">&#39;a&#39;</span> <span class="o">(</span>alarm<span class="o">)</span>, <span class="s1">&#39;l&#39;</span> <span class="o">(</span>log/archive<span class="o">)</span>, <span class="s1">&#39;p&#39;</span> <span class="o">(</span>property<span class="o">)</span>.
-                      Default is <span class="s1">&#39;va&#39;</span>.
--n                    Retrieve enums as integers <span class="o">(</span>default is strings<span class="o">)</span>.
---no-repeater         Do not spawn a Channel Access repeater daemon process.
---priority PRIORITY, -p PRIORITY
-                      Channel Access Virtual Circuit priority. Lowest is <span class="m">0</span><span class="p">;</span>
-                      highest is <span class="m">99</span>.
+--format FORMAT       Python format string. Available tokens are <span class="o">{</span>pv_name<span class="o">}</span>,
+                        <span class="o">{</span>response<span class="o">}</span>, <span class="o">{</span>callback_count<span class="o">}</span>. Additionally, <span class="k">if</span> this
+                        data <span class="nb">type</span> includes time, <span class="o">{</span>timestamp<span class="o">}</span>, <span class="o">{</span>timedelta<span class="o">}</span> and
+                        usages like <span class="o">{</span>timestamp:%Y-%m-%d %H:%M:%S<span class="o">}</span> are
+                        supported.
+--verbose, -v         Show DEBUG log messages.
+--duration DURATION   Maximum number seconds to run before exiting. Runs
+                        indefinitely by default.
+--maximum MAXIMUM     Maximum number of monitor events to process exiting.
+                        Unlimited by default.
 --timeout TIMEOUT, -w TIMEOUT
-                      Timeout <span class="o">(</span><span class="s1">&#39;wait&#39;</span><span class="o">)</span> in seconds <span class="k">for</span> server responses.
---verbose, -v         Verbose mode. <span class="o">(</span>Use -vvv <span class="k">for</span> more.<span class="o">)</span>
+                        Timeout <span class="o">(</span><span class="s1">&#39;wait&#39;</span><span class="o">)</span> in seconds <span class="k">for</span> server responses.
+-m MASK               Channel Access mask. Any combination of <span class="s1">&#39;v&#39;</span> <span class="o">(</span>value<span class="o">)</span>,
+                        <span class="s1">&#39;a&#39;</span> <span class="o">(</span>alarm<span class="o">)</span>, <span class="s1">&#39;l&#39;</span> <span class="o">(</span>log/archive<span class="o">)</span>, <span class="s1">&#39;p&#39;</span> <span class="o">(</span>property<span class="o">)</span>.
+                        Default is <span class="s1">&#39;va&#39;</span>.
+--priority PRIORITY, -p PRIORITY
+                        Channel Access Virtual Circuit priority. Lowest is <span class="m">0</span><span class="p">;</span>
+                        highest is <span class="m">99</span>.
+-n                    Retrieve enums as integers <span class="o">(</span>default is strings<span class="o">)</span>.
+--no-color            Suppress ANSI color codes in log messages.
+--no-repeater         Do not spawn a Channel Access repeater daemon process.
 </pre></div>
 </div>
 </div>
 <div class="section" id="caproto-repeater">
 <h3>caproto-repeater<a class="headerlink" href="#caproto-repeater" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ caproto-repeater -h
-usage: caproto-repeater <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-q <span class="p">|</span> -v<span class="o">]</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-repeater -h
+usage: caproto-repeater <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-q <span class="p">|</span> -v<span class="o">]</span> <span class="o">[</span>--no-color<span class="o">]</span>
 
 Run a Channel Access Repeater. If the Repeater port is already in use, assume
 a Repeater is already running and exit. That port number is <span class="nb">set</span> by the
@@ -498,6 +529,7 @@ optional arguments:
 -h, --help     show this <span class="nb">help</span> message and <span class="nb">exit</span>
 -q, --quiet    Suppress INFO log messages. <span class="o">(</span>Still show WARNING or higher.<span class="o">)</span>
 -v, --verbose  Verbose mode. <span class="o">(</span>Use -vvv <span class="k">for</span> more.<span class="o">)</span>
+--no-color     Suppress ANSI color codes in log messages.
 </pre></div>
 </div>
 </div>
@@ -546,7 +578,7 @@ optional arguments:
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0a1+305.g99b0a0f',
+            VERSION:'0.1.0a1+327.g7bc264f',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
