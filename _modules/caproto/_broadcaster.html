@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._broadcaster &mdash; caproto 0.1.0b2 documentation</title>
+  <title>caproto._broadcaster &mdash; caproto 0.1.0b2+2.gc6603b0 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0b2
+                0.1.0b2+2.gc6603b0
               </div>
             
           
@@ -265,6 +265,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Received datagram from </span><span class="si">%r</span><span class="s2"> with </span><span class="si">%d</span><span class="s2"> bytes.&quot;</span><span class="p">,</span>
                        <span class="n">address</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">byteslike</span><span class="p">))</span>
         <span class="n">commands</span> <span class="o">=</span> <span class="n">read_datagram</span><span class="p">(</span><span class="n">byteslike</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> bytes -&gt; </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="n">command</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">commands</span></div>
 
 <div class="viewcode-block" id="Broadcaster.process_commands"><a class="viewcode-back" href="../../api.html#caproto.Broadcaster.process_commands">[docs]</a>    <span class="k">def</span> <span class="nf">process_commands</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">commands</span><span class="p">):</span>
@@ -424,7 +426,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0b2',
+            VERSION:'0.1.0b2+2.gc6603b0',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
