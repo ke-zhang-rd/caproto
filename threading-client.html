@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Threading Client &mdash; caproto 0.1.0b2+21.g5ee91e0 documentation</title>
+  <title>Threading Client &mdash; caproto 0.1.0b2+32.gdfcc574 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0b2+21.g5ee91e0
+                0.1.0b2+32.gdfcc574
               </div>
             
           
@@ -95,6 +95,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#read">Read</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#write">Write</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#subscribe-monitor">Subscribe (“Monitor”)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#batched-requests">Batched Requests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#go-idle">Go Idle</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#loggers-for-debugging">Loggers for Debugging</a></li>
 </ul>
@@ -229,18 +230,18 @@ state:</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">res</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
 <span class="gp">In [7]: </span><span class="n">res</span>
-<span class="gh">Out[7]: </span><span class="go">ReadNotifyResponse(data=array([3.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
+<span class="gh">Out[7]: </span><span class="go">ReadNotifyResponse(data=array([1.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
 </pre></div>
 </div>
 <p>This object is a human-friendly representation of the server’s response. The
 raw bytes of that response are:</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="nb">bytes</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01@\x08\x00\x00\x00\x00\x00\x00&#39;</span>
+<span class="gh">Out[8]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01?\xf0\x00\x00\x00\x00\x00\x00&#39;</span>
 </pre></div>
 </div>
 <p>Access particular fields in the response using attribute (“dot”) access on <code class="docutils literal"><span class="pre">res</span></code>.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">res</span><span class="o">.</span><span class="n">data</span>
-<span class="gh">Out[9]: </span><span class="go">array([3.])</span>
+<span class="gh">Out[9]: </span><span class="go">array([1.])</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -252,7 +253,7 @@ data structures.</p>
 <span class="gh">Out[10]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=1)</span>
 
 <span class="gp">In [11]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x14b6e1bb5f48&gt;)</span>
+<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x14ce545bc288&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
@@ -332,15 +333,16 @@ define a second callback:</p>
 </div>
 <p>After some time has passed, we will have accumulated some responses.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
-<span class="gh">Out[20]: </span><span class="go">5</span>
+<span class="gh">Out[20]: </span><span class="go">6</span>
 
 <span class="gp">In [21]: </span><span class="n">values</span>
 <span class="go">           Out[21]: </span>
-<span class="go">[0.9134280917776738,</span>
-<span class="go"> 1.4166845895624627,</span>
-<span class="go"> 2.120953064069071,</span>
-<span class="go"> 2.2279986075098135,</span>
-<span class="go"> 2.873186680056839]</span>
+<span class="go">[3.587936011103255,</span>
+<span class="go"> 3.826686994910849,</span>
+<span class="go"> 4.573381033523074,</span>
+<span class="go"> 5.333008751062664,</span>
+<span class="go"> 5.352887974502569,</span>
+<span class="go"> 5.45420935712935]</span>
 </pre></div>
 </div>
 <p>At any point we can remove a specific callback function:</p>
@@ -375,9 +377,73 @@ passing the function to <a class="reference internal" href="#caproto.threading.c
 <span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
 </pre></div>
 </div>
-<p class="last">This can be surprising, but it is a standard approach for avoiding the
+<p>This can be surprising, but it is a standard approach for avoiding the
 accidental costly accumulation of abandoned callbacks.</p>
+<p class="last">This pitfall does not apply to callbacks passed to <a class="reference internal" href="#caproto.threading.client.PV.read" title="caproto.threading.client.PV.read"><code class="xref py py-meth docutils literal"><span class="pre">PV.read()</span></code></a> and
+<a class="reference internal" href="#caproto.threading.client.PV.write" title="caproto.threading.client.PV.write"><code class="xref py py-meth docutils literal"><span class="pre">PV.write()</span></code></a> (or <a class="reference internal" href="#caproto.threading.client.Batch.read" title="caproto.threading.client.Batch.read"><code class="xref py py-meth docutils literal"><span class="pre">Batch.read()</span></code></a> and <a class="reference internal" href="#caproto.threading.client.Batch.write" title="caproto.threading.client.Batch.write"><code class="xref py py-meth docutils literal"><span class="pre">Batch.write()</span></code></a>) because
+those are single-shot callbacks that do not persist beyond their first use.</p>
 </div>
+</div>
+<div class="section" id="batched-requests">
+<h3>Batched Requests<a class="headerlink" href="#batched-requests" title="Permalink to this headline">¶</a></h3>
+<p>Batching requests is efficient, and it sets up the server to perform these
+operations as closely-spaced in time as possible, within the limits of the
+protocol. Python’s <code class="docutils literal"><span class="pre">with</span></code> syntax provides a natural way to specify a batch of
+requests — reads, writes, or a mixture of both — and execute them upon exit
+from the <code class="docutils literal"><span class="pre">with</span></code> block.</p>
+<p>Suppose we had a list of <code class="docutils literal"><span class="pre">PV</span></code> objects, <code class="docutils literal"><span class="pre">pvs</span></code>, and we want to request
+readings in bulk. We can use a callback function to stash readings in a
+dictionary as they arrive.</p>
+<p>For convenience we’ll demonstrate this using the two PVs we have handy —
+<code class="docutils literal"><span class="pre">x</span></code> and <code class="docutils literal"><span class="pre">dt</span></code> — but an unlimited number may be used.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [24]: </span><span class="n">pvs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">dt</span><span class="p">]</span>
+
+<span class="gp">In [25]: </span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+
+<span class="gp">In [26]: </span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="gp">In [27]: </span><span class="k">def</span> <span class="nf">stash_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+<span class="gp">   ....: </span>    <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+<span class="gp">   ....: </span>
+<span class="gt">  File</span><span class="nn"> &quot;&lt;ipython-input-27-d5087b6d2c50&gt;&quot;</span><span class="gt">, line </span><span class="mi">1</span>
+    <span class="k">def</span> <span class="nf">stash_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+                                    <span class="o">^</span>
+<span class="ne">SyntaxError</span>: invalid syntax
+
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-28-e78c7b612e53&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+
+<span class="ne">NameError</span>: name &#39;response&#39; is not defined
+</pre></div>
+</div>
+<p>Now we’ll use the <a class="reference internal" href="#caproto.threading.client.Batch" title="caproto.threading.client.Batch"><code class="xref py py-class docutils literal"><span class="pre">Batch</span></code></a> context:</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [29]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">Batch</span>
+
+<span class="gp">In [30]: </span><span class="k">with</span> <span class="n">Batch</span><span class="p">()</span> <span class="k">as</span> <span class="n">b</span><span class="p">:</span>
+<span class="gp">   ....: </span>    <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">pvs</span><span class="p">:</span>
+<span class="gp">   ....: </span>        <span class="n">b</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="n">stash_result</span><span class="p">,</span> <span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="gp">   ....: </span>
+<span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
+<span class="nn">&lt;ipython-input-30-ad0f2f661e56&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
+<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">with</span> <span class="n">Batch</span><span class="p">()</span> <span class="k">as</span> <span class="n">b</span><span class="p">:</span>
+<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">pvs</span><span class="p">:</span>
+<span class="ne">----&gt; </span><span class="mi">3</span>         <span class="n">b</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="n">stash_result</span><span class="p">,</span> <span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+
+<span class="ne">NameError</span>: name &#39;stash_result&#39; is not defined
+</pre></div>
+</div>
+<p>The requests will be sent in large batches (over the PVs’ respective circuits)
+upon exiting the <code class="docutils literal"><span class="pre">with</span></code> block. The responses will be processed on a
+background thread. As the responses come in, the <code class="docutils literal"><span class="pre">results</span></code> dictionary will be
+updated.</p>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [31]: </span><span class="n">results</span>
+<span class="gh">Out[31]: </span><span class="go">{}</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="#caproto.threading.client.Batch" title="caproto.threading.client.Batch"><code class="xref py py-class docutils literal"><span class="pre">Batch</span></code></a> for more.</p>
 </div>
 <div class="section" id="go-idle">
 <h3>Go Idle<a class="headerlink" href="#go-idle" title="Permalink to this headline">¶</a></h3>
@@ -386,19 +452,19 @@ returned again to the user if a PV with the same name and priority is
 requested. In order to reduce the load on the network, a PV can be temporarily
 made “idle” (disconnected). It will silently, automatically reconnect the next
 time it is used.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [24]: </span><span class="n">x</span>
-<span class="gh">Out[24]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 59705), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [32]: </span><span class="n">x</span>
+<span class="gh">Out[32]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 62611), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
-<span class="gp">In [25]: </span><span class="n">x</span><span class="o">.</span><span class="n">go_idle</span><span class="p">()</span>
+<span class="gp">In [33]: </span><span class="n">x</span><span class="o">.</span><span class="n">go_idle</span><span class="p">()</span>
 
-<span class="gp">In [26]: </span><span class="n">x</span>
-<span class="gh">Out[26]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 (idle)&gt;</span>
+<span class="gp">In [34]: </span><span class="n">x</span>
+<span class="gh">Out[34]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 (idle)&gt;</span>
 
-<span class="gp">In [27]: </span><span class="n">x</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                     Out[27]: ReadNotifyResponse(data=array([2.87318668]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
+<span class="gp">In [35]: </span><span class="n">x</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                     Out[35]: ReadNotifyResponse(data=array([5.45420936]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
 
-<span class="gp">In [28]: </span><span class="n">x</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[28]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 59705), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="gp">In [36]: </span><span class="n">x</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[36]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 62611), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 </pre></div>
 </div>
 <p>Notice that when the PV was read it automatically reconnected, requiring no
@@ -557,8 +623,7 @@ channel’s native data type. Default is Channel’s native data type.
 </dd>
 <dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd><p class="first last">Requested number of values. Default is the channel’s native data
-count, which can be checked in the Channel’s attribute
-<code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
+count.</p>
 </dd>
 <dt><strong>notify: boolean, optional</strong></dt>
 <dd><p class="first last">Send a <code class="docutils literal"><span class="pre">ReadNotifyRequest</span></code> instead of a <code class="docutils literal"><span class="pre">ReadRequest</span></code>. True by
@@ -586,8 +651,7 @@ channel’s native data type. Default is Channel’s native data type.</p>
 </dd>
 <dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd><p class="first last">Requested number of values. Default is the channel’s native data
-count, which can be checked in the Channel’s attribute
-<code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
+count.</p>
 </dd>
 <dt><strong>low, high, to</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
 <dd><p class="first last">deprecated by Channel Access, not yet implemented by caproto</p>
@@ -689,8 +753,7 @@ channel’s native data type. Default is Channel’s native data type.</p>
 </dd>
 <dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd><p class="first last">Requested number of values. Default is the channel’s native data
-count, which can be checked in the Channel’s attribute
-<code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
+count.</p>
 </dd>
 </dl>
 </td>
@@ -752,6 +815,104 @@ it should be made by calling the <code class="docutils literal"><span class="pre
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>token</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer</span></dt>
 <dd><p class="first last">Token returned by <a class="reference internal" href="#caproto.threading.client.Subscription.add_callback" title="caproto.threading.client.Subscription.add_callback"><code class="xref py py-meth docutils literal"><span class="pre">add_callback()</span></code></a>.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="caproto.threading.client.Batch">
+<em class="property">class </em><code class="descclassname">caproto.threading.client.</code><code class="descname">Batch</code><span class="sig-paren">(</span><em>timeout=2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Batch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Accumulate requests and then issue them all in batch.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">number or None</span></dt>
+<dd><p class="first last">Number of seconds to wait before ignoring late responses. Default
+is 2.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Read some PVs in batch and stash the readings in a dictionary as they
+come in.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">stash_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">Batch</span><span class="p">()</span> <span class="k">as</span> <span class="n">b</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">pvs</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">b</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span><span class="n">stash_result</span><span class="p">,</span> <span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="c1"># The requests are sent upon exiting this &#39;with&#39; block.</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal"><span class="pre">results</span></code> dictionary will be populated as responses come in.</p>
+<dl class="method">
+<dt id="caproto.threading.client.Batch.read">
+<code class="descname">read</code><span class="sig-paren">(</span><em>pv</em>, <em>callback</em>, <em>data_type=None</em>, <em>data_count=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Batch.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Batch.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request a fresh reading as part of a batched request.</p>
+<p>Notice that, unlike <a class="reference internal" href="#caproto.threading.client.PV.read" title="caproto.threading.client.PV.read"><code class="xref py py-meth docutils literal"><span class="pre">PV.read()</span></code></a>, the callback is required. (There
+is no other way to get the result back from a batched read.)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>pv</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PV</span></dt>
+<dd></dd>
+<dt><strong>callback</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable</span></dt>
+<dd><p class="first last">Expected signature: <code class="docutils literal"><span class="pre">f(response)</span></code></p>
+</dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
+<dd><p class="first last">Request specific data type or a class of data types, matched to the
+channel’s native data type. Default is Channel’s native data type.</p>
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
+count.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.threading.client.Batch.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>pv</em>, <em>data</em>, <em>callback=None</em>, <em>data_type=None</em>, <em>data_count=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Batch.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Batch.write" title="Permalink to this definition">¶</a></dt>
+<dd><p>Write a new value as part of a batched request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>pv</strong> <span class="classifier-delimiter">:</span> <span class="classifier">PV</span></dt>
+<dd></dd>
+<dt><strong>data</strong> <span class="classifier-delimiter">:</span> <span class="classifier">Iterable</span></dt>
+<dd><p class="first last">values to write</p>
+</dd>
+<dt><strong>callback</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable</span></dt>
+<dd><p class="first last">Expected signature: <code class="docutils literal"><span class="pre">f(response)</span></code></p>
+</dd>
+<dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
+<dd><p class="first last">Request specific data type or a class of data types, matched to the
+channel’s native data type. Default is Channel’s native data type.</p>
+</dd>
+<dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Requested number of values. Default is the channel’s native data
+count.</p>
 </dd>
 </dl>
 </td>
@@ -861,7 +1022,7 @@ the <code class="docutils literal"><span class="pre">results_queue</span></code>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0b2+21.g5ee91e0',
+            VERSION:'0.1.0b2+32.gdfcc574',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
