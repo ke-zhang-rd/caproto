@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Threading Client &mdash; caproto 0.1.0b3+11.g8222886 documentation</title>
+  <title>Threading Client &mdash; caproto 0.1.0b3+15.gbf43df8 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0b3+11.g8222886
+                0.1.0b3+15.gbf43df8
               </div>
             
           
@@ -105,7 +105,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="pyepics-compat-client.html">Pyepics-Compatible Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="async-clients.html">Asynchronous Clients</a></li>
-<li class="toctree-l1"><a class="reference internal" href="iocs.html">Input-Output Controllers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="iocs.html">Input-Output Controllers (IOCs)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="servers.html">Servers</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
@@ -253,7 +253,7 @@ data structures.</p>
 <span class="gh">Out[10]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=1)</span>
 
 <span class="gp">In [11]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x153314be9648&gt;)</span>
+<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x14ea07f07948&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
@@ -337,12 +337,12 @@ define a second callback:</p>
 
 <span class="gp">In [21]: </span><span class="n">values</span>
 <span class="go">           Out[21]: </span>
-<span class="go">[4.61071983499859,</span>
-<span class="go"> 5.106807623568576,</span>
-<span class="go"> 5.161680047354406,</span>
-<span class="go"> 6.048259343390236,</span>
-<span class="go"> 6.581184977811683,</span>
-<span class="go"> 7.215338899740936]</span>
+<span class="go">[5.032403125298274,</span>
+<span class="go"> 5.515114084183016,</span>
+<span class="go"> 5.717781898905425,</span>
+<span class="go"> 6.410400979970883,</span>
+<span class="go"> 7.243404988644574,</span>
+<span class="go"> 7.469787594026727]</span>
 </pre></div>
 </div>
 <p>At any point we can remove a specific callback function:</p>
@@ -402,45 +402,26 @@ dictionary as they arrive.</p>
 
 <span class="gp">In [26]: </span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
 
-<span class="gp">In [27]: </span><span class="k">def</span> <span class="nf">stash_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+<span class="gp">In [27]: </span><span class="k">def</span> <span class="nf">stash_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
 <span class="gp">   ....: </span>    <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
 <span class="gp">   ....: </span>
-<span class="gt">  File</span><span class="nn"> &quot;&lt;ipython-input-27-d5087b6d2c50&gt;&quot;</span><span class="gt">, line </span><span class="mi">1</span>
-    <span class="k">def</span> <span class="nf">stash_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
-                                    <span class="o">^</span>
-<span class="ne">SyntaxError</span>: invalid syntax
-
-<span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">&lt;ipython-input-28-e78c7b612e53&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
-<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
-
-<span class="ne">NameError</span>: name &#39;response&#39; is not defined
 </pre></div>
 </div>
 <p>Now we’ll use the <a class="reference internal" href="#caproto.threading.client.Batch" title="caproto.threading.client.Batch"><code class="xref py py-class docutils literal"><span class="pre">Batch</span></code></a> context:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [29]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">Batch</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [28]: </span><span class="kn">from</span> <span class="nn">caproto.threading.client</span> <span class="kn">import</span> <span class="n">Batch</span>
 
-<span class="gp">In [30]: </span><span class="k">with</span> <span class="n">Batch</span><span class="p">()</span> <span class="k">as</span> <span class="n">b</span><span class="p">:</span>
+<span class="gp">In [29]: </span><span class="k">with</span> <span class="n">Batch</span><span class="p">()</span> <span class="k">as</span> <span class="n">b</span><span class="p">:</span>
 <span class="gp">   ....: </span>    <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">pvs</span><span class="p">:</span>
 <span class="gp">   ....: </span>        <span class="n">b</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="n">stash_result</span><span class="p">,</span> <span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
 <span class="gp">   ....: </span>
-<span class="gt">---------------------------------------------------------------------------</span>
-<span class="ne">NameError</span><span class="g g-Whitespace">                                 </span>Traceback (most recent call last)
-<span class="nn">&lt;ipython-input-30-ad0f2f661e56&gt;</span> in <span class="ni">&lt;module&gt;</span><span class="nt">()</span>
-<span class="g g-Whitespace">      </span><span class="mi">1</span> <span class="k">with</span> <span class="n">Batch</span><span class="p">()</span> <span class="k">as</span> <span class="n">b</span><span class="p">:</span>
-<span class="g g-Whitespace">      </span><span class="mi">2</span>     <span class="k">for</span> <span class="n">pv</span> <span class="ow">in</span> <span class="n">pvs</span><span class="p">:</span>
-<span class="ne">----&gt; </span><span class="mi">3</span>         <span class="n">b</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">pv</span><span class="p">,</span> <span class="n">partial</span><span class="p">(</span><span class="n">stash_result</span><span class="p">,</span> <span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
-
-<span class="ne">NameError</span>: name &#39;stash_result&#39; is not defined
 </pre></div>
 </div>
 <p>The requests will be sent in large batches (over the PVs’ respective circuits)
 upon exiting the <code class="docutils literal"><span class="pre">with</span></code> block. The responses will be processed on a
 background thread. As the responses come in, the <code class="docutils literal"><span class="pre">results</span></code> dictionary will be
 updated.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [31]: </span><span class="n">results</span>
-<span class="gh">Out[31]: </span><span class="go">{}</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [30]: </span><span class="n">results</span>
+<span class="gh">Out[30]: </span><span class="go">{&#39;random_walk:x&#39;: array([7.46978759]), &#39;random_walk:dt&#39;: array([1.])}</span>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="#caproto.threading.client.Batch" title="caproto.threading.client.Batch"><code class="xref py py-class docutils literal"><span class="pre">Batch</span></code></a> for more.</p>
@@ -452,19 +433,19 @@ returned again to the user if a PV with the same name and priority is
 requested. In order to reduce the load on the network, a PV can be temporarily
 made “idle” (disconnected). It will silently, automatically reconnect the next
 time it is used.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [32]: </span><span class="n">x</span>
-<span class="gh">Out[32]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 50274), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [31]: </span><span class="n">x</span>
+<span class="gh">Out[31]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 57407), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
-<span class="gp">In [33]: </span><span class="n">x</span><span class="o">.</span><span class="n">go_idle</span><span class="p">()</span>
+<span class="gp">In [32]: </span><span class="n">x</span><span class="o">.</span><span class="n">go_idle</span><span class="p">()</span>
 
-<span class="gp">In [34]: </span><span class="n">x</span>
-<span class="gh">Out[34]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 (idle)&gt;</span>
+<span class="gp">In [33]: </span><span class="n">x</span>
+<span class="gh">Out[33]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 (idle)&gt;</span>
 
-<span class="gp">In [35]: </span><span class="n">x</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                     Out[35]: ReadNotifyResponse(data=array([7.2153389]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
+<span class="gp">In [34]: </span><span class="n">x</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                     Out[34]: ReadNotifyResponse(data=array([7.46978759]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=5, metadata=None)</span>
 
-<span class="gp">In [36]: </span><span class="n">x</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                Out[36]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 50274), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="gp">In [35]: </span><span class="n">x</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[35]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 57407), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 </pre></div>
 </div>
 <p>Notice that when the PV was read it automatically reconnected, requiring no
@@ -847,7 +828,7 @@ is 2.</p>
 <p>Read some PVs in batch and stash the readings in a dictionary as they
 come in.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">stash_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">stash_result</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="n">results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">data</span>
 <span class="gp">...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">Batch</span><span class="p">()</span> <span class="k">as</span> <span class="n">b</span><span class="p">:</span>
@@ -1022,7 +1003,7 @@ the <code class="docutils literal"><span class="pre">results_queue</span></code>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0b3+11.g8222886',
+            VERSION:'0.1.0b3+15.gbf43df8',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
