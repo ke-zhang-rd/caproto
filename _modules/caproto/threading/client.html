@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.1.0b3+17.g1e98aac documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.1.0b3+22.g2e09fe6 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0b3+17.g1e98aac
+                0.1.0b3+22.g2e09fe6
               </div>
             
           
@@ -779,7 +779,8 @@
             <span class="c1"># filter to just things that need to go out</span>
             <span class="k">def</span> <span class="nf">_construct_search_requests</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">search_id</span><span class="p">,</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
-                    <span class="k">yield</span> <span class="n">ca</span><span class="o">.</span><span class="n">SearchRequest</span><span class="p">(</span><span class="n">it</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">search_id</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+                    <span class="k">yield</span> <span class="n">ca</span><span class="o">.</span><span class="n">SearchRequest</span><span class="p">(</span><span class="n">it</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">search_id</span><span class="p">,</span>
+                                           <span class="n">ca</span><span class="o">.</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">)</span>
                     <span class="n">it</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
 
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_lock</span><span class="p">:</span>
@@ -796,7 +797,9 @@
 
             <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batch_requests</span><span class="p">(</span><span class="n">requests</span><span class="p">,</span>
                                         <span class="n">SEARCH_MAX_DATAGRAM_BYTES</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">EPICS_CA1_PORT</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span> <span class="o">*</span><span class="n">batch</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">EPICS_CA1_PORT</span><span class="p">,</span>
+                          <span class="n">ca</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">),</span>
+                          <span class="o">*</span><span class="n">batch</span><span class="p">)</span>
 
             <span class="n">wait_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">RETRY_SEARCHES_PERIOD</span> <span class="o">-</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_search_now</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span>
@@ -1175,7 +1178,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">SERVER</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">IDLE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">add_socket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span> <span class="mi">13</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
+                                        <span class="n">ca</span><span class="o">.</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">),</span>
                       <span class="n">ca</span><span class="o">.</span><span class="n">HostNameRequest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">host_name</span><span class="p">),</span>
                       <span class="n">ca</span><span class="o">.</span><span class="n">ClientNameRequest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">client_name</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2126,7 +2130,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0b3+17.g1e98aac',
+            VERSION:'0.1.0b3+22.g2e09fe6',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
