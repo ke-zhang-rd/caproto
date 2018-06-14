@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0.1.0b3+29.gd112646 documentation</title>
+  <title>caproto._utils &mdash; caproto 0.1.0rc1 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0b3+29.gd112646
+                0.1.0rc1
               </div>
             
           
@@ -737,6 +737,8 @@
 <span class="n">ArrayFilter</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;ArrayFilter&#39;</span><span class="p">,</span> <span class="s1">&#39;s i e&#39;</span><span class="p">)</span>
 <span class="n">SyncFilter</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;SyncFilter&#39;</span><span class="p">,</span> <span class="s1">&#39;m s&#39;</span><span class="p">)</span>
 
+<span class="n">sync_modes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;before&#39;</span><span class="p">,</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="s1">&#39;while&#39;</span><span class="p">,</span> <span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="s1">&#39;after&#39;</span><span class="p">,</span> <span class="s1">&#39;unless&#39;</span><span class="p">])</span>
+
 
 <span class="k">def</span> <span class="nf">parse_channel_filter</span><span class="p">(</span><span class="n">filter_text</span><span class="p">):</span>
     <span class="s2">&quot;Parse and validate filter_text into a ChannelFilter.&quot;</span>
@@ -751,10 +753,24 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">filter_</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">filter_text</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">FilterValidationError</span><span class="p">(</span><span class="s2">&quot;Unable to parse channel filter text as JSON&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+        <span class="k">raise</span> <span class="n">FilterValidationError</span><span class="p">(</span>
+            <span class="n">f</span><span class="s2">&quot;Unable to parse channel filter text as JSON: &quot;</span>
+            <span class="n">f</span><span class="s2">&quot;</span><span class="si">{filter_text}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
 
+    <span class="c1"># If there is a shorthand sync filter, that is the only filter allowed.</span>
+    <span class="c1"># Rewrite the filter to expand the shorthand and go through the normal</span>
+    <span class="c1"># codepath.</span>
+    <span class="n">intersection</span> <span class="o">=</span> <span class="n">sync_modes</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">filter_</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">intersection</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filter_</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">FilterValidationError</span><span class="p">(</span>
+                <span class="n">f</span><span class="s2">&quot;Found shorthand sync filter key {next(iter(intersection))} &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;This must be the only key if present but additional keys &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;were found: </span><span class="si">{filter_}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">state</span><span class="p">),</span> <span class="o">=</span> <span class="n">filter_</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="n">filter_</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;sync&quot;</span><span class="p">:</span> <span class="p">{</span><span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">mode</span><span class="p">,</span> <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="n">state</span><span class="p">}}</span>
     <span class="n">valid_filters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ts&#39;</span><span class="p">,</span> <span class="s1">&#39;arr&#39;</span><span class="p">,</span> <span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="s1">&#39;dbnd&#39;</span><span class="p">}</span>
-    <span class="n">filter_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">filter_</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+    <span class="n">filter_keys</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">filter_</span><span class="p">)</span>
     <span class="n">invalid_keys</span> <span class="o">=</span> <span class="n">filter_keys</span> <span class="o">-</span> <span class="n">valid_filters</span>
     <span class="k">if</span> <span class="n">invalid_keys</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">FilterValidationError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Unsupported filters: </span><span class="si">{invalid_keys}</span><span class="s1">&#39;</span><span class="p">)</span>
@@ -775,9 +791,9 @@
             <span class="n">elements</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">elem</span><span class="p">))</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">ArrayFilter</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">ArrayFilter</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">e</span><span class="o">=</span><span class="n">elements</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">elements</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
         <span class="n">arr</span> <span class="o">=</span> <span class="n">ArrayFilter</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">elements</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="o">=</span><span class="n">elements</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">e</span><span class="o">=</span><span class="n">elements</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">arr</span>
 
@@ -841,8 +857,7 @@
         <span class="k">raise</span> <span class="n">FilterValidationError</span><span class="p">(</span>
             <span class="n">f</span><span class="s2">&quot;&#39;sync&#39; must include both &#39;m&#39; and &#39;s&#39;. &quot;</span>
             <span class="n">f</span><span class="s2">&quot;Found keys {set(val.keys())}.&quot;</span><span class="p">)</span>
-    <span class="n">valid_modes</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s1">&#39;before&#39;</span><span class="p">,</span> <span class="s1">&#39;first&#39;</span><span class="p">,</span> <span class="s1">&#39;while&#39;</span><span class="p">,</span> <span class="s1">&#39;last&#39;</span><span class="p">,</span> <span class="s1">&#39;after&#39;</span><span class="p">,</span> <span class="s1">&#39;unless&#39;</span><span class="p">])</span>
-    <span class="k">if</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_modes</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;m&#39;</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sync_modes</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">FilterValidationError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Unsupported mode in &#39;sync&#39;: &quot;</span>
                                     <span class="n">f</span><span class="s2">&quot;</span><span class="si">{val[&#39;m&#39;]}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">[</span><span class="s1">&#39;s&#39;</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
@@ -1003,7 +1018,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.0b3+29.gd112646',
+            VERSION:'0.1.0rc1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

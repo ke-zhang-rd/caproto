@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.server.records &mdash; caproto 0.1.0b3+29.gd112646 documentation</title>
+  <title>caproto.server.records &mdash; caproto 0.1.0rc1 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.0b3+29.gd112646
+                0.1.0rc1
               </div>
             
           
@@ -326,7 +326,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">alarm</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_alarm</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">pair</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">flags</span><span class="p">):</span>
         <span class="c1"># if SubscriptionType.DBE_ALARM in flags:</span>
         <span class="c1"># TODO this needs tweaking - proof of concept at the moment</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">alarm_acknowledge_transient</span><span class="o">.</span><span class="n">write</span><span class="p">(</span>
@@ -7546,7 +7546,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.0b3+29.gd112646',
+            VERSION:'0.1.0rc1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
