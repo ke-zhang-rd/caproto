@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Install Caproto &mdash; caproto 0.1.0b3+7.ge23a043 documentation</title>
+  <title>Install Caproto &mdash; caproto 0.1.0b3+11.g8222886 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0b3+7.ge23a043
+                0.1.0b3+11.g8222886
               </div>
             
           
@@ -87,6 +87,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#installation-using-pip">Installation Using Pip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#minimal-installation-using-pip">Minimal Installation Using Pip</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#development-installation">Development Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#development">Development</a></li>
 </ul>
 </li>
 </ul>
@@ -219,6 +220,9 @@ pip install -e .
 <div class="highlight-bash"><div class="highlight"><pre><span></span>pip install -e .<span class="o">[</span>complete<span class="o">]</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="development">
+<h2>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h2>
 <p>For development, you will also want the dependencies for running the tests and
 building the documentation:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>pip install -U -r test-requirements.txt
@@ -236,7 +240,12 @@ commonly useful:</p>
 <li><code class="docutils literal"><span class="pre">-s</span></code> Do not capture stdout/err per test.</li>
 <li><code class="docutils literal"><span class="pre">-k</span> <span class="pre">EXPRESSION</span></code> Filter tests by pattern-matching test name.</li>
 </ul>
-<p>To build the documentation:</p>
+<p>Many of the tests test caproto against EPICS’ reference implementation. They
+expect <code class="docutils literal"><span class="pre">caget</span></code>, <code class="docutils literal"><span class="pre">caput</span></code>, and <code class="docutils literal"><span class="pre">softIoc</span></code> executables to be available and
+for <code class="docutils literal"><span class="pre">EPICS_BASE</span></code> to be set.</p>
+<p>A small number of the tests test caproto against <code class="docutils literal"><span class="pre">motorsim</span></code>. To skip these
+tests, set the environment variable <code class="docutils literal"><span class="pre">CAPROTO_SKIP_MOTORSIM_TESTS=1</span></code>.
+To build the documentation:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>make -C doc html
 </pre></div>
 </div>
@@ -285,7 +294,7 @@ commonly useful:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0b3+7.ge23a043',
+            VERSION:'0.1.0b3+11.g8222886',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
