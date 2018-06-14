@@ -7,6 +7,7 @@
 ./_modules/caproto/_commands.html
 ./_modules/caproto/_dbr.html
 ./_modules/caproto/_utils.html
+./_modules/caproto/server/records.html
 ./_modules/caproto/sync/client.html
 ./_modules/caproto/threading/client.html
 ./_modules/index.html
@@ -17,6 +18,7 @@
 ./_sources/index.rst.txt
 ./_sources/install.rst.txt
 ./_sources/iocs.rst.txt
+./_sources/mock-records.rst.txt
 ./_sources/pyepics-compat-client.rst.txt
 ./_sources/references.rst.txt
 ./_sources/release-notes.rst.txt
@@ -93,6 +95,7 @@
 ./index.html
 ./install.html
 ./iocs.html
+./mock-records.html
 ./objects.inv
 ./pyepics-compat-client.html
 ./references.html

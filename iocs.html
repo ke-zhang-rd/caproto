@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Input-Output Controllers (IOCs) &mdash; caproto 0.1.0b3+22.g2e09fe6 documentation</title>
+  <title>Input-Output Controllers (IOCs) &mdash; caproto 0.1.0b3+29.gd112646 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Servers" href="servers.html" />
+    <link rel="next" title="Mock Records" href="mock-records.html" />
     <link rel="prev" title="Asynchronous Clients" href="async-clients.html" /> 
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0b3+22.g2e09fe6
+                0.1.0b3+29.gd112646
               </div>
             
           
@@ -98,13 +98,19 @@
 <li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#simple-ioc">Simple IOC</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#write-to-a-file-when-a-pv-is-written-to">Write to a File When a PV is Written To</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#update-tallies-when-each-pv-is-read">Update Tallies When Each PV is Read</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#random-walk">Random Walk</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#i-o-interrupt">I/O Interrupt</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#macros-for-pv-names">Macros for PV names</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#subgroups">Subgroups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mocking-records">Mocking Records</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#rpc-server-from-python-function">RPC Server from Python Function</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inline-style-read-and-write-customization">“Inline” Style Read and Write Customization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#more">More…</a></li>
 </ul>
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="mock-records.html">Mock Records</a></li>
 <li class="toctree-l1"><a class="reference internal" href="servers.html">Servers</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
@@ -114,7 +120,7 @@
 </ul>
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/summarylist">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/">Performance Benchmarks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
@@ -368,63 +374,172 @@ client writes.</p>
 <p>It is easy to imagine extending this example to write a socket or a serial
 device rather than a file.</p>
 </div>
-<div class="section" id="update-tallies-when-each-pv-is-read">
-<h3>Update Tallies When Each PV is Read<a class="headerlink" href="#update-tallies-when-each-pv-is-read" title="Permalink to this headline">¶</a></h3>
-<p>Above, we hooked into the IOC’s writing behavior to customize it. Here, we
-customize its reading behavior.</p>
+<div class="section" id="random-walk">
+<h3>Random Walk<a class="headerlink" href="#random-walk" title="Permalink to this headline">¶</a></h3>
+<p>This example contains a PV <code class="docutils literal"><span class="pre">random_walk:x</span></code> that takes random steps at an
+update rate controlled by a second PV, <code class="docutils literal"><span class="pre">random_walk:dt</span></code>.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">from</span> <span class="nn">caproto.server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">ioc_arg_parser</span><span class="p">,</span> <span class="n">run</span>
-<span class="kn">import</span> <span class="nn">collections</span>
 
 
-<span class="k">class</span> <span class="nc">ReadingCounter</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Count the number of times that a PV is read.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">Counter</span><span class="p">()</span>
+<span class="k">class</span> <span class="nc">RandomWalkIOC</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+    <span class="n">dt</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mf">3.0</span><span class="p">])</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">])</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">my_read</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
-        <span class="n">pv_name</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">pvspec</span><span class="o">.</span><span class="n">attr</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">pv_name</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;tallies:&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="p">)</span>
-        <span class="c1"># The act of reading this PV changes its value!</span>
-        <span class="c1"># Weird but sort of interesting.</span>
-        <span class="k">await</span> <span class="n">instance</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tallies</span><span class="p">[</span><span class="n">pv_name</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">instance</span><span class="o">.</span><span class="n">value</span>
+    <span class="nd">@x</span><span class="o">.</span><span class="n">startup</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">x</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">async_lib</span><span class="p">):</span>
+        <span class="s1">&#39;Periodically update the value&#39;</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="c1"># compute next value</span>
+            <span class="n">x</span><span class="p">,</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="o">.</span><span class="n">value</span>
+            <span class="n">x</span> <span class="o">+=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
 
-    <span class="n">A</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">get</span><span class="o">=</span><span class="n">my_read</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-    <span class="n">B</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">get</span><span class="o">=</span><span class="n">my_read</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c1"># update the ChannelData instance and notify any subscribers</span>
+            <span class="k">await</span> <span class="n">instance</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+
+            <span class="c1"># Let the async library wait for the next iteration</span>
+            <span class="k">await</span> <span class="n">async_lib</span><span class="o">.</span><span class="n">library</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
     <span class="n">ioc_options</span><span class="p">,</span> <span class="n">run_options</span> <span class="o">=</span> <span class="n">ioc_arg_parser</span><span class="p">(</span>
-        <span class="n">default_prefix</span><span class="o">=</span><span class="s1">&#39;reading_counter:&#39;</span><span class="p">,</span>
-        <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;PVs whose value equals the number of times they&#39;ve been read.&quot;</span><span class="p">)</span>
-    <span class="n">ioc</span> <span class="o">=</span> <span class="n">ReadingCounter</span><span class="p">(</span><span class="o">**</span><span class="n">ioc_options</span><span class="p">)</span>
+        <span class="n">default_prefix</span><span class="o">=</span><span class="s1">&#39;random_walk:&#39;</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Run an IOC with a random-walking value.&#39;</span><span class="p">)</span>
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">RandomWalkIOC</span><span class="p">(</span><span class="o">**</span><span class="n">ioc_options</span><span class="p">)</span>
     <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.reading_counter --list-pvs
-<span class="o">[</span>I <span class="m">18</span>:26:38.169 server:93<span class="o">]</span> Server starting up...
-<span class="o">[</span>I <span class="m">18</span>:26:38.170 server:109<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:52687
-<span class="o">[</span>I <span class="m">18</span>:26:38.171 server:121<span class="o">]</span> Server startup complete.
-<span class="o">[</span>I <span class="m">18</span>:26:38.171 server:123<span class="o">]</span> PVs available:
-    reading_counter:A
-    reading_counter:B
+</div>
+<div class="section" id="i-o-interrupt">
+<h3>I/O Interrupt<a class="headerlink" href="#i-o-interrupt" title="Permalink to this headline">¶</a></h3>
+<p>This example listens for key presses.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span> <span class="nn">termios</span>
+<span class="kn">import</span> <span class="nn">fcntl</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+<span class="kn">import</span> <span class="nn">atexit</span>
+
+<span class="kn">from</span> <span class="nn">caproto.server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">ioc_arg_parser</span><span class="p">,</span> <span class="n">run</span>
+
+
+<span class="k">def</span> <span class="nf">start_io_interrupt_monitor</span><span class="p">(</span><span class="n">new_value_callback</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This function monitors the terminal it was run in for keystrokes.</span>
+<span class="sd">    On each keystroke, it calls new_value_callback with the given keystroke.</span>
+
+<span class="sd">    This is used to simulate the concept of an I/O Interrupt-style signal from</span>
+<span class="sd">    the EPICS world. Those signals depend on hardware to tell EPICS when new</span>
+<span class="sd">    values are available to be read by way of interrupts - whereas we use</span>
+<span class="sd">    callbacks here.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c1"># Thanks stackoverflow and Python 2 FAQ!</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">sys</span><span class="o">.</span><span class="n">__stdin__</span><span class="o">.</span><span class="n">isatty</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;[IO Interrupt] stdin is not a TTY, exiting&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">fileno</span><span class="p">()</span>
+
+    <span class="n">oldterm</span> <span class="o">=</span> <span class="n">termios</span><span class="o">.</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+    <span class="n">newattr</span> <span class="o">=</span> <span class="n">termios</span><span class="o">.</span><span class="n">tcgetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">)</span>
+    <span class="n">newattr</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">&amp;=</span> <span class="o">~</span><span class="n">termios</span><span class="o">.</span><span class="n">ICANON</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">termios</span><span class="o">.</span><span class="n">ECHO</span>
+    <span class="n">oldflags</span> <span class="o">=</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">F_GETFL</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Started monitoring the keyboard outside of the async library&#39;</span><span class="p">)</span>
+
+    <span class="c1"># When the process exits, be sure to reset the terminal settings</span>
+    <span class="nd">@atexit</span><span class="o">.</span><span class="n">register</span>
+    <span class="k">def</span> <span class="nf">reset_terminal</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Resetting the terminal settings&#39;</span><span class="p">)</span>
+        <span class="n">termios</span><span class="o">.</span><span class="n">tcsetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">termios</span><span class="o">.</span><span class="n">TCSAFLUSH</span><span class="p">,</span> <span class="n">oldterm</span><span class="p">)</span>
+        <span class="n">fcntl</span><span class="o">.</span><span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">F_SETFL</span><span class="p">,</span> <span class="n">oldflags</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done&#39;</span><span class="p">)</span>
+
+    <span class="n">termios</span><span class="o">.</span><span class="n">tcsetattr</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">termios</span><span class="o">.</span><span class="n">TCSANOW</span><span class="p">,</span> <span class="n">newattr</span><span class="p">)</span>
+    <span class="n">fcntl</span><span class="o">.</span><span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">fcntl</span><span class="o">.</span><span class="n">F_SETFL</span><span class="p">,</span> <span class="n">oldflags</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_NONBLOCK</span><span class="p">)</span>
+
+    <span class="c1"># Loop forever, sending back keypresses to the callback</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">char</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+            <span class="o">...</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">char</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;New keypress: </span><span class="si">{char!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="n">new_value_callback</span><span class="p">(</span><span class="n">char</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">IOInterruptIOC</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+    <span class="n">keypress</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&#39;</span><span class="p">])</span>
+
+    <span class="c1"># NOTE the decorator used here:</span>
+    <span class="nd">@keypress</span><span class="o">.</span><span class="n">startup</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">keypress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">async_lib</span><span class="p">):</span>
+        <span class="c1"># This method will be called when the server starts up.</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;* keypress method called at server startup&#39;</span><span class="p">)</span>
+        <span class="n">queue</span> <span class="o">=</span> <span class="n">async_lib</span><span class="o">.</span><span class="n">ThreadsafeQueue</span><span class="p">()</span>
+
+        <span class="c1"># Start a separate thread that monitors keyboard input, telling it to</span>
+        <span class="c1"># put new values into our async-friendly queue</span>
+        <span class="n">thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="n">start_io_interrupt_monitor</span><span class="p">,</span>
+                                  <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                  <span class="n">kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">new_value_callback</span><span class="o">=</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">))</span>
+        <span class="n">thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="c1"># Loop and grab items from the queue one at a time</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="k">await</span> <span class="n">queue</span><span class="o">.</span><span class="n">async_get</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;Saw new value on async side: </span><span class="si">{value!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Propagate the keypress to the EPICS PV, triggering any monitors</span>
+            <span class="c1"># along the way</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">keypress</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">ioc_options</span><span class="p">,</span> <span class="n">run_options</span> <span class="o">=</span> <span class="n">ioc_arg_parser</span><span class="p">(</span>
+        <span class="n">default_prefix</span><span class="o">=</span><span class="s1">&#39;io:&#39;</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Run an IOC that updates via I/O interrupt on key-press events.&#39;</span><span class="p">)</span>
+
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">IOInterruptIOC</span><span class="p">(</span><span class="o">**</span><span class="n">ioc_options</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;reading_counter:A&#39;</span><span class="p">,</span> <span class="s1">&#39;reading_counter:B&#39;</span><span class="p">)</span>
-
-<span class="gp">In [14]: </span><span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
-<span class="gh">Out[14]: </span><span class="go">array([1], dtype=int32)</span>
-
-<span class="gp">In [15]: </span><span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
-<span class="go">                                 Out[15]: array([2], dtype=int32)</span>
-
-<span class="gp">In [16]: </span><span class="n">a</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
-<span class="go">                                                                  Out[16]: array([3], dtype=int32)</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python -m caproto.ioc_examples.io_interrupt --list-pvs
+<span class="o">[</span>I <span class="m">10</span>:18:57.643 server:132<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">10</span>:18:57.644 server:145<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:54583
+<span class="o">[</span>I <span class="m">10</span>:18:57.646 server:218<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">10</span>:18:57.646 server:220<span class="o">]</span> PVs available:
+    io:keypress
+* keypress method called at server startup
+Started monitoring the keyboard outside of the async library
+</pre></div>
+</div>
+<p>Typing causes updates to be sent to any client subscribed to <code class="docutils literal"><span class="pre">io:keypress</span></code>.
+If we monitoring using the commandline-client like so:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ caproto-monitor io:keypress
+</pre></div>
+</div>
+<p>and go back to the server and type some keys:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>New keypress: <span class="s1">&#39;a&#39;</span>
+Saw new value on async side: <span class="s1">&#39;a&#39;</span>
+New keypress: <span class="s1">&#39;b&#39;</span>
+Saw new value on async side: <span class="s1">&#39;b&#39;</span>
+New keypress: <span class="s1">&#39;c&#39;</span>
+Saw new value on async side: <span class="s1">&#39;c&#39;</span>
+New keypress: <span class="s1">&#39;d&#39;</span>
+Saw new value on async side: <span class="s1">&#39;d&#39;</span>
+</pre></div>
+</div>
+<p>the client will receive the updates:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>io:keypress                               <span class="m">2018</span>-06-14 <span class="m">10</span>:19:04 <span class="o">[</span>b<span class="s1">&#39;d&#39;</span><span class="o">]</span>
+io:keypress                               <span class="m">2018</span>-06-14 <span class="m">10</span>:20:26 <span class="o">[</span>b<span class="s1">&#39;a&#39;</span><span class="o">]</span>
+io:keypress                               <span class="m">2018</span>-06-14 <span class="m">10</span>:20:26 <span class="o">[</span>b<span class="s1">&#39;s&#39;</span><span class="o">]</span>
+io:keypress                               <span class="m">2018</span>-06-14 <span class="m">10</span>:20:26 <span class="o">[</span>b<span class="s1">&#39;d&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 </div>
@@ -479,13 +594,248 @@ optional arguments:
     macros:XF31ID:detector.RBV
 </pre></div>
 </div>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">pv</span><span class="p">,</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;macros:XF31ID:detector.VAL&#39;</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [13]: </span><span class="n">pv</span><span class="p">,</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;macros:XF31ID:detector.VAL&#39;</span><span class="p">)</span>
 
-<span class="gp">In [18]: </span><span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="gh">Out[18]: </span><span class="go">ReadNotifyResponse(data=array([0], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
+<span class="gp">In [14]: </span><span class="n">pv</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gh">Out[14]: </span><span class="go">ReadNotifyResponse(data=array([0], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
 </pre></div>
 </div>
 <p>Observe that the command line arguments fill in the PV names.</p>
+</div>
+<div class="section" id="subgroups">
+<h3>Subgroups<a class="headerlink" href="#subgroups" title="Permalink to this headline">¶</a></h3>
+<p>The PVGroup is designed to be nested, which provides a nice path toward future
+capability: IOCs that are natively “V7”, encoding semantic structure for PV
+Access clients and decomposing into flat PVs for Channel Access clients.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">from</span> <span class="nn">caproto.server</span> <span class="k">import</span> <span class="p">(</span><span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">SubGroup</span><span class="p">,</span> <span class="n">ioc_arg_parser</span><span class="p">,</span> <span class="n">run</span><span class="p">)</span>
+
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">RecordLike</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+    <span class="s1">&#39;Example group, mirroring a V3 record&#39;</span>
+
+    <span class="c1"># stop : from being added to the prefix</span>
+    <span class="n">attr_separator</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+
+    <span class="c1"># PV #1: {prefix}.RTYP</span>
+    <span class="n">record_type</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;.RTYP&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;ai&#39;</span><span class="p">])</span>
+    <span class="c1"># PV #2: {prefix}.VAL</span>
+    <span class="n">value</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;.VAL&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># PV #3: {prefix}.DESC</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">&#39;.DESC&#39;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Description&#39;</span><span class="p">])</span>
+
+
+<span class="k">class</span> <span class="nc">MySubGroup</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+    <span class="s1">&#39;Example group of PVs, where the prefix is defined on instantiation&#39;</span>
+    <span class="c1"># PV: {prefix}random - defaults to dtype of int</span>
+    <span class="nd">@pvproperty</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyPVGroup</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+    <span class="s1">&#39;Example group of PVs, a mix of pvproperties and subgroups&#39;</span>
+
+    <span class="c1"># PV: {prefix}random</span>
+    <span class="nd">@pvproperty</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;read random from </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="c1"># PVs: {prefix}RECORD_LIKE1.RTYP, .VAL, and .DESC</span>
+    <span class="n">recordlike1</span> <span class="o">=</span> <span class="n">SubGroup</span><span class="p">(</span><span class="n">RecordLike</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;RECORD_LIKE1&#39;</span><span class="p">)</span>
+    <span class="c1"># PVs: {prefix}recordlike2.RTYP, .VAL, and .DESC</span>
+    <span class="n">recordlike2</span> <span class="o">=</span> <span class="n">SubGroup</span><span class="p">(</span><span class="n">RecordLike</span><span class="p">)</span>
+
+    <span class="c1"># PV: {prefix}group1:random</span>
+    <span class="n">group1</span> <span class="o">=</span> <span class="n">SubGroup</span><span class="p">(</span><span class="n">MySubGroup</span><span class="p">)</span>
+    <span class="c1"># PV: {prefix}group2-random</span>
+    <span class="n">group2</span> <span class="o">=</span> <span class="n">SubGroup</span><span class="p">(</span><span class="n">MySubGroup</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;group2-&#39;</span><span class="p">)</span>
+
+    <span class="c1"># PV: {prefix}group3_prefix:random</span>
+    <span class="nd">@SubGroup</span><span class="p">(</span><span class="n">prefix</span><span class="o">=</span><span class="s1">&#39;group3_prefix:&#39;</span><span class="p">)</span>
+    <span class="k">class</span> <span class="nc">group3</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+        <span class="nd">@pvproperty</span>
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;read random from </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="c1"># PV: {prefix}group4:subgroup4:random</span>
+    <span class="c1"># (TODO BUG) {prefix}subgroup4:random</span>
+    <span class="nd">@SubGroup</span>
+    <span class="k">class</span> <span class="nc">group4</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+        <span class="nd">@SubGroup</span>
+        <span class="k">class</span> <span class="nc">subgroup4</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+            <span class="nd">@pvproperty</span>
+            <span class="k">async</span> <span class="k">def</span> <span class="nf">random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;read random from </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">ioc_options</span><span class="p">,</span> <span class="n">run_options</span> <span class="o">=</span> <span class="n">ioc_arg_parser</span><span class="p">(</span>
+        <span class="n">default_prefix</span><span class="o">=</span><span class="s1">&#39;subgroups:&#39;</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Run an IOC with groups of groups of PVs.&#39;</span><span class="p">)</span>
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">MyPVGroup</span><span class="p">(</span><span class="o">**</span><span class="n">ioc_options</span><span class="p">)</span>
+
+    <span class="c1"># here&#39;s what accessing a pvproperty descriptor looks like:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;random using the descriptor getter is:&#39;</span><span class="p">,</span> <span class="n">ioc</span><span class="o">.</span><span class="n">random</span><span class="p">)</span>
+
+    <span class="c1"># and for subgroups:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;subgroup4 is:&#39;</span><span class="p">,</span> <span class="n">ioc</span><span class="o">.</span><span class="n">group4</span><span class="o">.</span><span class="n">subgroup4</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;subgroup4.random is:&#39;</span><span class="p">,</span> <span class="n">ioc</span><span class="o">.</span><span class="n">group4</span><span class="o">.</span><span class="n">subgroup4</span><span class="o">.</span><span class="n">random</span><span class="p">)</span>
+
+    <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python -m caproto.ioc_examples.subgroups --list-pvs
+random using the descriptor getter is: &lt;caproto.server.server.PvpropertyInteger object at 0x10928ffd0&gt;
+subgroup4 is: &lt;__main__.MyPVGroup.group4.subgroup4 object at 0x10928fe10&gt;
+subgroup4.random is: &lt;caproto.server.server.PvpropertyInteger object at 0x10928fef0&gt;
+<span class="o">[</span>I <span class="m">11</span>:08:35.074 server:132<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">11</span>:08:35.074 server:145<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:63336
+<span class="o">[</span>I <span class="m">11</span>:08:35.076 server:218<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">11</span>:08:35.077 server:220<span class="o">]</span> PVs available:
+    subgroups:random
+    subgroups:RECORD_LIKE1.RTYP
+    subgroups:RECORD_LIKE1.VAL
+    subgroups:RECORD_LIKE1.DESC
+    subgroups:recordlike2.RTYP
+    subgroups:recordlike2.VAL
+    subgroups:recordlike2.DESC
+    subgroups:group1:random
+    subgroups:group2-random
+    subgroups:group3_prefix:random
+    subgroups:group4:subgroup4:random
+</pre></div>
+</div>
+</div>
+<div class="section" id="mocking-records">
+<span id="mocking-records-example"></span><h3>Mocking Records<a class="headerlink" href="#mocking-records" title="Permalink to this headline">¶</a></h3>
+<p>See <a class="reference internal" href="mock-records.html"><span class="doc">Mock Records</span></a>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">caproto.server</span> <span class="k">import</span> <span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">ioc_arg_parser</span><span class="p">,</span> <span class="n">run</span>
+
+
+<span class="k">class</span> <span class="nc">RecordMockingIOC</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span> <span class="n">mock_record</span><span class="o">=</span><span class="s1">&#39;ai&#39;</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="p">[</span><span class="mf">2.0</span><span class="p">],</span> <span class="n">mock_record</span><span class="o">=</span><span class="s1">&#39;ai&#39;</span><span class="p">,</span>
+                   <span class="n">precision</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+    <span class="nd">@B</span><span class="o">.</span><span class="n">putter</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">B</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">list</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">==</span> <span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="c1"># Mocked record will pick up the alarm status simply by use raising</span>
+            <span class="c1"># an exception in the putter:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Invalid value!&#39;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">ioc_options</span><span class="p">,</span> <span class="n">run_options</span> <span class="o">=</span> <span class="n">ioc_arg_parser</span><span class="p">(</span>
+        <span class="n">default_prefix</span><span class="o">=</span><span class="s1">&#39;mock:&#39;</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Run an IOC that mocks at ai record.&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Instantiate the IOC, assigning a prefix for the PV names.</span>
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">RecordMockingIOC</span><span class="p">(</span><span class="o">**</span><span class="n">ioc_options</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;PVs:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">))</span>
+
+    <span class="c1"># ... but what you don&#39;t see are all of the analog input record fields</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Fields of B:&#39;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">B</span><span class="o">.</span><span class="n">fields</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+    <span class="c1"># Run IOC.</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python -m caproto.ioc_examples.mocking_records --list-pvs
+PVs: <span class="o">[</span><span class="s1">&#39;mock:A&#39;</span>, <span class="s1">&#39;mock:B&#39;</span><span class="o">]</span>
+Fields of B: <span class="o">[</span><span class="s1">&#39;ACKS&#39;</span>, <span class="s1">&#39;ACKT&#39;</span>, <span class="s1">&#39;ASG&#39;</span>, <span class="s1">&#39;DESC&#39;</span>, <span class="s1">&#39;DISA&#39;</span>, <span class="s1">&#39;DISP&#39;</span>, <span class="s1">&#39;DISS&#39;</span>, <span class="s1">&#39;DISV&#39;</span>, <span class="s1">&#39;DTYP&#39;</span>, <span class="s1">&#39;EVNT&#39;</span>, <span class="s1">&#39;FLNK&#39;</span>, <span class="s1">&#39;LCNT&#39;</span>, <span class="s1">&#39;NAME&#39;</span>, <span class="s1">&#39;NSEV&#39;</span>, <span class="s1">&#39;NSTA&#39;</span>, <span class="s1">&#39;PACT&#39;</span>, <span class="s1">&#39;PHAS&#39;</span>, <span class="s1">&#39;PINI&#39;</span>, <span class="s1">&#39;PRIO&#39;</span>, <span class="s1">&#39;PROC&#39;</span>, <span class="s1">&#39;PUTF&#39;</span>, <span class="s1">&#39;RPRO&#39;</span>, <span class="s1">&#39;SCAN&#39;</span>, <span class="s1">&#39;SDIS&#39;</span>, <span class="s1">&#39;SEVR&#39;</span>, <span class="s1">&#39;TPRO&#39;</span>, <span class="s1">&#39;TSE&#39;</span>, <span class="s1">&#39;TSEL&#39;</span>, <span class="s1">&#39;UDF&#39;</span>, <span class="s1">&#39;RTYP&#39;</span>, <span class="s1">&#39;STAT&#39;</span>, <span class="s1">&#39;RVAL&#39;</span>, <span class="s1">&#39;INIT&#39;</span>, <span class="s1">&#39;MLST&#39;</span>, <span class="s1">&#39;LALM&#39;</span>, <span class="s1">&#39;ALST&#39;</span>, <span class="s1">&#39;LBRK&#39;</span>, <span class="s1">&#39;ORAW&#39;</span>, <span class="s1">&#39;ROFF&#39;</span>, <span class="s1">&#39;SIMM&#39;</span>, <span class="s1">&#39;SVAL&#39;</span>, <span class="s1">&#39;HYST&#39;</span>, <span class="s1">&#39;HIGH&#39;</span>, <span class="s1">&#39;HSV&#39;</span>, <span class="s1">&#39;HIHI&#39;</span>, <span class="s1">&#39;HHSV&#39;</span>, <span class="s1">&#39;LOLO&#39;</span>, <span class="s1">&#39;LLSV&#39;</span>, <span class="s1">&#39;LOW&#39;</span>, <span class="s1">&#39;LSV&#39;</span>, <span class="s1">&#39;AOFF&#39;</span>, <span class="s1">&#39;ASLO&#39;</span>, <span class="s1">&#39;EGUF&#39;</span>, <span class="s1">&#39;EGUL&#39;</span>, <span class="s1">&#39;LINR&#39;</span>, <span class="s1">&#39;EOFF&#39;</span>, <span class="s1">&#39;ESLO&#39;</span>, <span class="s1">&#39;SMOO&#39;</span>, <span class="s1">&#39;ADEL&#39;</span>, <span class="s1">&#39;PREC&#39;</span>, <span class="s1">&#39;EGU&#39;</span>, <span class="s1">&#39;HOPR&#39;</span>, <span class="s1">&#39;LOPR&#39;</span>, <span class="s1">&#39;MDEL&#39;</span>, <span class="s1">&#39;INP&#39;</span>, <span class="s1">&#39;SIOL&#39;</span>, <span class="s1">&#39;SIML&#39;</span>, <span class="s1">&#39;SIMS&#39;</span><span class="o">]</span>
+<span class="o">[</span>I <span class="m">11</span>:07:48.635 server:132<span class="o">]</span> Server starting up...
+<span class="o">[</span>I <span class="m">11</span>:07:48.636 server:145<span class="o">]</span> Listening on <span class="m">0</span>.0.0.0:49637
+<span class="o">[</span>I <span class="m">11</span>:07:48.638 server:218<span class="o">]</span> Server startup complete.
+<span class="o">[</span>I <span class="m">11</span>:07:48.638 server:220<span class="o">]</span> PVs available:
+    mock:A
+    mock:B
+</pre></div>
+</div>
+</div>
+<div class="section" id="rpc-server-from-python-function">
+<h3>RPC Server from Python Function<a class="headerlink" href="#rpc-server-from-python-function" title="Permalink to this headline">¶</a></h3>
+<p>This automatically generates a SubGroup. In the future, this could be used to
+spin up a PVA RPC service. As is, for Channel Access, this provides an RPC
+function for single-user access.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env python3</span>
+<span class="kn">from</span> <span class="nn">pprint</span> <span class="k">import</span> <span class="n">pprint</span>
+<span class="kn">import</span> <span class="nn">random</span>
+
+<span class="kn">from</span> <span class="nn">caproto.server</span> <span class="k">import</span> <span class="p">(</span><span class="n">pvproperty</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">pvfunction</span><span class="p">,</span> <span class="n">ioc_arg_parser</span><span class="p">,</span>
+                            <span class="n">run</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MyPVGroup</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+    <span class="s1">&#39;Example group of PVs, where the prefix is defined on instantiation&#39;</span>
+    <span class="c1"># PV #1: {prefix}random - defaults to dtype of int</span>
+    <span class="nd">@pvproperty</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">fixed_random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">):</span>
+        <span class="s1">&#39;Random integer between 1 and 100&#39;</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="nd">@pvfunction</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_random</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                         <span class="n">low</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                         <span class="n">high</span><span class="p">:</span> <span class="nb">int</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="s1">&#39;A configurable random number&#39;</span>
+        <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">low</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">high</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">ioc_options</span><span class="p">,</span> <span class="n">run_options</span> <span class="o">=</span> <span class="n">ioc_arg_parser</span><span class="p">(</span>
+        <span class="n">default_prefix</span><span class="o">=</span><span class="s1">&#39;rpc:&#39;</span><span class="p">,</span>
+        <span class="n">desc</span><span class="o">=</span><span class="s1">&#39;Run an IOC with an RPC function.&#39;</span><span class="p">)</span>
+
+    <span class="n">ioc</span> <span class="o">=</span> <span class="n">MyPVGroup</span><span class="p">(</span><span class="o">**</span><span class="n">ioc_options</span><span class="p">)</span>
+
+    <span class="c1"># here&#39;s what accessing a pvproperty descriptor looks like:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;fixed_random using the descriptor getter is: </span><span class="si">{ioc.fixed_random}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;get_random using the descriptor getter is: </span><span class="si">{ioc.get_random}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;get_random is an autogenerated subgroup with PVs:&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">pvspec</span> <span class="ow">in</span> <span class="n">ioc</span><span class="o">.</span><span class="n">get_random</span><span class="o">.</span><span class="n">pvdb</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="se">\t</span><span class="si">{pvspec!r}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># here is the auto-generated pvdb:</span>
+    <span class="n">pprint</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">)</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">ioc</span><span class="o">.</span><span class="n">pvdb</span><span class="p">,</span> <span class="o">**</span><span class="n">run_options</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python -m caproto.ioc_examples.rpc_function --list-pvs
+
+   fixed_random using the descriptor getter is: &lt;caproto.server.server.PvpropertyInteger object at 0x1041672b0&gt;
+   get_random using the descriptor getter is: &lt;caproto.server.server.get_random object at 0x1041675f8&gt;
+   get_random is an autogenerated subgroup with PVs:
+       <span class="o">(</span><span class="s1">&#39;rpc:get_random:low&#39;</span>, &lt;caproto.server.server.PvpropertyInteger object at 0x104167358&gt;<span class="o">)</span>
+       <span class="o">(</span><span class="s1">&#39;rpc:get_random:high&#39;</span>, &lt;caproto.server.server.PvpropertyInteger object at 0x104167588&gt;<span class="o">)</span>
+       <span class="o">(</span><span class="s1">&#39;rpc:get_random:Status&#39;</span>, &lt;caproto.server.server.PvpropertyStringRO object at 0x104167320&gt;<span class="o">)</span>
+       <span class="o">(</span><span class="s1">&#39;rpc:get_random:Retval&#39;</span>, &lt;caproto.server.server.PvpropertyIntegerRO object at 0x104167550&gt;<span class="o">)</span>
+       <span class="o">(</span><span class="s1">&#39;rpc:get_random:Process&#39;</span>, &lt;caproto.server.server.PvpropertyInteger object at 0x1041672e8&gt;<span class="o">)</span>
+   OrderedDict<span class="o">([(</span><span class="s1">&#39;rpc:fixed_random&#39;</span>,
+               &lt;caproto.server.server.PvpropertyInteger object at 0x1041672b0&gt;<span class="o">)</span>,
+               <span class="o">(</span><span class="s1">&#39;rpc:get_random:low&#39;</span>,
+               &lt;caproto.server.server.PvpropertyInteger object at 0x104167358&gt;<span class="o">)</span>,
+               <span class="o">(</span><span class="s1">&#39;rpc:get_random:high&#39;</span>,
+               &lt;caproto.server.server.PvpropertyInteger object at 0x104167588&gt;<span class="o">)</span>,
+               <span class="o">(</span><span class="s1">&#39;rpc:get_random:Status&#39;</span>,
+               &lt;caproto.server.server.PvpropertyStringRO object at 0x104167320&gt;<span class="o">)</span>,
+               <span class="o">(</span><span class="s1">&#39;rpc:get_random:Retval&#39;</span>,
+               &lt;caproto.server.server.PvpropertyIntegerRO object at 0x104167550&gt;<span class="o">)</span>,
+               <span class="o">(</span><span class="s1">&#39;rpc:get_random:Process&#39;</span>,
+               &lt;caproto.server.server.PvpropertyInteger object at 0x1041672e8&gt;<span class="o">)])</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="inline-style-read-and-write-customization">
 <h3>“Inline” Style Read and Write Customization<a class="headerlink" href="#inline-style-read-and-write-customization" title="Permalink to this headline">¶</a></h3>
@@ -537,27 +887,32 @@ behavior.</p>
     inline_style:A
 </pre></div>
 </div>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="n">randint</span><span class="p">,</span> <span class="n">randstr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;inline_style:random_int&#39;</span><span class="p">,</span> <span class="s1">&#39;inline_style:random_str&#39;</span><span class="p">)</span>
+<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [15]: </span><span class="n">randint</span><span class="p">,</span> <span class="n">randstr</span> <span class="o">=</span> <span class="n">ctx</span><span class="o">.</span><span class="n">get_pvs</span><span class="p">(</span><span class="s1">&#39;inline_style:random_int&#39;</span><span class="p">,</span> <span class="s1">&#39;inline_style:random_str&#39;</span><span class="p">)</span>
 
-<span class="gp">In [20]: </span><span class="n">randint</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="gh">Out[20]: </span><span class="go">ReadNotifyResponse(data=array([95], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
+<span class="gp">In [16]: </span><span class="n">randint</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gh">Out[16]: </span><span class="go">ReadNotifyResponse(data=array([10], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
 
-<span class="gp">In [21]: </span><span class="n">randint</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                               Out[21]: ReadNotifyResponse(data=array([67], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=2, metadata=None)</span>
+<span class="gp">In [17]: </span><span class="n">randint</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                               Out[17]: ReadNotifyResponse(data=array([22], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=2, metadata=None)</span>
 
-<span class="gp">In [22]: </span><span class="n">randint</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              Out[22]: ReadNotifyResponse(data=array([22], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
+<span class="gp">In [18]: </span><span class="n">randint</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              Out[18]: ReadNotifyResponse(data=array([36], dtype=int32), data_type=&lt;ChannelType.LONG: 5&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=3, metadata=None)</span>
 
-<span class="gp">In [23]: </span><span class="n">randstr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             Out[23]: ReadNotifyResponse(data=[b&#39;b&#39;], data_type=&lt;ChannelType.STRING: 0&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=4, metadata=None)</span>
+<span class="gp">In [19]: </span><span class="n">randstr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             Out[19]: ReadNotifyResponse(data=[b&#39;a&#39;], data_type=&lt;ChannelType.STRING: 0&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=4, metadata=None)</span>
 
-<span class="gp">In [24]: </span><span class="n">randstr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Out[24]: ReadNotifyResponse(data=[b&#39;a&#39;], data_type=&lt;ChannelType.STRING: 0&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=5, metadata=None)</span>
+<span class="gp">In [20]: </span><span class="n">randstr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            Out[20]: ReadNotifyResponse(data=[b&#39;b&#39;], data_type=&lt;ChannelType.STRING: 0&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=5, metadata=None)</span>
 
-<span class="gp">In [25]: </span><span class="n">randstr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Out[25]: ReadNotifyResponse(data=[b&#39;b&#39;], data_type=&lt;ChannelType.STRING: 0&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=6, metadata=None)</span>
+<span class="gp">In [21]: </span><span class="n">randstr</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           Out[21]: ReadNotifyResponse(data=[b&#39;c&#39;], data_type=&lt;ChannelType.STRING: 0&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=6, metadata=None)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="more">
+<h3>More…<a class="headerlink" href="#more" title="Permalink to this headline">¶</a></h3>
+<p>Take a look around
+<cite>the ``ioc_examples`</cite> subpackage &lt;<a class="reference external" href="https://github.com/NSLS-II/caproto/tree/master/caproto/ioc_examples">https://github.com/NSLS-II/caproto/tree/master/caproto/ioc_examples</a>&gt;` for more examples not covered here.</p>
 </div>
 </div>
 </div>
@@ -570,7 +925,7 @@ behavior.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="servers.html" class="btn btn-neutral float-right" title="Servers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="mock-records.html" class="btn btn-neutral float-right" title="Mock Records" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="async-clients.html" class="btn btn-neutral" title="Asynchronous Clients" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -604,7 +959,7 @@ behavior.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0b3+22.g2e09fe6',
+            VERSION:'0.1.0b3+29.gd112646',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
