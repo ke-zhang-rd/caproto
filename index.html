@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0.1.0rc1+6.g6afa447 documentation</title>
+  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0.1.0rc1+8.gca168ee documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0rc1+6.g6afa447
+                0.1.0rc1+8.gca168ee
               </div>
             
           
@@ -189,6 +189,11 @@ particle accelerators, and synchrotrons. Its
 go back to a 1988 meeting funded by the Reagan-era Strategic Defense Initiative
 (“Star Wars”).</p>
 <p>The authors pronounce caproto “kah-proto” (not “C.A. proto”). It’s fun to say.</p>
+<p>Caproto is intended as a friendly entry-point to EPICS. It may be useful for
+scientists who want to understand their hardware better, engineers learning
+more about the EPICS community, and “makers” interesting in using it for hobby
+projects — EPICS has been used for brewing beer and keeping bees! At the same
+time, caproto is suitable for use at large experimental facilities.</p>
 <div class="section" id="try-caproto-in-four-lines">
 <h2>Try caproto in four lines<a class="headerlink" href="#try-caproto-in-four-lines" title="Permalink to this headline">¶</a></h2>
 <p>First verify that you have Python 3.6+.</p>
@@ -214,16 +219,18 @@ about the <a class="reference internal" href="command-line-client.html"><span cl
 </div>
 <div class="section" id="reasons-to-use-caproto-and-1-big-reason-not-to">
 <h2>10 Reasons To Use Caproto and 1 Big Reason Not To<a class="headerlink" href="#reasons-to-use-caproto-and-1-big-reason-not-to" title="Permalink to this headline">¶</a></h2>
-<p>Most existing EPICS tools are built on a well-established C library, <em>libca</em>.
-Why rewrite it from scratch in Python instead of just wrapping C?</p>
+<p>Most existing EPICS tools are built on well-established C and C++ libraries.
+Why write something from scratch in Python instead of just wrapping those?</p>
 <ol class="arabic">
-<li><p class="first"><strong>Effortlessly Portable</strong>: No required dependencies —– even numpy is
-optional. Caproto just needs Python itself.</p>
+<li><p class="first"><strong>Effortlessly Portable</strong>: No required dependencies — even numpy is
+optional. Caproto just needs Python itself. We use it on Linux, OSX,
+Windows, and RaspberryPi.</p>
 </li>
 <li><p class="first"><strong>Easy to Install and Use</strong>: See “Try caproto in four lines,” above.</p>
 </li>
 <li><p class="first"><strong>Handy for Debugging</strong>: Programmatic access to convenient Python objects
-embodying every CA message sent and received.</p>
+embodying every CA message sent and received. See the examples of verbose
+logging with the <a class="reference internal" href="command-line-client.html"><span class="doc">Command-Line Client</span></a>.</p>
 </li>
 <li><p class="first"><strong>Efficient</strong>: Data is read directly from sockets into contiguous-memory
 ctypes structures.</p>
@@ -232,7 +239,7 @@ ctypes structures.</p>
 <li>Only pay a performance cost of human-friendly introspection if and when
 you use it.</li>
 </ul>
-<p>For hard numbers, see the
+<p>For the numbers, see caproto’s
 <a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/">benchmarks</a>.</p>
 </li>
 <li><p class="first"><strong>Batteries Included</strong>: Includes multiple server and client implementations
@@ -411,7 +418,7 @@ learning exercises.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0rc1+6.g6afa447',
+            VERSION:'0.1.0rc1+8.gca168ee',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
