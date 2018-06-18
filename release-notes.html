@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release History &mdash; caproto 0.1.0+4.gb66410d documentation</title>
+  <title>Release History &mdash; caproto 0.1.0+13.g2b18ab1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0+4.gb66410d
+                0.1.0+13.g2b18ab1
               </div>
             
           
@@ -103,8 +103,10 @@
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol-compliance.html">Details of our Protocol Compliance for CA Nerds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v0-1-1-2018-06-17">v0.1.1 (2018-06-17)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v0-1-0-2018-06-14">v0.1.0 (2018-06-14)</a></li>
 </ul>
 </li>
@@ -174,6 +176,22 @@
             
   <div class="section" id="release-history">
 <h1>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v0-1-1-2018-06-17">
+<h2>v0.1.1 (2018-06-17)<a class="headerlink" href="#v0-1-1-2018-06-17" title="Permalink to this headline">¶</a></h2>
+<p>This is a bug-fix release following closely on the initial release. We
+recommend that all users update.</p>
+<ul class="simple">
+<li>Fix straightforward but important bug in the synchronous client that broke
+monitoring of multiple channels concurrently.</li>
+<li>In servers, abide by the spec’s recommendation that beacons should be issued
+quickly at startup before backing off to a slower, steady rate.</li>
+<li>Fix a bug that broke the array (“arr”) channel filter if numpy was not
+installed.</li>
+<li>Add a new section to the documentation detailing caproto’s compliance with
+the Channel Access protocol and the feature parity of caproto’s clients and
+servers with respect to the reference implementations in epics-base.</li>
+</ul>
+</div>
 <div class="section" id="v0-1-0-2018-06-14">
 <h2>v0.1.0 (2018-06-14)<a class="headerlink" href="#v0-1-0-2018-06-14" title="Permalink to this headline">¶</a></h2>
 <p>This initial release contains some fairly stable components and some very
@@ -233,7 +251,7 @@ of caproto.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0+4.gb66410d',
+            VERSION:'0.1.0+13.g2b18ab1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

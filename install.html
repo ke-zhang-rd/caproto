@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Install Caproto &mdash; caproto 0.1.0+4.gb66410d documentation</title>
+  <title>Install Caproto &mdash; caproto 0.1.0+13.g2b18ab1 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.0+4.gb66410d
+                0.1.0+13.g2b18ab1
               </div>
             
           
@@ -110,6 +110,7 @@
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol-compliance.html">Details of our Protocol Compliance for CA Nerds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
@@ -186,7 +187,7 @@
 <p>If necessary, install it by your method of choice (apt, Homebrew, conda, etc.).</p>
 <div class="section" id="installation-using-pip">
 <h2>Installation Using Pip<a class="headerlink" href="#installation-using-pip" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install <span class="s2">&quot;caproto[complete]&quot;</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install -U <span class="s2">&quot;caproto[complete]&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -194,7 +195,7 @@
 <h2>Minimal Installation Using Pip<a class="headerlink" href="#minimal-installation-using-pip" title="Permalink to this headline">¶</a></h2>
 <p>The complete installation includes several optional dependences. For an
 extremely lightweight installation, install caproto alone:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install caproto
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install -U caproto
 </pre></div>
 </div>
 <p>Caproto’s command-line, synchronous, and threading clients will work in this
@@ -205,8 +206,8 @@ are installed.</p>
 module. This choice can be manually controlled via
 <code class="docutils literal"><span class="pre">caproto.select_backend('numpy')</span></code> and <code class="docutils literal"><span class="pre">caproto.select_backend('array')</span></code>.</p>
 <p>Other, intermediate combinations are also conveniently available:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install <span class="s2">&quot;caproto[standard]&quot;</span>  <span class="c1"># includes numpy, netifaces</span>
-python3 -m pip install <span class="s2">&quot;caproto[async]&quot;</span>  <span class="c1"># includes the async libs</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install -U <span class="s2">&quot;caproto[standard]&quot;</span>  <span class="c1"># includes numpy, netifaces</span>
+python3 -m pip install -U <span class="s2">&quot;caproto[async]&quot;</span>  <span class="c1"># includes the async libs</span>
 </pre></div>
 </div>
 </div>
@@ -226,8 +227,8 @@ pip install -e .
 <h2>Development<a class="headerlink" href="#development" title="Permalink to this headline">¶</a></h2>
 <p>For development, you will also want the dependencies for running the tests and
 building the documentation:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install -U -r test-requirements.txt
-pip install -U -r docs-requirements.txt
+<div class="highlight-bash"><div class="highlight"><pre><span></span>pip install -Ur test-requirements.txt
+pip install -Ur docs-requirements.txt
 </pre></div>
 </div>
 <p>To run the tests:</p>
@@ -245,8 +246,8 @@ commonly useful:</p>
 expect <code class="docutils literal"><span class="pre">caget</span></code>, <code class="docutils literal"><span class="pre">caput</span></code>, and <code class="docutils literal"><span class="pre">softIoc</span></code> executables to be available and
 for <code class="docutils literal"><span class="pre">EPICS_BASE</span></code> to be set.</p>
 <p>A small number of the tests test caproto against <code class="docutils literal"><span class="pre">motorsim</span></code>. To skip these
-tests, set the environment variable <code class="docutils literal"><span class="pre">CAPROTO_SKIP_MOTORSIM_TESTS=1</span></code>.
-To build the documentation:</p>
+tests, set the environment variable <code class="docutils literal"><span class="pre">CAPROTO_SKIP_MOTORSIM_TESTS=1</span></code>.</p>
+<p>To build the documentation:</p>
 <div class="highlight-bash"><div class="highlight"><pre><span></span>make -C doc html
 </pre></div>
 </div>
@@ -295,7 +296,7 @@ To build the documentation:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0+4.gb66410d',
+            VERSION:'0.1.0+13.g2b18ab1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

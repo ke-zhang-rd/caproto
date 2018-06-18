@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0.1.0+4.gb66410d documentation</title>
+  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0.1.0+13.g2b18ab1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.0+4.gb66410d
+                0.1.0+13.g2b18ab1
               </div>
             
           
@@ -103,6 +103,7 @@
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol-compliance.html">Details of our Protocol Compliance for CA Nerds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
 </ul>
@@ -202,7 +203,7 @@ time, caproto is suitable for use at large experimental facilities.</p>
 </div>
 <p>If necessary, install it by your method of choice (apt, Homebrew, conda, etc.).
 Now install caproto:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install caproto
+<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install -U caproto
 </pre></div>
 </div>
 <p>In one terminal, start an EPICS Input-Output Controller (IOC), which is a
@@ -368,8 +369,16 @@ learning exercises.</p>
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol-compliance.html">Details of our Protocol Compliance for CA Nerds</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocol-compliance.html#core-protocol-support">Core protocol support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol-compliance.html#threading-client">Threading Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol-compliance.html#synchronous-client-and-command-line-client">Synchronous Client and Command-Line Client</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol-compliance.html#servers">Servers</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="release-notes.html#v0-1-1-2018-06-17">v0.1.1 (2018-06-17)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="release-notes.html#v0-1-0-2018-06-14">v0.1.0 (2018-06-14)</a></li>
 </ul>
 </li>
@@ -418,7 +427,7 @@ learning exercises.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.0+4.gb66410d',
+            VERSION:'0.1.0+13.g2b18ab1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

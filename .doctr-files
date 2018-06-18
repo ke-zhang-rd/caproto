@@ -19,6 +19,7 @@
 ./_sources/install.rst.txt
 ./_sources/iocs.rst.txt
 ./_sources/mock-records.rst.txt
+./_sources/protocol-compliance.rst.txt
 ./_sources/pyepics-compat-client.rst.txt
 ./_sources/references.rst.txt
 ./_sources/release-notes.rst.txt
@@ -97,6 +98,7 @@
 ./iocs.html
 ./mock-records.html
 ./objects.inv
+./protocol-compliance.html
 ./pyepics-compat-client.html
 ./references.html
 ./release-notes.html
