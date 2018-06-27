@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release History &mdash; caproto 0.1.1 documentation</title>
+  <title>Release History &mdash; caproto 0.1.1+2.g2cfe331 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.1+2.g2cfe331
               </div>
             
           
@@ -106,6 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="protocol-compliance.html">Details of our Protocol Compliance for CA Nerds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v0-1-1-2018-06-17">v0.1.1 (2018-06-17)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v0-1-0-2018-06-14">v0.1.0 (2018-06-14)</a></li>
 </ul>
@@ -176,6 +177,15 @@
             
   <div class="section" id="release-history">
 <h1>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="unreleased">
+<h2>Unreleased<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>In the threading client, process user callbacks using one threadpool <em>per
+circuit</em> instead of one threadpool for the entire context. Make the size of
+the threadpool configurable via a new
+<a class="reference internal" href="threading-client.html#caproto.threading.client.Context" title="caproto.threading.client.Context"><code class="xref py py-class docutils literal"><span class="pre">Context</span></code></a> parameter, <code class="docutils literal"><span class="pre">max_workers</span></code>.</li>
+</ul>
+</div>
 <div class="section" id="v0-1-1-2018-06-17">
 <h2>v0.1.1 (2018-06-17)<a class="headerlink" href="#v0-1-1-2018-06-17" title="Permalink to this headline">¶</a></h2>
 <p>This is a bug-fix release following closely on the initial release. We
@@ -251,7 +261,7 @@ of caproto.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.1',
+            VERSION:'0.1.1+2.g2cfe331',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

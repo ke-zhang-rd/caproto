@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.1.1 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.1.1+2.g2cfe331 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.1+2.g2cfe331
               </div>
             
           
@@ -177,6 +177,7 @@
 <span class="c1"># - process search results</span>
 <span class="c1"># - TCP socket SelectorThread</span>
 <span class="c1"># - restart subscriptions</span>
+<span class="c1"># The VirtualCircuit has:</span>
 <span class="c1"># - ThreadPoolExecutor for processing user callbacks on read, write, subscribe</span>
 <span class="kn">import</span> <span class="nn">array</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">Iterable</span>
@@ -314,18 +315,6 @@
 <span class="n">RETRY_SEARCHES_PERIOD</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="n">RESTART_SUBS_PERIOD</span> <span class="o">=</span> <span class="mf">0.1</span>
 <span class="n">STR_ENC</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CAPROTO_STRING_ENCODING&#39;</span><span class="p">,</span> <span class="s1">&#39;latin-1&#39;</span><span class="p">)</span>
-
-<span class="c1"># WARNING</span>
-<span class="c1"># Using more than 1 worker for processing user callbacks can avoid the jamming</span>
-<span class="c1"># up of callback-processing by any user callbacks that sleep or do I/O work</span>
-<span class="c1"># (i.e. things that release the GIL). BUT, parallelizing callback-processing</span>
-<span class="c1"># across multiple workers means that closely-spaced updates (~0.001 seconds)</span>
-<span class="c1"># may sometimes be processed out of order. Tasks are submitted to the pool of</span>
-<span class="c1"># workers in order, but that does not provide any guarantees about whether the</span>
-<span class="c1"># internal work in those tasks is completed in order. Providing better</span>
-<span class="c1"># guarantees, allowing the number of workers to be safely increased above 1,</span>
-<span class="c1"># will require significant additional complexity in caproto.</span>
-<span class="n">MAX_USER_CALLBACK_WORKERS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;MAX_USER_CALLBACK_WORKERS&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">SelectorThread</span><span class="p">:</span>
@@ -829,9 +818,21 @@
 <span class="sd">        uses value of ``socket.gethostname()`` by default</span>
 <span class="sd">    client_name : string, optional</span>
 <span class="sd">        uses value of ``getpass.getuser()`` by default</span>
+<span class="sd">    max_workers : integer, optional</span>
+<span class="sd">        Number of worker threaders *per VirtualCircuit* for executing user</span>
+<span class="sd">        callbacks. Default is 1. For any number of workers, workers will</span>
+<span class="sd">        receive updates in the order which they are received from the server.</span>
+<span class="sd">        That is, work on each update will *begin* in sequential order.</span>
+<span class="sd">        Work-scheduling internal to the user callback is outside caproto&#39;s</span>
+<span class="sd">        control. If the number of workers is set to greater than 1, the work on</span>
+<span class="sd">        each update may not *finish* in a deterministic order. For example, if</span>
+<span class="sd">        workers are writing lines into a file, the only way to guarantee that</span>
+<span class="sd">        the lines are ordered properly is to use only one worker. If ordering</span>
+<span class="sd">        matters for your application, think carefully before increasing this</span>
+<span class="sd">        value from 1.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">broadcaster</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
-                 <span class="n">host_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">client_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+                 <span class="n">host_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">client_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_workers</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">broadcaster</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">broadcaster</span> <span class="o">=</span> <span class="n">SharedBroadcaster</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span> <span class="o">=</span> <span class="n">broadcaster</span>
@@ -840,6 +841,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">host_name</span> <span class="o">=</span> <span class="n">host_name</span>
         <span class="k">if</span> <span class="n">client_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">client_name</span> <span class="o">=</span> <span class="n">getpass</span><span class="o">.</span><span class="n">getuser</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_workers</span> <span class="o">=</span> <span class="n">max_workers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">client_name</span> <span class="o">=</span> <span class="n">client_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;caproto.ctx.{id(self)}&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pv_cache_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
@@ -869,10 +871,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">selector</span> <span class="o">=</span> <span class="n">SelectorThread</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_disconnected</span> <span class="o">=</span> <span class="kc">False</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">user_callback_executor</span> <span class="o">=</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span>
-            <span class="n">max_workers</span><span class="o">=</span><span class="n">MAX_USER_CALLBACK_WORKERS</span><span class="p">,</span>
-            <span class="n">thread_name_prefix</span><span class="o">=</span><span class="s1">&#39;user-callback-executor&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="s2">&quot;&lt;Context &quot;</span>
@@ -1122,9 +1120,6 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Stopping Context&#39;s SelectorThread&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Shutting down ThreadPoolExecutor for user callbacks&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
-
             <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_process_search_results_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_activate_subscriptions_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
@@ -1155,7 +1150,8 @@
                  <span class="s1">&#39;subscriptions&#39;</span><span class="p">,</span> <span class="s1">&#39;_user_disconnected&#39;</span><span class="p">,</span> <span class="s1">&#39;_ready&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;socket&#39;</span><span class="p">,</span> <span class="s1">&#39;selector&#39;</span><span class="p">,</span> <span class="s1">&#39;pvs&#39;</span><span class="p">,</span> <span class="s1">&#39;all_created_pvnames&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;dead&#39;</span><span class="p">,</span> <span class="s1">&#39;process_queue&#39;</span><span class="p">,</span> <span class="s1">&#39;processing&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;_subscriptionid_counter&#39;</span><span class="p">,</span> <span class="s1">&#39;__weakref__&#39;</span><span class="p">)</span>
+                 <span class="s1">&#39;_subscriptionid_counter&#39;</span><span class="p">,</span> <span class="s1">&#39;user_callback_executor&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;__weakref__&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">selector</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
@@ -1167,6 +1163,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map subscriptionid to Subscription</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector</span> <span class="o">=</span> <span class="n">selector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_callback_executor</span> <span class="o">=</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span>
+            <span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">max_workers</span><span class="p">,</span>
+            <span class="n">thread_name_prefix</span><span class="o">=</span><span class="s1">&#39;user-callback-executor&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_disconnected</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="c1"># keep track of all PV names that are successfully connected to within</span>
         <span class="c1"># this circuit. This is to be cleared upon disconnection:</span>
@@ -1269,8 +1268,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">callback</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;callback&#39;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
-                        <span class="n">callback</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
 
             <span class="n">event</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;event&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1370,6 +1368,9 @@
                            <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">reconnect</span><span class="p">(((</span><span class="n">chan</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
                                     <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Shutting down ThreadPoolExecutor for user callbacks&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_user_disconnected</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1811,7 +1812,7 @@
                 <span class="n">to_remove</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cb_id</span><span class="p">)</span>
                 <span class="k">continue</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
                 <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
@@ -2132,7 +2133,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.1',
+            VERSION:'0.1.1+2.g2cfe331',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

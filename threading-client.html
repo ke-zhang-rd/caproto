@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Threading Client &mdash; caproto 0.1.1 documentation</title>
+  <title>Threading Client &mdash; caproto 0.1.1+2.g2cfe331 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.1+2.g2cfe331
               </div>
             
           
@@ -255,7 +255,7 @@ data structures.</p>
 <span class="gh">Out[10]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=1)</span>
 
 <span class="gp">In [11]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x2b1c4aa25dc8&gt;)</span>
+<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x148b93eabc48&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
@@ -339,10 +339,11 @@ define a second callback:</p>
 
 <span class="gp">In [21]: </span><span class="n">values</span>
 <span class="go">           Out[21]: </span>
-<span class="go">[0.6759524892922968,</span>
-<span class="go"> 1.4522098446785443,</span>
-<span class="go"> 2.0262329640017014,</span>
-<span class="go"> 2.7840229756784445]</span>
+<span class="go">[0.8685031117405546,</span>
+<span class="go"> 1.3784573258277375,</span>
+<span class="go"> 1.602887015077104,</span>
+<span class="go"> 2.058612657746231,</span>
+<span class="go"> 2.84698860131224]</span>
 </pre></div>
 </div>
 <p>At any point we can remove a specific callback function:</p>
@@ -421,7 +422,7 @@ upon exiting the <code class="docutils literal"><span class="pre">with</span></c
 background thread. As the responses come in, the <code class="docutils literal"><span class="pre">results</span></code> dictionary will be
 updated.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [30]: </span><span class="n">results</span>
-<span class="gh">Out[30]: </span><span class="go">{&#39;random_walk:x&#39;: array([2.78402298]), &#39;random_walk:dt&#39;: array([1.])}</span>
+<span class="gh">Out[30]: </span><span class="go">{&#39;random_walk:x&#39;: array([2.8469886]), &#39;random_walk:dt&#39;: array([1.])}</span>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="#caproto.threading.client.Batch" title="caproto.threading.client.Batch"><code class="xref py py-class docutils literal"><span class="pre">Batch</span></code></a> for more.</p>
@@ -434,7 +435,7 @@ requested. In order to reduce the load on the network, a PV can be temporarily
 made “idle” (disconnected). It will silently, automatically reconnect the next
 time it is used.</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [31]: </span><span class="n">x</span>
-<span class="gh">Out[31]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 59819), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="gh">Out[31]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 59719), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
 <span class="gp">In [32]: </span><span class="n">x</span><span class="o">.</span><span class="n">go_idle</span><span class="p">()</span>
 
@@ -442,10 +443,10 @@ time it is used.</p>
 <span class="gh">Out[33]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 (idle)&gt;</span>
 
 <span class="gp">In [34]: </span><span class="n">x</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                     Out[34]: ReadNotifyResponse(data=array([2.78402298]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=5, metadata=None)</span>
+<span class="go">                                                     Out[34]: ReadNotifyResponse(data=array([2.8469886]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=5, metadata=None)</span>
 
 <span class="gp">In [35]: </span><span class="n">x</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[35]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 59819), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                Out[35]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 59719), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 </pre></div>
 </div>
 <p>Notice that when the PV was read it automatically reconnected, requiring no
@@ -492,7 +493,7 @@ searches still awaiting responses, etc.) use <code class="docutils literal"><spa
 <h2>API Documentation<a class="headerlink" href="#api-documentation" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="caproto.threading.client.Context">
-<em class="property">class </em><code class="descclassname">caproto.threading.client.</code><code class="descname">Context</code><span class="sig-paren">(</span><em>broadcaster=None</em>, <em>*</em>, <em>host_name=None</em>, <em>client_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Context" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.threading.client.</code><code class="descname">Context</code><span class="sig-paren">(</span><em>broadcaster=None</em>, <em>*</em>, <em>host_name=None</em>, <em>client_name=None</em>, <em>max_workers=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#Context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.Context" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encapsulates the state and connections of a client</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -507,6 +508,19 @@ searches still awaiting responses, etc.) use <code class="docutils literal"><spa
 </dd>
 <dt><strong>client_name</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string, optional</span></dt>
 <dd><p class="first last">uses value of <code class="docutils literal"><span class="pre">getpass.getuser()</span></code> by default</p>
+</dd>
+<dt><strong>max_workers</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
+<dd><p class="first last">Number of worker threaders <em>per VirtualCircuit</em> for executing user
+callbacks. Default is 1. For any number of workers, workers will
+receive updates in the order which they are received from the server.
+That is, work on each update will <em>begin</em> in sequential order.
+Work-scheduling internal to the user callback is outside caproto’s
+control. If the number of workers is set to greater than 1, the work on
+each update may not <em>finish</em> in a deterministic order. For example, if
+workers are writing lines into a file, the only way to guarantee that
+the lines are ordered properly is to use only one worker. If ordering
+matters for your application, think carefully before increasing this
+value from 1.</p>
 </dd>
 </dl>
 </td>
@@ -1003,7 +1017,7 @@ the <code class="docutils literal"><span class="pre">results_queue</span></code>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.1',
+            VERSION:'0.1.1+2.g2cfe331',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
