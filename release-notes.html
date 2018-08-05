@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release History &mdash; caproto 0.1.1+12.gd18611e documentation</title>
+  <title>Release History &mdash; caproto 0.1.1+15.g550032c documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.1+12.gd18611e
+                0.1.1+15.g550032c
               </div>
             
           
@@ -184,6 +184,9 @@
 circuit</em> instead of one threadpool for the entire context. Make the size of
 the threadpool configurable via a new
 <a class="reference internal" href="threading-client.html#caproto.threading.client.Context" title="caproto.threading.client.Context"><code class="xref py py-class docutils literal"><span class="pre">Context</span></code></a> parameter, <code class="docutils literal"><span class="pre">max_workers</span></code>.</li>
+<li>The expected signature of the <code class="docutils literal"><span class="pre">access_rights_callback</span></code> passed to
+<a class="reference internal" href="threading-client.html#caproto.threading.client.Context" title="caproto.threading.client.Context"><code class="xref py py-class docutils literal"><span class="pre">Context</span></code></a> has been changed from
+<code class="docutils literal"><span class="pre">f(access_rights)</span></code> to <code class="docutils literal"><span class="pre">f(pv,</span> <span class="pre">access_rights)</span></code>.</li>
 </ul>
 </div>
 <div class="section" id="v0-1-1-2018-06-17">
@@ -261,7 +264,7 @@ of caproto.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.1+12.gd18611e',
+            VERSION:'0.1.1+15.g550032c',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.1.1+12.gd18611e documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.1.1+15.g550032c documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.1+12.gd18611e
+                0.1.1+15.g550032c
               </div>
             
           
@@ -906,9 +906,11 @@
 <span class="sd">            Used by the server to triage subscription responses when under high</span>
 <span class="sd">            load. 0 is lowest; 99 is highest.</span>
 <span class="sd">        connection_state_callback : callable</span>
-<span class="sd">            Expected signature: ``f(state)`` where ``state`` is a string</span>
+<span class="sd">            Expected signature: ``f(pv, state)`` where ``pv`` is the instance</span>
+<span class="sd">            of ``PV`` whose state has changed and ``state`` is a string</span>
 <span class="sd">        access_rights_callback : callable</span>
-<span class="sd">            Expected signature: ``f(access_rights)`` where ``access_rights`` is</span>
+<span class="sd">            Expected signature: ``f(pv, access_rights)`` where ``pv`` is the</span>
+<span class="sd">            instance of ``PV`` whose state has changed and ``access_rights`` is</span>
 <span class="sd">            a member of the caproto ``AccessRights`` enum</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1460,7 +1462,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span> <span class="o">=</span> <span class="n">val</span>
 
     <span class="k">def</span> <span class="nf">access_rights_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rights</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">access_rights_callback</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">rights</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_rights_callback</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rights</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">connection_state_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> connection state changed to </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
@@ -2133,7 +2135,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.1+12.gd18611e',
+            VERSION:'0.1.1+15.g550032c',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
