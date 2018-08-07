@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.1.1+15.g550032c documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.1.1+18.g86ff451 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.1+15.g550032c
+                0.1.1+18.g86ff451
               </div>
             
           
@@ -481,6 +481,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">search_results</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map name to (time, address)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map search id (cid) to (name, queue)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">server_protocol_versions</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map address to protocol version</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakSet</span><span class="p">()</span>
 
@@ -685,6 +686,7 @@
 
         <span class="c1"># Save doing a &#39;self&#39; lookup in the inner loop.</span>
         <span class="n">search_results</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_results</span>
+        <span class="n">server_protocol_versions</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">server_protocol_versions</span>
         <span class="n">unanswered_searches</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span>
         <span class="n">queues</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="n">results_by_cid</span> <span class="o">=</span> <span class="n">deque</span><span class="p">(</span><span class="n">maxlen</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
@@ -741,6 +743,7 @@
                         <span class="c1"># (Entries expire after STALE_SEARCH_EXPIRATION.)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Found </span><span class="si">%s</span><span class="s1"> at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
                         <span class="n">search_results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
+                        <span class="n">server_protocol_versions</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">version</span>
             <span class="c1"># Send the search results to the Contexts that asked for</span>
             <span class="c1"># them. This is probably more general than is has to be but</span>
             <span class="c1"># I&#39;m playing it safe for now.</span>
@@ -1042,9 +1045,12 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock_during_get_circuit_manager</span><span class="p">:</span>
             <span class="n">cm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_managers</span><span class="o">.</span><span class="n">get</span><span class="p">((</span><span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">cm</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">cm</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-                <span class="n">circuit</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">,</span>
-                                            <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span>
-                                            <span class="n">priority</span><span class="o">=</span><span class="n">priority</span><span class="p">)</span>
+                <span class="n">version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">server_protocol_versions</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
+                <span class="n">circuit</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">VirtualCircuit</span><span class="p">(</span>
+                    <span class="n">our_role</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">,</span>
+                    <span class="n">address</span><span class="o">=</span><span class="n">address</span><span class="p">,</span>
+                    <span class="n">priority</span><span class="o">=</span><span class="n">priority</span><span class="p">,</span>
+                    <span class="n">protocol_version</span><span class="o">=</span><span class="n">version</span><span class="p">)</span>
                 <span class="n">cm</span> <span class="o">=</span> <span class="n">VirtualCircuitManager</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">circuit_managers</span><span class="p">[(</span><span class="n">address</span><span class="p">,</span> <span class="n">priority</span><span class="p">)]</span> <span class="o">=</span> <span class="n">cm</span>
             <span class="k">return</span> <span class="n">cm</span>
@@ -1188,6 +1194,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Cannot connect. States are </span><span class="si">{}</span><span class="s2"> &quot;</span>
                                <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span><span class="p">))</span>
+        <span class="c1"># Old versions of the protocol do not send a VersionResponse at TCP</span>
+        <span class="c1"># connection time, so set this Event manually rather than waiting for</span>
+        <span class="c1"># it to be set by receipt of a VersionResponse.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">server_protocol_versions</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="n">ready</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ready</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">TimeoutError</span><span class="p">(</span><span class="s2">&quot;Circuit with server at </span><span class="si">{}</span><span class="s2"> did not &quot;</span>
@@ -2135,7 +2146,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.1+15.g550032c',
+            VERSION:'0.1.1+18.g86ff451',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
