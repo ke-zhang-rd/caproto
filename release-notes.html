@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release History &mdash; caproto 0.1.1+20.gaf7661f documentation</title>
+  <title>Release History &mdash; caproto 0.1.2+22.g1b345e1 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.1+20.gaf7661f
+                0.1.2+22.g1b345e1
               </div>
             
           
@@ -107,6 +107,7 @@
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-1-2-2018-08-31">v0.1.2 (2018-08-31)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v0-1-1-2018-06-17">v0.1.1 (2018-06-17)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#v0-1-0-2018-06-14">v0.1.0 (2018-06-14)</a></li>
 </ul>
@@ -189,6 +190,18 @@ the threadpool configurable via a new
 <code class="docutils literal"><span class="pre">f(access_rights)</span></code> to <code class="docutils literal"><span class="pre">f(pv,</span> <span class="pre">access_rights)</span></code>.</li>
 </ul>
 </div>
+<div class="section" id="v0-1-2-2018-08-31">
+<h2>v0.1.2 (2018-08-31)<a class="headerlink" href="#v0-1-2-2018-08-31" title="Permalink to this headline">¶</a></h2>
+<p>This is a bug-fix release fixing some critical bugs. We recommend that all
+users ugprade.</p>
+<ul class="simple">
+<li>Fix critical typo in threading client’s search functionality that could cause
+it to conflate addresses from different search responses and then attempt to
+connect to the wrong server.</li>
+<li>Fix handshake with servers and clients speaking Version 11 (or older) of the
+protocol.</li>
+</ul>
+</div>
 <div class="section" id="v0-1-1-2018-06-17">
 <h2>v0.1.1 (2018-06-17)<a class="headerlink" href="#v0-1-1-2018-06-17" title="Permalink to this headline">¶</a></h2>
 <p>This is a bug-fix release following closely on the initial release. We
@@ -264,7 +277,7 @@ of caproto.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.1+20.gaf7661f',
+            VERSION:'0.1.2+22.g1b345e1',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
