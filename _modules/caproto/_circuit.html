@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0.1.2+24.ge0c2021 documentation</title>
+  <title>caproto._circuit &mdash; caproto 0.1.2+72.g0eaa75b documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+24.ge0c2021
+                0.1.2+72.g0eaa75b
               </div>
             
           
@@ -483,7 +483,8 @@
                 <span class="n">chan</span><span class="o">.</span><span class="n">sid</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">sid</span>
                 <span class="n">chan</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">sid</span><span class="p">]</span> <span class="o">=</span> <span class="n">chan</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ClearChannelResponse</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="p">(</span><span class="n">ServerDisconnResponse</span><span class="p">,</span>
+                                      <span class="n">ClearChannelResponse</span><span class="p">)):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">channels_sid</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">sid</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="p">(</span><span class="n">ReadNotifyRequest</span><span class="p">,</span> <span class="n">ReadRequest</span><span class="p">,</span>
@@ -743,7 +744,7 @@
                                     <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-<div class="viewcode-block" id="ClientChannel.disconnect"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ClientChannel.clear"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`ClearChannelRequest`.</span>
 
@@ -1047,7 +1048,7 @@
                                    <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
-<div class="viewcode-block" id="ServerChannel.unsubscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="ServerChannel.unsubscribe"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.unsubscribe">[docs]</a>    <span class="k">def</span> <span class="nf">unsubscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Generate a valid :class:`EventCancelResponse`.</span>
 
@@ -1063,13 +1064,25 @@
 <span class="sd">        -------</span>
 <span class="sd">        EventCancelResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">data_type</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="n">EventCancelResponse</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">)</span>
+        <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">EventCancelResponse</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span>
+                                      <span class="n">data_count</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">command</span></div>
+
+<div class="viewcode-block" id="ServerChannel.clear"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate a valid :class:`ClearChannelResponse`</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ClearChannelResposne</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">ClearChannelResponse</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cid</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">command</span></div>
 
 <div class="viewcode-block" id="ServerChannel.disconnect"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Generate a valid :class:`ServerDisconnResponse`.</span>
+<span class="sd">        Generate a valid :class:`ServerDisconnResponse`</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1128,7 +1141,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.2+24.ge0c2021',
+            VERSION:'0.1.2+72.g0eaa75b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

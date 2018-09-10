@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Core API Documentation &mdash; caproto 0.1.2+24.ge0c2021 documentation</title>
+  <title>Core API Documentation &mdash; caproto 0.1.2+72.g0eaa75b documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.2+24.ge0c2021
+                0.1.2+72.g0eaa75b
               </div>
             
           
@@ -270,7 +270,7 @@ in the event of congestion.</p>
 
 <dl class="class">
 <dt id="caproto.SearchRequest">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">SearchRequest</code><span class="sig-paren">(</span><em>name</em>, <em>cid</em>, <em>version</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#SearchRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.SearchRequest" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">SearchRequest</code><span class="sig-paren">(</span><em>name</em>, <em>cid</em>, <em>version</em>, <em>reply=5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#SearchRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.SearchRequest" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query for the address of the server that provides a given Channel.</p>
 <p>Fields:</p>
 <dl class="attribute">
@@ -561,7 +561,7 @@ subscription on this Virtual Circuit.</p>
 
 <dl class="class">
 <dt id="caproto.EventCancelResponse">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventCancelResponse</code><span class="sig-paren">(</span><em>data_type</em>, <em>sid</em>, <em>subscriptionid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventCancelResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventCancelResponse" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">EventCancelResponse</code><span class="sig-paren">(</span><em>data_type</em>, <em>sid</em>, <em>subscriptionid</em>, <em>data_count</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_commands.html#EventCancelResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.EventCancelResponse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Confirm receipt of <a class="reference internal" href="#caproto.EventCancelRequest" title="caproto.EventCancelRequest"><code class="xref py py-class docutils literal"><span class="pre">EventCancelRequest</span></code></a>.</p>
 <p>Fields:</p>
 <dl class="attribute">
@@ -1500,24 +1500,6 @@ load. Lowest priority is 0; highest is 99. Default is 0.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="caproto.ClientChannel.disconnect">
-<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a valid <a class="reference internal" href="#caproto.ClearChannelRequest" title="caproto.ClearChannelRequest"><code class="xref py py-class docutils literal"><span class="pre">ClearChannelRequest</span></code></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>ClearChannelRequest</strong></dt>
-<dd></dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="caproto.ClientChannel.read">
 <code class="descname">read</code><span class="sig-paren">(</span><em>data_type=None</em>, <em>data_count=None</em>, <em>ioid=None</em>, <em>notify=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.ReadRequest" title="caproto.ReadRequest"><code class="xref py py-class docutils literal"><span class="pre">ReadRequest</span></code></a> or <a class="reference internal" href="#caproto.ReadNotifyRequest" title="caproto.ReadNotifyRequest"><code class="xref py py-class docutils literal"><span class="pre">ReadNotifyRequest</span></code></a>.</p>
@@ -1676,6 +1658,24 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 </table>
 </dd></dl>
 
+<dl class="method">
+<dt id="caproto.ClientChannel.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <a class="reference internal" href="#caproto.ClearChannelRequest" title="caproto.ClearChannelRequest"><code class="xref py py-class docutils literal"><span class="pre">ClearChannelRequest</span></code></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ClearChannelRequest</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
@@ -1761,24 +1761,6 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>CreateChFailResponse</strong></dt>
-<dd></dd>
-</dl>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="caproto.ServerChannel.disconnect">
-<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.disconnect" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generate a valid <a class="reference internal" href="#caproto.ServerDisconnResponse" title="caproto.ServerDisconnResponse"><code class="xref py py-class docutils literal"><span class="pre">ServerDisconnResponse</span></code></a>.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
-<dt><strong>ServerDisconnResponse</strong></dt>
 <dd></dd>
 </dl>
 </td>
@@ -1915,7 +1897,7 @@ count, which can be checked in the Channel’s attribute
 
 <dl class="method">
 <dt id="caproto.ServerChannel.unsubscribe">
-<code class="descname">unsubscribe</code><span class="sig-paren">(</span><em>subscriptionid</em>, <em>data_type=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.unsubscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.unsubscribe" title="Permalink to this definition">¶</a></dt>
+<code class="descname">unsubscribe</code><span class="sig-paren">(</span><em>subscriptionid</em>, <em>data_type=None</em>, <em>data_count=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.unsubscribe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.unsubscribe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a valid <a class="reference internal" href="#caproto.EventCancelResponse" title="caproto.EventCancelResponse"><code class="xref py py-class docutils literal"><span class="pre">EventCancelResponse</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1943,9 +1925,27 @@ native data type, which can be checked in the Channel’s attribute
 </dd></dl>
 
 <dl class="method">
-<dt>
-<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.disconnect"><span class="viewcode-link">[source]</span></a></dt>
-<dd><p>Generate a valid <a class="reference internal" href="#caproto.ServerDisconnResponse" title="caproto.ServerDisconnResponse"><code class="xref py py-class docutils literal"><span class="pre">ServerDisconnResponse</span></code></a>.</p>
+<dt id="caproto.ServerChannel.clear">
+<code class="descname">clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.clear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <a class="reference internal" href="#caproto.ClearChannelResponse" title="caproto.ClearChannelResponse"><code class="xref py py-class docutils literal"><span class="pre">ClearChannelResponse</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>ClearChannelResposne</strong></dt>
+<dd></dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.ServerChannel.disconnect">
+<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a valid <a class="reference internal" href="#caproto.ServerDisconnResponse" title="caproto.ServerDisconnResponse"><code class="xref py py-class docutils literal"><span class="pre">ServerDisconnResponse</span></code></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2311,7 +2311,7 @@ supported by Python, using <code class="docutils literal"><span class="pre">logg
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.2+24.ge0c2021',
+            VERSION:'0.1.2+72.g0eaa75b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0.1.2+24.ge0c2021 documentation</title>
+  <title>caproto._commands &mdash; caproto 0.1.2+72.g0eaa75b documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+24.ge0c2021
+                0.1.2+72.g0eaa75b
               </div>
             
           
@@ -655,7 +655,13 @@
         <span class="n">parameters</span> <span class="o">=</span> <span class="p">(</span><span class="n">signature</span><span class="o">.</span><span class="n">parameters</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">Message</span>
                       <span class="k">else</span> <span class="p">[</span><span class="s1">&#39;header&#39;</span><span class="p">])</span>
 
-        <span class="n">d</span> <span class="o">=</span> <span class="p">[(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">)))</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">]</span>
+        <span class="k">def</span> <span class="nf">safe_repr</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">repr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">f</span><span class="s1">&#39;(repr: </span><span class="si">{ex}</span><span class="s1">)&#39;</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="p">[(</span><span class="n">arg</span><span class="p">,</span> <span class="n">safe_repr</span><span class="p">(</span><span class="n">arg</span><span class="p">))</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">]</span>
         <span class="n">formatted_args</span> <span class="o">=</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;</span><span class="si">{!s}</span><span class="s2">=</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
                                     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d</span><span class="p">])</span>
         <span class="k">return</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">(</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">formatted_args</span><span class="p">)</span>
@@ -750,7 +756,7 @@
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">6</span>
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">reply</span><span class="o">=</span><span class="n">NO_REPLY</span><span class="p">):</span>
         <span class="n">size</span><span class="p">,</span> <span class="n">payload</span> <span class="o">=</span> <span class="n">padded_string_payload</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="n">rec</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">field</span> <span class="o">=</span> <span class="n">name</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
         <span class="n">_len</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">rec</span><span class="p">)</span>
@@ -759,8 +765,18 @@
                                     <span class="s1">&#39;on record names. The record </span><span class="si">{!r}</span><span class="s1"> is </span><span class="si">{}</span><span class="s1"> &#39;</span>
                                     <span class="s1">&#39;characters.&#39;</span>
                                     <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">MAX_RECORD_LENGTH</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_len</span><span class="p">))</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="n">SearchRequestHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">NO_REPLY</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">cid</span><span class="p">)</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">SearchRequestHeader</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">reply</span><span class="p">,</span> <span class="n">version</span><span class="p">,</span> <span class="n">cid</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">from_wire</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="o">*</span><span class="n">buffers</span><span class="p">,</span> <span class="n">sender_address</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Special-case to handle the fact that data_type holds whether or not</span>
+        <span class="c1"># to reply to the request upon failure - this can cause part of the</span>
+        <span class="c1"># payload to be interpreted as metadata in from_buffer (TODO: is there</span>
+        <span class="c1"># a better place to special-case/fix this?)</span>
+        <span class="n">payload_buffer</span> <span class="o">=</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">buffers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">from_components</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">payload_buffer</span><span class="p">,</span>
+                                   <span class="n">sender_address</span><span class="o">=</span><span class="n">sender_address</span><span class="p">)</span>
 
     <span class="n">payload_size</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">payload_size</span><span class="p">)</span>
     <span class="n">reply</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">)</span>
@@ -1210,12 +1226,13 @@
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">2</span>
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">False</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">):</span>
-        <span class="c1"># TODO: refactor, this does not exist</span>
-        <span class="n">header</span> <span class="o">=</span> <span class="n">EventCancelResponseHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span> <span class="n">subscriptionid</span><span class="p">,</span> <span class="n">data_count</span><span class="p">):</span>
+        <span class="n">header</span> <span class="o">=</span> <span class="n">EventCancelResponseHeader</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">sid</span><span class="p">,</span>
+                                           <span class="n">subscriptionid</span><span class="p">)</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">header</span><span class="p">)</span>
 
     <span class="n">data_type</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="n">ChannelType</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_type</span><span class="p">))</span>
+    <span class="n">data_count</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">data_count</span><span class="p">)</span>
     <span class="n">sid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span><span class="p">)</span>
     <span class="n">subscriptionid</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="k">lambda</span> <span class="bp">self</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter2</span><span class="p">)</span>
 
@@ -1903,7 +1920,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'0.1.2+24.ge0c2021',
+            VERSION:'0.1.2+72.g0eaa75b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

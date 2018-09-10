@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.sync.client &mdash; caproto 0.1.2+24.ge0c2021 documentation</title>
+  <title>caproto.sync.client &mdash; caproto 0.1.2+72.g0eaa75b documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+24.ge0c2021
+                0.1.2+72.g0eaa75b
               </div>
             
           
@@ -411,7 +411,7 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
-                <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">disconnect</span><span class="p">())</span>
+                <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">clear</span><span class="p">())</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
@@ -598,7 +598,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
-                    <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">disconnect</span><span class="p">())</span>
+                    <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">clear</span><span class="p">())</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="c1"># Reinstate the timeout for channel cleanup.</span>
             <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -708,7 +708,7 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
-                <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">disconnect</span><span class="p">())</span>
+                <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">clear</span><span class="p">())</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
@@ -792,7 +792,7 @@
     <span class="k">finally</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">chan</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span><span class="p">:</span>
-                <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">disconnect</span><span class="p">())</span>
+                <span class="n">send</span><span class="p">(</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">clear</span><span class="p">())</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="n">sockets</span><span class="p">[</span><span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="p">]</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">initial</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">final</span></div>
@@ -964,7 +964,7 @@
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../../',
-            VERSION:'0.1.2+24.ge0c2021',
+            VERSION:'0.1.2+72.g0eaa75b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',

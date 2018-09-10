@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Synchronous Client &mdash; caproto 0.1.2+24.ge0c2021 documentation</title>
+  <title>Synchronous Client &mdash; caproto 0.1.2+72.g0eaa75b documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.2+24.ge0c2021
+                0.1.2+72.g0eaa75b
               </div>
             
           
@@ -226,7 +226,7 @@ data structures.</p>
 <span class="gh">Out[6]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=0)</span>
 
 <span class="gp">In [7]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                         Out[7]: (b&#39;&#39;, &lt;memory at 0x2b1574f4e408&gt;)</span>
+<span class="go">                                                                                                         Out[7]: (b&#39;&#39;, &lt;memory at 0x148733e9cd08&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
@@ -251,7 +251,7 @@ result in an <code class="docutils literal"><span class="pre">ErrorResponse</spa
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">write</span>
 
 <span class="gp">In [11]: </span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;random_walk:dt&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-<span class="gh">Out[11]: </span><span class="go">WriteNotifyResponse(data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=0, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=0)</span>
+<span class="gh">Out[11]: </span><span class="go">WriteNotifyResponse(data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=0)</span>
 </pre></div>
 </div>
 </div>
@@ -812,7 +812,7 @@ user.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'./',
-            VERSION:'0.1.2+24.ge0c2021',
+            VERSION:'0.1.2+72.g0eaa75b',
             LANGUAGE:'None',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
