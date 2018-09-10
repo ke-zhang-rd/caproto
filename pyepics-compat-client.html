@@ -251,10 +251,10 @@ Get and put to <code class="docutils literal"><span class="pre">random_walk:dt</
 <span class="gh">Out[11]: </span><span class="go">0</span>
 
 <span class="gp">In [12]: </span><span class="kn">import</span> <span class="nn">time</span><span class="p">;</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># give some time for responses to come in</span>
-<span class="go">           received value 0.42766336572366204</span>
-<span class="go">received value 1.3203428934365737</span>
-<span class="go">received value 1.8188391458158943</span>
-<span class="go">received value 2.770863969892789</span>
+<span class="go">           received value 0.6614124408639561</span>
+<span class="go">received value 1.0585156593697613</span>
+<span class="go">received value 1.6653759667797434</span>
+<span class="go">received value 1.750459848149092</span>
 
 <span class="gp">In [13]: </span><span class="n">x_pv</span><span class="o">.</span><span class="n">clear_callbacks</span><span class="p">()</span>
 </pre></div>
@@ -262,7 +262,7 @@ Get and put to <code class="docutils literal"><span class="pre">random_walk:dt</
 <p>The underlying caproto PV and Context objects from caproto’s main
 <a class="reference internal" href="threading-client.html"><span class="doc">Threading Client</span></a>. are accessible:</p>
 <div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">pv</span><span class="o">.</span><span class="n">_caproto_pv</span>
-<span class="gh">Out[14]: </span><span class="go">&lt;PV name=&#39;random_walk:dt&#39; priority=0 address=(&#39;127.0.0.1&#39;, 63015), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="gh">Out[14]: </span><span class="go">&lt;PV name=&#39;random_walk:dt&#39; priority=0 address=(&#39;127.0.0.1&#39;, 53187), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
 <span class="gp">In [15]: </span><span class="n">pv</span><span class="o">.</span><span class="n">_caproto_pv</span><span class="o">.</span><span class="n">context</span>
 <span class="go">                                                                                                                                            Out[15]: &lt;Context searches_pending=0 circuits=1 pvs=2 idle=0&gt;</span>
