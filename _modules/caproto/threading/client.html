@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.1.2+88.g82418cf documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.1.2+96.g1a49b86 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+88.g82418cf
+                0.1.2+96.g1a49b86
               </div>
             
           
@@ -1106,16 +1106,15 @@
             <span class="c1"># disconnect any circuits we have</span>
             <span class="n">circuits</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit_managers</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
             <span class="n">total_circuits</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">circuits</span><span class="p">)</span>
+            <span class="n">disconnected</span> <span class="o">=</span> <span class="kc">False</span>
             <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">circuit</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">circuits</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">circuit</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Disconnecting circuit </span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
                                    <span class="n">idx</span><span class="p">,</span> <span class="n">total_circuits</span><span class="p">,</span> <span class="n">circuit</span><span class="p">)</span>
                     <span class="n">circuit</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;... Circuit </span><span class="si">%d</span><span class="s1"> disconnect complete.&#39;</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Circuit </span><span class="si">%d</span><span class="s1">/</span><span class="si">%d</span><span class="s1"> was already disconnected: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span>
-                                   <span class="n">idx</span><span class="p">,</span> <span class="n">total_circuits</span><span class="p">,</span> <span class="n">circuit</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;All circuits disconnected&#39;</span><span class="p">)</span>
+                    <span class="n">disconnected</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="n">disconnected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;All circuits disconnected&#39;</span><span class="p">)</span>
         <span class="k">finally</span><span class="p">:</span>
             <span class="c1"># Remove from Broadcaster.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
@@ -1125,10 +1124,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">circuit_managers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
             <span class="c1"># disconnect the underlying state machine</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Removing Context from the broadcaster&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">remove_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Stopping Context&#39;s SelectorThread&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Stopping SelectorThread of the context&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
 
             <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
@@ -1136,7 +1134,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_activate_subscriptions_thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Disconnection complete&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Context disconnection complete&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
@@ -2148,21 +2146,11 @@
 
     
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'../../../',
-              VERSION:'0.1.2+88.g82418cf',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
         <script type="text/javascript" src="../../../_static/jquery.js"></script>
         <script type="text/javascript" src="../../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../../_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

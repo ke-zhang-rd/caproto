@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0.1.2+88.g82418cf documentation</title>
+  <title>caproto: a pure-Python Channel Access protocol library &mdash; caproto 0.1.2+96.g1a49b86 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.2+88.g82418cf
+                0.1.2+96.g1a49b86
               </div>
             
           
@@ -198,24 +198,24 @@ time, caproto is suitable for use at large experimental facilities.</p>
 <div class="section" id="try-caproto-in-four-lines">
 <h2>Try caproto in four lines<a class="headerlink" href="#try-caproto-in-four-lines" title="Permalink to this headline">¶</a></h2>
 <p>First verify that you have Python 3.6+.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 --version
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 --version
 </pre></div>
 </div>
 <p>If necessary, install it by your method of choice (apt, Homebrew, conda, etc.).
 Now install caproto:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m pip install -U caproto
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m pip install -U caproto
 </pre></div>
 </div>
 <p>In one terminal, start an EPICS Input-Output Controller (IOC), which is a
 server.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>python3 -m caproto.ioc_examples.simple --list-pvs
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python3 -m caproto.ioc_examples.simple --list-pvs
 </pre></div>
 </div>
 <p>In another, use the command-line client:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>caproto-put -c simple:A <span class="m">42</span>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>caproto-put -c simple:A <span class="m">42</span>
 </pre></div>
 </div>
-<p>This sets the value to 42 and wait for it to “complete” (<code class="docutils literal"><span class="pre">-c</span></code>). Read more
+<p>This sets the value to 42 and wait for it to “complete” (<code class="docutils literal notranslate"><span class="pre">-c</span></code>). Read more
 about the <a class="reference internal" href="command-line-client.html"><span class="doc">Command-Line Client</span></a> and <a class="reference internal" href="iocs.html"><span class="doc">Input-Output Controllers (IOCs)</span></a>.</p>
 </div>
 <div class="section" id="reasons-to-use-caproto-and-1-big-reason-not-to">
@@ -236,7 +236,7 @@ logging with the <a class="reference internal" href="command-line-client.html"><
 <li><p class="first"><strong>Efficient</strong>: Data is read directly from sockets into contiguous-memory
 ctypes structures.</p>
 <ul class="simple">
-<li>Zero-copy into <code class="docutils literal"><span class="pre">ctypes</span></code> and <code class="docutils literal"><span class="pre">array.array</span></code> or <code class="docutils literal"><span class="pre">numpy.ndarray</span></code>.</li>
+<li>Zero-copy into <code class="docutils literal notranslate"><span class="pre">ctypes</span></code> and <code class="docutils literal notranslate"><span class="pre">array.array</span></code> or <code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code>.</li>
 <li>Only pay a performance cost of human-friendly introspection if and when
 you use it.</li>
 </ul>
@@ -428,21 +428,11 @@ learning exercises.</p>
 
     
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.1.2+88.g82418cf',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

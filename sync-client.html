@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Synchronous Client &mdash; caproto 0.1.2+88.g82418cf documentation</title>
+  <title>Synchronous Client &mdash; caproto 0.1.2+96.g1a49b86 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.2+88.g82418cf
+                0.1.2+96.g1a49b86
               </div>
             
           
@@ -190,31 +190,31 @@ applications, use one of caproto’s other clients such as the
 <div class="section" id="tutorial">
 <h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
 <p>In a separate shell, start one of caproto’s demo IOCs.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.random_walk
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python3 -m caproto.ioc_examples.random_walk
 PVs: <span class="o">[</span><span class="s1">&#39;random_walk:dt&#39;</span>, <span class="s1">&#39;random_walk:x&#39;</span><span class="o">]</span>
 </pre></div>
 </div>
 <p>Now, in Python we will talk to it using caproto’s synchronous client.</p>
 <div class="section" id="read">
 <h3>Read<a class="headerlink" href="#read" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">read</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [1]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">read</span>
 
 <span class="gp">In [2]: </span><span class="n">res</span> <span class="o">=</span> <span class="n">read</span><span class="p">(</span><span class="s1">&#39;random_walk:dt&#39;</span><span class="p">)</span>
 
 <span class="gp">In [3]: </span><span class="n">res</span>
-<span class="gh">Out[3]: </span><span class="go">ReadNotifyResponse(data=array([3.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=0, metadata=None)</span>
+<span class="gh">Out[3]: </span><span class="go">ReadNotifyResponse(data=array([1.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=0, metadata=None)</span>
 </pre></div>
 </div>
 <p>This object is a human-friendly representation of the server’s response. The
 raw bytes of that response are:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="nb">bytes</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-<span class="gh">Out[4]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00@\x08\x00\x00\x00\x00\x00\x00&#39;</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [4]: </span><span class="nb">bytes</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+<span class="gh">Out[4]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x00?\xf0\x00\x00\x00\x00\x00\x00&#39;</span>
 </pre></div>
 </div>
 <p>Access particular fields in the response using attribute (“dot”) access on
-<code class="docutils literal"><span class="pre">res</span></code>.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">res</span><span class="o">.</span><span class="n">data</span>
-<span class="gh">Out[5]: </span><span class="go">array([3.])</span>
+<code class="docutils literal notranslate"><span class="pre">res</span></code>.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [5]: </span><span class="n">res</span><span class="o">.</span><span class="n">data</span>
+<span class="gh">Out[5]: </span><span class="go">array([1.])</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -222,33 +222,33 @@ raw bytes of that response are:</p>
 <p><strong>Performance Note</strong></p>
 <p>The underlying metadata and data are stored in efficient, contiguous-memory
 data structures.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">res</span><span class="o">.</span><span class="n">header</span>  <span class="c1"># a ctypes.BigEndianStructure</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">res</span><span class="o">.</span><span class="n">header</span>  <span class="c1"># a ctypes.BigEndianStructure</span>
 <span class="gh">Out[6]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=0)</span>
 
 <span class="gp">In [7]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                         Out[7]: (b&#39;&#39;, &lt;memory at 0x2b671f790288&gt;)</span>
+<span class="go">                                                                                                         Out[7]: (b&#39;&#39;, &lt;memory at 0x2acd3544f948&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
-intermediate copies. Accessing the <code class="docutils literal"><span class="pre">res.data</span></code> — which returns a
-<code class="docutils literal"><span class="pre">numpy.ndarray</span></code> or <code class="docutils literal"><span class="pre">array.array</span></code> — provides a view onto that same
+intermediate copies. Accessing the <code class="docutils literal notranslate"><span class="pre">res.data</span></code> — which returns a
+<code class="docutils literal notranslate"><span class="pre">numpy.ndarray</span></code> or <code class="docutils literal notranslate"><span class="pre">array.array</span></code> — provides a view onto that same
 memory with no copying (if the data was received from the socket all at
 once) or one copy (if the data bridged multiple receipts).</p>
 </div>
 </div>
 <div class="section" id="write">
 <h3>Write<a class="headerlink" href="#write" title="Permalink to this headline">¶</a></h3>
-<p>Let us set the value to <code class="docutils literal"><span class="pre">1</span></code>.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">write</span>
+<p>Let us set the value to <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">write</span>
 
 <span class="gp">In [9]: </span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;random_walk:dt&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The function returns <code class="docutils literal"><span class="pre">None</span></code> immediately. To wait for confirmation that the
-write has been successfully processed by the server, use the <code class="docutils literal"><span class="pre">notify</span></code> keyword
+<p>The function returns <code class="docutils literal notranslate"><span class="pre">None</span></code> immediately. To wait for confirmation that the
+write has been successfully processed by the server, use the <code class="docutils literal notranslate"><span class="pre">notify</span></code> keyword
 argument. (This is not guaranteed to be supported by an EPICS server; it may
-result in an <code class="docutils literal"><span class="pre">ErrorResponse</span></code>.)</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">write</span>
+result in an <code class="docutils literal notranslate"><span class="pre">ErrorResponse</span></code>.)</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [10]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">write</span>
 
 <span class="gp">In [11]: </span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;random_walk:dt&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="gh">Out[11]: </span><span class="go">WriteNotifyResponse(data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=0)</span>
@@ -257,18 +257,18 @@ result in an <code class="docutils literal"><span class="pre">ErrorResponse</spa
 </div>
 <div class="section" id="subscribe-monitor">
 <h3>Subscribe (“Monitor”)<a class="headerlink" href="#subscribe-monitor" title="Permalink to this headline">¶</a></h3>
-<p>Let us now monitor a channel. The server updates the <code class="docutils literal"><span class="pre">random_walk:x</span></code> channel
-periodically at some period set by <code class="docutils literal"><span class="pre">random_walk:dt</span></code>. We can subscribe
+<p>Let us now monitor a channel. The server updates the <code class="docutils literal notranslate"><span class="pre">random_walk:x</span></code> channel
+periodically at some period set by <code class="docutils literal notranslate"><span class="pre">random_walk:dt</span></code>. We can subscribe
 to updates and fan them out to one or more user-defined callback functions.
-First, we define a <a class="reference internal" href="#caproto.sync.client.Subscription" title="caproto.sync.client.Subscription"><code class="xref py py-class docutils literal"><span class="pre">Subscription</span></code></a>.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">subscribe</span>
+First, we define a <a class="reference internal" href="#caproto.sync.client.Subscription" title="caproto.sync.client.Subscription"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscription</span></code></a>.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [12]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">subscribe</span>
 
 <span class="gp">In [13]: </span><span class="n">sub</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="s1">&#39;random_walk:x&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Next, we define a callback function, a function that will be called whenever
 the server sends an update. It must accept one positional argument.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">responses</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="gp">In [15]: </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
 <span class="gp">   ....: </span>    <span class="s2">&quot;On each update, print the data and cache the full response in a list.&quot;</span>
@@ -277,17 +277,17 @@ the server sends an update. It must accept one positional argument.</p>
 <span class="gp">   ....: </span>
 </pre></div>
 </div>
-<p>We register this function with <code class="docutils literal"><span class="pre">sub</span></code>. We can register multiple such functions
+<p>We register this function with <code class="docutils literal notranslate"><span class="pre">sub</span></code>. We can register multiple such functions
 is we wish.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="n">token</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [16]: </span><span class="n">token</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal"><span class="pre">token</span></code> is just an integer which we can use to remove <code class="docutils literal"><span class="pre">f</span></code> later.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">token</span></code> is just an integer which we can use to remove <code class="docutils literal notranslate"><span class="pre">f</span></code> later.</p>
 <p>Because this is a <em>synchronous</em> client, processing subscriptions is a blocking
 operation,. (See the <a class="reference internal" href="threading-client.html"><span class="doc">Threading Client</span></a> to process subscriptions on a
 separate, background thread.) To activate the subscription, call
-<code class="docutils literal"><span class="pre">sub.block()</span></code>.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">sub</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+<code class="docutils literal notranslate"><span class="pre">sub.block()</span></code>.</p>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [17]: </span><span class="n">sub</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 <span class="go">[14.14272394]</span>
 <span class="go">[14.94322537]</span>
 <span class="go">[15.35695388]</span>
@@ -295,32 +295,32 @@ separate, background thread.) To activate the subscription, call
 <span class="go">^C</span>
 </pre></div>
 </div>
-<p>This call to <code class="docutils literal"><span class="pre">sub.block()</span></code> blocks indefinitely, sending a message to the
-server to request future updates and then passing its responses to <code class="docutils literal"><span class="pre">f</span></code> as
+<p>This call to <code class="docutils literal notranslate"><span class="pre">sub.block()</span></code> blocks indefinitely, sending a message to the
+server to request future updates and then passing its responses to <code class="docutils literal notranslate"><span class="pre">f</span></code> as
 they arrive. The server always sends at least one response immediately. When we
 are satisfied, we can interrupt it with Ctrl+C (or by calling
-<code class="docutils literal"><span class="pre">sub.interrupt()</span></code> from another thread). The subscription may later be
-reactivated by calling <code class="docutils literal"><span class="pre">sub.block()</span></code> again.</p>
-<p>Recall that the user-defined function <code class="docutils literal"><span class="pre">f</span></code> printed the data from each response
+<code class="docutils literal notranslate"><span class="pre">sub.interrupt()</span></code> from another thread). The subscription may later be
+reactivated by calling <code class="docutils literal notranslate"><span class="pre">sub.block()</span></code> again.</p>
+<p>Recall that the user-defined function <code class="docutils literal notranslate"><span class="pre">f</span></code> printed the data from each response
 and accumulated the response objects in a list. Indeed, we have captured four
 responses.</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [18]: </span><span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [18]: </span><span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
 <span class="gh">Out[18]: </span><span class="go">4</span>
 </pre></div>
 </div>
 <p>At any point we can remove a specific callback function:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="n">sub</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [19]: </span><span class="n">sub</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>or clear all the callbacks on a subscription:</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="n">sub</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="n">sub</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>To activate multiple subscriptions concurrently, use the top-level function
-<a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal"><span class="pre">block()</span></code></a>, which accepts any number of <a class="reference internal" href="#caproto.sync.client.Subscription" title="caproto.sync.client.Subscription"><code class="xref py py-class docutils literal"><span class="pre">Subscription</span></code></a> objects as
-arguments. Again, use Ctrl+C to interrupt (or call <a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-func docutils literal"><span class="pre">interrupt()</span></code></a> from
+<a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal notranslate"><span class="pre">block()</span></code></a>, which accepts any number of <a class="reference internal" href="#caproto.sync.client.Subscription" title="caproto.sync.client.Subscription"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscription</span></code></a> objects as
+arguments. Again, use Ctrl+C to interrupt (or call <a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-func docutils literal notranslate"><span class="pre">interrupt()</span></code></a> from
 another thread).</p>
-<div class="highlight-ipython"><div class="highlight"><pre><span></span><span class="gp">In [21]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">block</span>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [21]: </span><span class="kn">from</span> <span class="nn">caproto.sync.client</span> <span class="kn">import</span> <span class="n">block</span>
 
 <span class="gp">In [22]: </span><span class="n">sub_dt</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="s1">&#39;random_walk:dt&#39;</span><span class="p">)</span>
 
@@ -342,17 +342,17 @@ another thread).</p>
 </div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
-<p>The callback registry in <a class="reference internal" href="#caproto.sync.client.Subscription" title="caproto.sync.client.Subscription"><code class="xref py py-class docutils literal"><span class="pre">Subscription</span></code></a> only holds weak references
+<p>The callback registry in <a class="reference internal" href="#caproto.sync.client.Subscription" title="caproto.sync.client.Subscription"><code class="xref py py-class docutils literal notranslate"><span class="pre">Subscription</span></code></a> only holds weak references
 to the user callback functions. If there are no other references to the
 function, it will be silently garbage collected and removed. Therefore,
 constructions like this do not work:</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">))</span>
 </pre></div>
 </div>
 <p>The lambda function will be promptly garbage collected by Python and
-removed from <code class="docutils literal"><span class="pre">sub</span></code> by caproto. To avoid that, make a reference before
-passing the function to <a class="reference internal" href="#caproto.sync.client.Subscription.add_callback" title="caproto.sync.client.Subscription.add_callback"><code class="xref py py-meth docutils literal"><span class="pre">Subscription.add_callback()</span></code></a>.</p>
-<div class="highlight-python"><div class="highlight"><pre><span></span><span class="n">cb</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+removed from <code class="docutils literal notranslate"><span class="pre">sub</span></code> by caproto. To avoid that, make a reference before
+passing the function to <a class="reference internal" href="#caproto.sync.client.Subscription.add_callback" title="caproto.sync.client.Subscription.add_callback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Subscription.add_callback()</span></code></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cb</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">response</span><span class="p">:</span> <span class="k">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 <span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -370,7 +370,7 @@ each function call. This stateless design is sufficient to support the
 debugging, but it is very inefficient for performing multiple operations on the
 same channel.</p>
 <p>For the common use case “read / write a new value / read again,” the
-synchronous client provides <a class="reference internal" href="#caproto.sync.client.read_write_read" title="caproto.sync.client.read_write_read"><code class="xref py py-func docutils literal"><span class="pre">read_write_read()</span></code></a>, which uses one connection
+synchronous client provides <a class="reference internal" href="#caproto.sync.client.read_write_read" title="caproto.sync.client.read_write_read"><code class="xref py py-func docutils literal notranslate"><span class="pre">read_write_read()</span></code></a>, which uses one connection
 for all three operations. For anything more complicated than that, upgrade to
 one of the other clients.</p>
 </div>
@@ -422,7 +422,7 @@ clients should do this.</p>
 </table>
 <p class="rubric">Examples</p>
 <p>Get the value of a Channel named ‘cat’.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">read</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -447,7 +447,7 @@ clients should do this.</p>
 <dt><strong>data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
 <dd><p class="first last">Write as specific data type. Default is inferred from input.</p>
 </dd>
-<dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
+<dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
 <dd><p class="first last">Status and control metadata for the values</p>
 </dd>
 <dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
@@ -474,7 +474,7 @@ clients should do this.</p>
 </table>
 <p class="rubric">Examples</p>
 <p>Write the value 5 to a Channel named ‘cat’.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># returns None</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># returns None</span>
 </pre></div>
 </div>
 <p>Request notification of completion (“put completion”) and wait for it.
@@ -503,7 +503,7 @@ channel’s native data type. Default is Channel’s native data type.</p>
 <dt><strong>data_count</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd><p class="first last">Requested number of values. Default is the channel’s native data
 count, which can be checked in the Channel’s attribute
-<code class="xref py py-attr docutils literal"><span class="pre">native_data_count</span></code>.</p>
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">native_data_count</span></code>.</p>
 </dd>
 <dt><strong>low, high, to</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
 <dd><p class="first last">deprecated by Channel Access, not yet implemented by caproto</p>
@@ -517,31 +517,31 @@ count, which can be checked in the Channel’s attribute
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>Define a subscription on the <code class="docutils literal"><span class="pre">cat</span></code> PV.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span>
+<p>Define a subscription on the <code class="docutils literal notranslate"><span class="pre">cat</span></code> PV.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Add one or more user-defined callbacks to process responses.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
 <span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">repsonse</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
 <span class="gp">...</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Activate the subscription and process incoming responses.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sub</span><span class="o">.</span><span class="n">block</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>This is a blocking operation in the sync client. (To do this on a
 background thread, use the threading client.) Interrupt using Ctrl+C or
-by calling <code class="xref py py-meth docutils literal"><span class="pre">sub.interrupt()</span></code> from another thread.</p>
-<p>The subscription may be reactivated by calling <code class="docutils literal"><span class="pre">sub.block()</span></code> again.</p>
+by calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">sub.interrupt()</span></code> from another thread.</p>
+<p>The subscription may be reactivated by calling <code class="docutils literal notranslate"><span class="pre">sub.block()</span></code> again.</p>
 <p>To process multiple subscriptions at once, use the <em>function</em>
-<a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal"><span class="pre">block()</span></code></a>, which takes one or more Subscriptions as arguments.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">block</span><span class="p">(</span><span class="n">sub1</span><span class="p">,</span> <span class="n">sub2</span><span class="p">)</span>
+<a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal notranslate"><span class="pre">block()</span></code></a>, which takes one or more Subscriptions as arguments.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">block</span><span class="p">(</span><span class="n">sub1</span><span class="p">,</span> <span class="n">sub2</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>There is also an <a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-func docutils literal"><span class="pre">interrupt()</span></code></a> function, which is merely an alias to
+<p>There is also an <a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-func docutils literal notranslate"><span class="pre">interrupt()</span></code></a> function, which is merely an alias to
 the method.</p>
 </dd></dl>
 
@@ -550,7 +550,7 @@ the method.</p>
 <code class="descclassname">caproto.sync.client.</code><code class="descname">block</code><span class="sig-paren">(</span><em>*subscriptions</em>, <em>duration=None</em>, <em>timeout=1</em>, <em>force_int_enums=False</em>, <em>repeater=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.block" title="Permalink to this definition">¶</a></dt>
 <dd><p>Activate one or more subscriptions and process incoming responses.</p>
 <p>Use Ctrl+C (SIGINT) to escape, or from another thread, call
-<a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-func docutils literal"><span class="pre">interrupt()</span></code></a>.</p>
+<a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-func docutils literal notranslate"><span class="pre">interrupt()</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -580,7 +580,7 @@ clients should do this.</p>
 </table>
 <p class="rubric">Examples</p>
 <p>Activate subscription(s) and block while they process updates.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sub1</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sub1</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sub1</span> <span class="o">=</span> <span class="n">subscribe</span><span class="p">(</span><span class="s1">&#39;dog&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">block</span><span class="p">(</span><span class="n">sub1</span><span class="p">,</span> <span class="n">sub2</span><span class="p">)</span>
 </pre></div>
@@ -590,7 +590,7 @@ clients should do this.</p>
 <dl class="function">
 <dt id="caproto.sync.client.interrupt">
 <code class="descclassname">caproto.sync.client.</code><code class="descname">interrupt</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#interrupt"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.interrupt" title="Permalink to this definition">¶</a></dt>
-<dd><p>Signal to <a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal"><span class="pre">block()</span></code></a> to stop blocking. Idempotent.</p>
+<dd><p>Signal to <a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal notranslate"><span class="pre">block()</span></code></a> to stop blocking. Idempotent.</p>
 <p>This obviously cannot be called interactively while blocked;
 it is intended to be called from another thread.</p>
 </dd></dl>
@@ -599,13 +599,13 @@ it is intended to be called from another thread.</p>
 <dt id="caproto.sync.client.read_write_read">
 <code class="descclassname">caproto.sync.client.</code><code class="descname">read_write_read</code><span class="sig-paren">(</span><em>pv_name</em>, <em>data</em>, <em>*</em>, <em>notify=False</em>, <em>read_data_type=None</em>, <em>write_data_type=None</em>, <em>metadata=None</em>, <em>timeout=1</em>, <em>priority=0</em>, <em>force_int_enums=False</em>, <em>repeater=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#read_write_read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.read_write_read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write to a Channel, but sandwich the write between to reads.</p>
-<p>This is what the command-line utilities <code class="docutils literal"><span class="pre">caproto-put</span></code> and <code class="docutils literal"><span class="pre">caput</span></code> do.
+<p>This is what the command-line utilities <code class="docutils literal notranslate"><span class="pre">caproto-put</span></code> and <code class="docutils literal notranslate"><span class="pre">caput</span></code> do.
 Notice that if you want the second reading to reflect the written value,
-you should pass the parameter <code class="docutils literal"><span class="pre">notify=True</span></code>. (This is also true of
-<code class="docutils literal"><span class="pre">caproto-put</span></code>/<code class="docutils literal"><span class="pre">caput</span></code>, which needs the <code class="docutils literal"><span class="pre">-c</span></code> argument to behave the
+you should pass the parameter <code class="docutils literal notranslate"><span class="pre">notify=True</span></code>. (This is also true of
+<code class="docutils literal notranslate"><span class="pre">caproto-put</span></code>/<code class="docutils literal notranslate"><span class="pre">caput</span></code>, which needs the <code class="docutils literal notranslate"><span class="pre">-c</span></code> argument to behave the
 way you might expect it to behave.)</p>
-<p>This is provided as a separate function in order to support <code class="docutils literal"><span class="pre">caproto-put</span></code>
-efficiently. Making separate calls to <a class="reference internal" href="#caproto.sync.client.read" title="caproto.sync.client.read"><code class="xref py py-func docutils literal"><span class="pre">read()</span></code></a> and <a class="reference internal" href="#caproto.sync.client.write" title="caproto.sync.client.write"><code class="xref py py-func docutils literal"><span class="pre">write()</span></code></a> would
+<p>This is provided as a separate function in order to support <code class="docutils literal notranslate"><span class="pre">caproto-put</span></code>
+efficiently. Making separate calls to <a class="reference internal" href="#caproto.sync.client.read" title="caproto.sync.client.read"><code class="xref py py-func docutils literal notranslate"><span class="pre">read()</span></code></a> and <a class="reference internal" href="#caproto.sync.client.write" title="caproto.sync.client.write"><code class="xref py py-func docutils literal notranslate"><span class="pre">write()</span></code></a> would
 re-create a connection redundantly.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -626,7 +626,7 @@ re-create a connection redundantly.</p>
 <dt><strong>write_data_type</strong> <span class="classifier-delimiter">:</span> <span class="classifier">{‘native’, ‘status’, ‘time’, ‘graphic’, ‘control’} or ChannelType or int ID, optional</span></dt>
 <dd><p class="first last">Write as specific data type. Default is inferred from input.</p>
 </dd>
-<dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
+<dt><strong>metadata</strong> <span class="classifier-delimiter">:</span> <span class="classifier"><code class="docutils literal notranslate"><span class="pre">ctypes.BigEndianStructure</span></code> or tuple</span></dt>
 <dd><p class="first last">Status and control metadata for the values</p>
 </dd>
 <dt><strong>timeout</strong> <span class="classifier-delimiter">:</span> <span class="classifier">float, optional</span></dt>
@@ -660,11 +660,11 @@ clients should do this.</p>
 </table>
 <p class="rubric">Examples</p>
 <p>Write the value 5 to a Channel named ‘cat’.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">read_write_read</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># returns initial, None, final</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">read_write_read</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>  <span class="c1"># returns initial, None, final</span>
 </pre></div>
 </div>
 <p>Request notification of completion (“put completion”) and wait for it.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">read_write_read</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># initial, WriteNotifyResponse, final</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">read_write_read</span><span class="p">(</span><span class="s1">&#39;cat&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># initial, WriteNotifyResponse, final</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -673,7 +673,7 @@ clients should do this.</p>
 <dt id="caproto.sync.client.Subscription">
 <em class="property">class </em><code class="descclassname">caproto.sync.client.</code><code class="descname">Subscription</code><span class="sig-paren">(</span><em>pv_name</em>, <em>priority=0</em>, <em>data_type=None</em>, <em>data_count=None</em>, <em>low=0.0</em>, <em>high=0.0</em>, <em>to=0.0</em>, <em>mask=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#Subscription"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.Subscription" title="Permalink to this definition">¶</a></dt>
 <dd><p>This object encapsulates state related to a Subscription.</p>
-<p>See the <a class="reference internal" href="#caproto.sync.client.subscribe" title="caproto.sync.client.subscribe"><code class="xref py py-func docutils literal"><span class="pre">subscribe()</span></code></a> function.</p>
+<p>See the <a class="reference internal" href="#caproto.sync.client.subscribe" title="caproto.sync.client.subscribe"><code class="xref py py-func docutils literal notranslate"><span class="pre">subscribe()</span></code></a> function.</p>
 <dl class="method">
 <dt id="caproto.sync.client.Subscription.add_callback">
 <code class="descname">add_callback</code><span class="sig-paren">(</span><em>func</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#Subscription.add_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.Subscription.add_callback" title="Permalink to this definition">¶</a></dt>
@@ -684,14 +684,14 @@ clients should do this.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
 <dt><strong>func</strong> <span class="classifier-delimiter">:</span> <span class="classifier">callable</span></dt>
-<dd><p class="first last">Expected signature: <code class="docutils literal"><span class="pre">func(response)</span></code></p>
+<dd><p class="first last">Expected signature: <code class="docutils literal notranslate"><span class="pre">func(response)</span></code></p>
 </dd>
 </dl>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
 <dt><strong>token</strong> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
-<dd><p class="first last">Integer token that can be passed to <a class="reference internal" href="#caproto.sync.client.Subscription.remove_callback" title="caproto.sync.client.Subscription.remove_callback"><code class="xref py py-meth docutils literal"><span class="pre">remove_callback()</span></code></a>.</p>
+<dd><p class="first last">Integer token that can be passed to <a class="reference internal" href="#caproto.sync.client.Subscription.remove_callback" title="caproto.sync.client.Subscription.remove_callback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">remove_callback()</span></code></a>.</p>
 </dd>
 </dl>
 </td>
@@ -705,8 +705,8 @@ clients should do this.</p>
 <code class="descname">block</code><span class="sig-paren">(</span><em>duration=None</em>, <em>timeout=1</em>, <em>force_int_enums=False</em>, <em>repeater=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#Subscription.block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.Subscription.block" title="Permalink to this definition">¶</a></dt>
 <dd><p>Activate one or more subscriptions and process incoming responses.</p>
 <p>Use Ctrl+C (SIGINT) to escape, or from another thread, call
-<a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-meth docutils literal"><span class="pre">interrupt()</span></code></a>.</p>
-<p>Convenience alias for the top-level function <a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal"><span class="pre">block()</span></code></a>, which may
+<a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-meth docutils literal notranslate"><span class="pre">interrupt()</span></code></a>.</p>
+<p>Convenience alias for the top-level function <a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal notranslate"><span class="pre">block()</span></code></a>, which may
 be used to process multiple Subscriptions concurrently.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -748,21 +748,21 @@ well-behaved clients should do this.</p>
 <p>This obviously cannot be called interactively while blocked;
 it is intended to be called from another thread.
 This method is a convenience alias for the top-level function
-<a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-func docutils literal"><span class="pre">interrupt()</span></code></a>.</p>
+<a class="reference internal" href="#caproto.sync.client.interrupt" title="caproto.sync.client.interrupt"><code class="xref py py-func docutils literal notranslate"><span class="pre">interrupt()</span></code></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="caproto.sync.client.Subscription.process">
 <code class="descname">process</code><span class="sig-paren">(</span><em>response</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#Subscription.process"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.Subscription.process" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the callbacks on a response.</p>
-<p>This is used internally by <a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal"><span class="pre">block()</span></code></a>, generally not called by the
+<p>This is used internally by <a class="reference internal" href="#caproto.sync.client.block" title="caproto.sync.client.block"><code class="xref py py-func docutils literal notranslate"><span class="pre">block()</span></code></a>, generally not called by the
 user.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="caproto.sync.client.Subscription.remove_callback">
 <code class="descname">remove_callback</code><span class="sig-paren">(</span><em>cb_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/sync/client.html#Subscription.remove_callback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.sync.client.Subscription.remove_callback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Remove callback using token that was returned by <a class="reference internal" href="#caproto.sync.client.Subscription.add_callback" title="caproto.sync.client.Subscription.add_callback"><code class="xref py py-meth docutils literal"><span class="pre">add_callback()</span></code></a>.</p>
+<dd><p>Remove callback using token that was returned by <a class="reference internal" href="#caproto.sync.client.Subscription.add_callback" title="caproto.sync.client.Subscription.add_callback"><code class="xref py py-meth docutils literal notranslate"><span class="pre">add_callback()</span></code></a>.</p>
 </dd></dl>
 
 </dd></dl>
@@ -811,21 +811,11 @@ user.</p>
 
     
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.1.2+88.g82418cf',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   

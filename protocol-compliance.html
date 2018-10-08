@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Details of our Protocol Compliance for CA Nerds &mdash; caproto 0.1.2+88.g82418cf documentation</title>
+  <title>Details of our Protocol Compliance for CA Nerds &mdash; caproto 0.1.2+96.g1a49b86 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.2+88.g82418cf
+                0.1.2+96.g1a49b86
               </div>
             
           
@@ -195,7 +195,7 @@ versions as old as 12</li>
 </ul>
 <p>TO DO:</p>
 <ul class="simple">
-<li>There are possible issues with the <code class="docutils literal"><span class="pre">ReadResponse</span></code> message, but this message
+<li>There are possible issues with the <code class="docutils literal notranslate"><span class="pre">ReadResponse</span></code> message, but this message
 has been deprecated since epics-base version 3.13.</li>
 </ul>
 </div>
@@ -203,7 +203,7 @@ has been deprecated since epics-base version 3.13.</li>
 <h2>Threading Client<a class="headerlink" href="#threading-client" title="Permalink to this headline">¶</a></h2>
 <p>Supported:</p>
 <ul class="simple">
-<li>Respects all <code class="docutils literal"><span class="pre">EPICS_CA*</span></code> environment variables, correctly configuring
+<li>Respects all <code class="docutils literal notranslate"><span class="pre">EPICS_CA*</span></code> environment variables, correctly configuring
 interfaces and ports.</li>
 <li>Connection caching</li>
 <li>Automatic reconnection</li>
@@ -213,17 +213,17 @@ interfaces and ports.</li>
 <ul class="simple">
 <li>Back-off of unanswered search requests</li>
 <li>“Flow control” — automatic temporary suspension of subscriptions when
-under high load using <code class="docutils literal"><span class="pre">EventsOn</span></code> and <code class="docutils literal"><span class="pre">EventsOff</span></code></li>
+under high load using <code class="docutils literal notranslate"><span class="pre">EventsOn</span></code> and <code class="docutils literal notranslate"><span class="pre">EventsOff</span></code></li>
 </ul>
 </div>
 <div class="section" id="synchronous-client-and-command-line-client">
 <h2>Synchronous Client and Command-Line Client<a class="headerlink" href="#synchronous-client-and-command-line-client" title="Permalink to this headline">¶</a></h2>
 <p>Supported:</p>
 <ul class="simple">
-<li>Respects all <code class="docutils literal"><span class="pre">EPICS_CA*</span></code> environment variables, correctly configuring
+<li>Respects all <code class="docutils literal notranslate"><span class="pre">EPICS_CA*</span></code> environment variables, correctly configuring
 interfaces and ports.</li>
-<li>Most of the command-line arguments that <code class="docutils literal"><span class="pre">caget</span></code>, <code class="docutils literal"><span class="pre">caput</span></code>, <code class="docutils literal"><span class="pre">camonitor</span></code>
-take work the same on <code class="docutils literal"><span class="pre">caproto-get</span></code>, <code class="docutils literal"><span class="pre">caproto-put</span></code>, <code class="docutils literal"><span class="pre">caproto-monitor</span></code></li>
+<li>Most of the command-line arguments that <code class="docutils literal notranslate"><span class="pre">caget</span></code>, <code class="docutils literal notranslate"><span class="pre">caput</span></code>, <code class="docutils literal notranslate"><span class="pre">camonitor</span></code>
+take work the same on <code class="docutils literal notranslate"><span class="pre">caproto-get</span></code>, <code class="docutils literal notranslate"><span class="pre">caproto-put</span></code>, <code class="docutils literal notranslate"><span class="pre">caproto-monitor</span></code></li>
 <li>Monitoring of multiple channel concurrently using a selector</li>
 </ul>
 <p>TO DO:</p>
@@ -236,7 +236,7 @@ take work the same on <code class="docutils literal"><span class="pre">caproto-g
 <h2>Servers<a class="headerlink" href="#servers" title="Permalink to this headline">¶</a></h2>
 <p>Supported:</p>
 <ul class="simple">
-<li>Respects all <code class="docutils literal"><span class="pre">EPICS_CAS*</span></code> environment variables, correctly configuring
+<li>Respects all <code class="docutils literal notranslate"><span class="pre">EPICS_CAS*</span></code> environment variables, correctly configuring
 interfaces and ports.</li>
 <li>Channel Access filters (arr, dbnd, ts, sync) including their “shorthand”
 syntax</li>
@@ -246,7 +246,7 @@ syntax</li>
 <ul class="simple">
 <li>Enforcing quotas per subscription to avoid one prolific subscription (or slow
 client) from drowning out others</li>
-<li>Respecting <code class="docutils literal"><span class="pre">EventsOn</span></code> and <code class="docutils literal"><span class="pre">EventsOff</span></code></li>
+<li>Respecting <code class="docutils literal notranslate"><span class="pre">EventsOn</span></code> and <code class="docutils literal notranslate"><span class="pre">EventsOff</span></code></li>
 <li>Deprecated mask specification (low, high, to)</li>
 </ul>
 </div>
@@ -293,21 +293,11 @@ client) from drowning out others</li>
 
     
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'0.1.2+88.g82418cf',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
 
   
