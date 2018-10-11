@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0.1.2+98.gd1610fa documentation</title>
+  <title>caproto._utils &mdash; caproto 0.1.2+110.g956e787 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+98.gd1610fa
+                0.1.2+110.g956e787
               </div>
             
           
@@ -226,6 +226,7 @@
     <span class="s1">&#39;CaprotoNotImplementedError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;CaprotoValueError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;CaprotoTypeError&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CaprotoConversionError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;CaprotoRuntimeError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;ErrorResponseReceived&#39;</span><span class="p">,</span>
     <span class="s1">&#39;SendAllRetry&#39;</span><span class="p">,</span>
@@ -283,6 +284,11 @@
     <span class="n">NEED_DATA</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
 
 
+<span class="k">class</span> <span class="nc">ConversionDirection</span><span class="p">(</span><span class="n">_SimpleReprEnum</span><span class="p">):</span>
+    <span class="n">FROM_WIRE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+    <span class="n">TO_WIRE</span> <span class="o">=</span> <span class="n">enum</span><span class="o">.</span><span class="n">auto</span><span class="p">()</span>
+
+
 <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
     <span class="p">{</span><span class="n">token</span><span class="p">:</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">_enum</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
      <span class="k">for</span> <span class="n">_enum</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Role</span><span class="p">,</span> <span class="n">Direction</span><span class="p">,</span> <span class="n">States</span><span class="p">]</span>
@@ -325,6 +331,10 @@
 
 
 <span class="k">class</span> <span class="nc">CaprotoValueError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">CaprotoConversionError</span><span class="p">(</span><span class="n">CaprotoValueError</span><span class="p">):</span>
     <span class="o">...</span>
 
 

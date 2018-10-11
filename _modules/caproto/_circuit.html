@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0.1.2+98.gd1610fa documentation</title>
+  <title>caproto._circuit &mdash; caproto 0.1.2+110.g956e787 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+98.gd1610fa
+                0.1.2+110.g956e787
               </div>
             
           
@@ -178,7 +178,8 @@
 <span class="c1"># Responses.</span>
 <span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">deque</span><span class="p">,</span> <span class="n">Iterable</span>
+<span class="kn">import</span> <span class="nn">os</span>
 
 <span class="kn">from</span> <span class="nn">._commands</span> <span class="k">import</span> <span class="p">(</span><span class="n">AccessRightsResponse</span><span class="p">,</span> <span class="n">CreateChFailResponse</span><span class="p">,</span>
                         <span class="n">ClearChannelRequest</span><span class="p">,</span> <span class="n">ClearChannelResponse</span><span class="p">,</span>
@@ -196,13 +197,15 @@
                      <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">CaprotoRuntimeError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">,</span>
                      <span class="n">parse_channel_filter</span><span class="p">,</span> <span class="n">parse_record_field</span><span class="p">,</span>
                      <span class="n">ChannelFilter</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">SubscriptionType</span><span class="p">,</span> <span class="n">field_types</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">ChannelType</span><span class="p">,</span> <span class="n">SubscriptionType</span><span class="p">,</span> <span class="n">field_types</span><span class="p">,</span> <span class="n">native_type</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">,</span> <span class="n">MAX_ID</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._status</span> <span class="k">import</span> <span class="n">CAStatus</span>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;VirtualCircuit&#39;</span><span class="p">,</span> <span class="s1">&#39;ClientChannel&#39;</span><span class="p">,</span> <span class="s1">&#39;ServerChannel&#39;</span><span class="p">,</span>
            <span class="s1">&#39;extract_address&#39;</span><span class="p">)</span>
+
+<span class="n">STRING_ENCODING</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CAPROTO_STRING_ENCODING&#39;</span><span class="p">,</span> <span class="s1">&#39;latin-1&#39;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="VirtualCircuit"><a class="viewcode-back" href="../../api.html#caproto.VirtualCircuit">[docs]</a><span class="k">class</span> <span class="nc">VirtualCircuit</span><span class="p">:</span>
@@ -333,7 +336,7 @@
 <span class="sd">        ``(commands, num_bytes_needed)``</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">total_received</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">byteslike</span><span class="p">)</span> <span class="k">for</span> <span class="n">byteslike</span> <span class="ow">in</span> <span class="n">buffers</span><span class="p">)</span>
-        <span class="n">commands</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">deque</span><span class="p">()</span>
+        <span class="n">commands</span> <span class="o">=</span> <span class="n">deque</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">total_received</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Zero-length recv; sending disconnect notification&#39;</span><span class="p">)</span>
             <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">DISCONNECTED</span><span class="p">)</span>
@@ -583,10 +586,11 @@
     <span class="c1"># Base class for ClientChannel and ServerChannel, which add convenience</span>
     <span class="c1"># methods for composing requests and repsponses, respectively. All of the</span>
     <span class="c1"># important code is here in the base class.</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">cid</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">string_encoding</span><span class="o">=</span><span class="n">STRING_ENCODING</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;caproto.ch.</span><span class="si">{name}</span><span class="s1">.</span><span class="si">{circuit.priority}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">circuit</span><span class="o">.</span><span class="n">protocol_version</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">string_encoding</span> <span class="o">=</span> <span class="n">string_encoding</span>
         <span class="n">modifiers</span> <span class="o">=</span> <span class="n">parse_record_field</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">modifiers</span>
         <span class="k">if</span> <span class="n">modifiers</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">channel_filter</span> <span class="o">=</span> <span class="n">parse_channel_filter</span><span class="p">(</span><span class="n">modifiers</span><span class="o">.</span><span class="n">filter_</span><span class="p">)</span>
@@ -680,8 +684,9 @@
 <span class="sd">        Channnel name (PV)</span>
 <span class="sd">    circuit : VirtualCircuit</span>
 <span class="sd">    cid : integer, optional</span>
-<span class="sd">    protocol_version : integer, optional</span>
-<span class="sd">        Default is ``DEFAULT_PROTOCOL_VERSION``.</span>
+<span class="sd">    string_encoding : string</span>
+<span class="sd">        Default is &#39;latin-1&#39; or value of ``CAPROTO_STRING_ENCODING``</span>
+<span class="sd">        environment variable.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="ClientChannel.version"><a class="viewcode-back" href="../../api.html#caproto.ClientChannel.version">[docs]</a>    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -817,6 +822,13 @@
 <span class="sd">        WriteNotifyRequest</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">native_type</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">data</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">val</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string_encoding</span><span class="p">)</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">string_encoding</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">data_count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">data_count</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">ioid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -908,8 +920,9 @@
 <span class="sd">        Channnel name (PV)</span>
 <span class="sd">    circuit : VirtualCircuit</span>
 <span class="sd">    cid : integer, optional</span>
-<span class="sd">    protocol_version : integer, optional</span>
-<span class="sd">        Default is ``DEFAULT_PROTOCOL_VERSION``.</span>
+<span class="sd">    string_encoding : string</span>
+<span class="sd">        Default is &#39;latin-1&#39; or value of ``CAPROTO_STRING_ENCODING``</span>
+<span class="sd">        environment variable.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 <div class="viewcode-block" id="ServerChannel.version"><a class="viewcode-back" href="../../api.html#caproto.ServerChannel.version">[docs]</a>    <span class="k">def</span> <span class="nf">version</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -985,6 +998,15 @@
 <span class="sd">        ReadResponse or ReadNotifyResponse</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fill_defaults</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">)</span>
+        <span class="c1"># TODO: Un-comment this to make the server symmetric with the channel.</span>
+        <span class="c1"># Some work is needed to integrate it with the server/ChannelData.</span>
+        <span class="c1"># if native_type(data_type) != ChannelType.CHAR:</span>
+        <span class="c1">#     if not isinstance(data, Iterable) or isinstance(data, (str, bytes)):</span>
+        <span class="c1">#         data = [data]</span>
+        <span class="c1">#     if len(data) and isinstance(data[0], str):</span>
+        <span class="c1">#         data = [val.encode(self.string_encoding) for val in data]</span>
+        <span class="c1"># elif len(data) and isinstance(data[0], str):</span>
+        <span class="c1">#     data = data.encode(self.string_encoding)</span>
         <span class="bp">cls</span> <span class="o">=</span> <span class="n">ReadNotifyResponse</span> <span class="k">if</span> <span class="n">notify</span> <span class="k">else</span> <span class="n">ReadResponse</span>
         <span class="n">command</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">ioid</span><span class="p">,</span>
                       <span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span><span class="p">)</span>

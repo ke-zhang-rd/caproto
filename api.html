@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Core API Documentation &mdash; caproto 0.1.2+98.gd1610fa documentation</title>
+  <title>Core API Documentation &mdash; caproto 0.1.2+110.g956e787 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.2+98.gd1610fa
+                0.1.2+110.g956e787
               </div>
             
           
@@ -1374,7 +1374,7 @@ of individual channels. The user can optionally use them as a convenience for
 generating valid commands.</p>
 <dl class="class">
 <dt id="caproto.ClientChannel">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ClientChannel</code><span class="sig-paren">(</span><em>name</em>, <em>circuit</em>, <em>cid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ClientChannel</code><span class="sig-paren">(</span><em>name</em>, <em>circuit</em>, <em>cid=None</em>, <em>string_encoding='latin-1'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ClientChannel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ClientChannel" title="Permalink to this definition">¶</a></dt>
 <dd><p>An object encapsulating the state of the EPICS Channel on a Client.</p>
 <p>A ClientChannel may be created in one of two ways:
 (1) The user instantiates a ClientChannel with a name, server address,
@@ -1398,8 +1398,9 @@ and priority of that VirtualCircuit. It can be accessed in the circuit’s
 <dd></dd>
 <dt><strong>cid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd></dd>
-<dt><strong>protocol_version</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
-<dd><p class="first last">Default is <code class="docutils literal notranslate"><span class="pre">DEFAULT_PROTOCOL_VERSION</span></code>.</p>
+<dt><strong>string_encoding</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Default is ‘latin-1’ or value of <code class="docutils literal notranslate"><span class="pre">CAPROTO_STRING_ENCODING</span></code>
+environment variable.</p>
 </dd>
 </dl>
 </td>
@@ -1680,7 +1681,7 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 
 <dl class="class">
 <dt id="caproto.ServerChannel">
-<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ServerChannel</code><span class="sig-paren">(</span><em>name</em>, <em>circuit</em>, <em>cid=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">ServerChannel</code><span class="sig-paren">(</span><em>name</em>, <em>circuit</em>, <em>cid=None</em>, <em>string_encoding='latin-1'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#ServerChannel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.ServerChannel" title="Permalink to this definition">¶</a></dt>
 <dd><p>A server-side Channel.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1694,8 +1695,9 @@ corresponding <a class="reference internal" href="#caproto.EventAddRequest" titl
 <dd></dd>
 <dt><strong>cid</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
 <dd></dd>
-<dt><strong>protocol_version</strong> <span class="classifier-delimiter">:</span> <span class="classifier">integer, optional</span></dt>
-<dd><p class="first last">Default is <code class="docutils literal notranslate"><span class="pre">DEFAULT_PROTOCOL_VERSION</span></code>.</p>
+<dt><strong>string_encoding</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Default is ‘latin-1’ or value of <code class="docutils literal notranslate"><span class="pre">CAPROTO_STRING_ENCODING</span></code>
+environment variable.</p>
 </dd>
 </dl>
 </td>
