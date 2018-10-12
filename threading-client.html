@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Threading Client &mdash; caproto 0.1.2+110.g956e787 documentation</title>
+  <title>Threading Client &mdash; caproto 0.1.2+133.g9f0bbb4 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.1.2+110.g956e787
+                0.1.2+133.g9f0bbb4
               </div>
             
           
@@ -97,6 +97,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#subscribe-monitor">Subscribe (“Monitor”)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#batched-requests">Batched Requests</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#go-idle">Go Idle</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#events-off-and-on">Events Off and On</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#loggers-for-debugging">Loggers for Debugging</a></li>
 </ul>
 </li>
@@ -232,18 +233,18 @@ state:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [6]: </span><span class="n">res</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
 <span class="gp">In [7]: </span><span class="n">res</span>
-<span class="gh">Out[7]: </span><span class="go">ReadNotifyResponse(data=array([1.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
+<span class="gh">Out[7]: </span><span class="go">ReadNotifyResponse(data=array([3.]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=1, metadata=None)</span>
 </pre></div>
 </div>
 <p>This object is a human-friendly representation of the server’s response. The
 raw bytes of that response are:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [8]: </span><span class="nb">bytes</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
-<span class="gh">Out[8]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01?\xf0\x00\x00\x00\x00\x00\x00&#39;</span>
+<span class="gh">Out[8]: </span><span class="go">b&#39;\x00\x0f\x00\x08\x00\x06\x00\x01\x00\x00\x00\x01\x00\x00\x00\x01@\x08\x00\x00\x00\x00\x00\x00&#39;</span>
 </pre></div>
 </div>
 <p>Access particular fields in the response using attribute (“dot”) access on <code class="docutils literal notranslate"><span class="pre">res</span></code>.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [9]: </span><span class="n">res</span><span class="o">.</span><span class="n">data</span>
-<span class="gh">Out[9]: </span><span class="go">array([1.])</span>
+<span class="gh">Out[9]: </span><span class="go">array([3.])</span>
 </pre></div>
 </div>
 <div class="admonition note">
@@ -255,7 +256,7 @@ data structures.</p>
 <span class="gh">Out[10]: </span><span class="go">MessageHeader(command=15, payload_size=8, data_type=6, data_count=1, parameter1=1, parameter2=1)</span>
 
 <span class="gp">In [11]: </span><span class="n">res</span><span class="o">.</span><span class="n">buffers</span>  <span class="c1"># a collection of one or more buffers</span>
-<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x2af9e31c2408&gt;)</span>
+<span class="go">                                                                                                          Out[11]: (b&#39;&#39;, &lt;memory at 0x2ab91f311648&gt;)</span>
 </pre></div>
 </div>
 <p class="last">They were received directly from the socket into these structure with no
@@ -335,16 +336,14 @@ define a second callback:</p>
 </div>
 <p>After some time has passed, we will have accumulated some responses.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [20]: </span><span class="nb">len</span><span class="p">(</span><span class="n">responses</span><span class="p">)</span>
-<span class="gh">Out[20]: </span><span class="go">6</span>
+<span class="gh">Out[20]: </span><span class="go">4</span>
 
 <span class="gp">In [21]: </span><span class="n">values</span>
 <span class="go">           Out[21]: </span>
-<span class="go">[2.991804013061378,</span>
-<span class="go"> 3.5329493039805095,</span>
-<span class="go"> 3.6608824273069795,</span>
-<span class="go"> 3.743034238946783,</span>
-<span class="go"> 4.431807492316615,</span>
-<span class="go"> 4.857759809122987]</span>
+<span class="go">[-0.36752492005579995,</span>
+<span class="go"> 0.5322073574416475,</span>
+<span class="go"> 0.3290583118627084,</span>
+<span class="go"> 0.3617596671131189]</span>
 </pre></div>
 </div>
 <p>At any point we can remove a specific callback function:</p>
@@ -423,7 +422,7 @@ upon exiting the <code class="docutils literal notranslate"><span class="pre">wi
 background thread. As the responses come in, the <code class="docutils literal notranslate"><span class="pre">results</span></code> dictionary will be
 updated.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [30]: </span><span class="n">results</span>
-<span class="gh">Out[30]: </span><span class="go">{&#39;random_walk:x&#39;: array([5.15496545]), &#39;random_walk:dt&#39;: array([1.])}</span>
+<span class="gh">Out[30]: </span><span class="go">{&#39;random_walk:x&#39;: array([0.23065092]), &#39;random_walk:dt&#39;: array([1.])}</span>
 </pre></div>
 </div>
 <p>See <a class="reference internal" href="#caproto.threading.client.Batch" title="caproto.threading.client.Batch"><code class="xref py py-class docutils literal notranslate"><span class="pre">Batch</span></code></a> for more.</p>
@@ -436,7 +435,7 @@ requested. In order to reduce the load on the network, a PV can be temporarily
 made “idle” (disconnected). It will silently, automatically reconnect the next
 time it is used.</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [31]: </span><span class="n">x</span>
-<span class="gh">Out[31]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 51930), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="gh">Out[31]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 59924), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
 <span class="gp">In [32]: </span><span class="n">x</span><span class="o">.</span><span class="n">go_idle</span><span class="p">()</span>
 
@@ -444,10 +443,10 @@ time it is used.</p>
 <span class="gh">Out[33]: </span><span class="go">&lt;PV name=&#39;random_walk:x&#39; priority=0 (idle)&gt;</span>
 
 <span class="gp">In [34]: </span><span class="n">x</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
-<span class="go">                                                     Out[34]: ReadNotifyResponse(data=array([5.15496545]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=5, metadata=None)</span>
+<span class="go">                                                     Out[34]: ReadNotifyResponse(data=array([0.23065092]), data_type=&lt;ChannelType.DOUBLE: 6&gt;, data_count=1, status=CAStatusCode(name=&#39;ECA_NORMAL&#39;, code=0, code_with_severity=1, severity=&lt;CASeverity.SUCCESS: 1&gt;, success=1, defunct=False, description=&#39;Normal successful completion&#39;), ioid=5, metadata=None)</span>
 
 <span class="gp">In [35]: </span><span class="n">x</span>
-<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[35]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 51930), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="go">                                                                                                                                                                                                                                                                                                                                                                 Out[35]: &lt;PV name=&#39;random_walk:x&#39; priority=0 address=(&#39;127.0.0.1&#39;, 59924), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 </pre></div>
 </div>
 <p>Notice that when the PV was read it automatically reconnected, requiring no
@@ -458,6 +457,19 @@ must stay active to continue servicing user callbacks. Therefore, it is safe
 call <code class="docutils literal notranslate"><span class="pre">go_idle()</span></code> on any PV at any time, knowing that the PV will decline to
 disconnect if it is being actively used and that, if it is currently unused, it
 will transparently reconnect the next time it is used.</p>
+</div>
+<div class="section" id="events-off-and-on">
+<h3>Events Off and On<a class="headerlink" href="#events-off-and-on" title="Permalink to this headline">¶</a></h3>
+<p>If a given circuit produces updates faster than a client can process them, the
+client can suspend subscriptions on that circuit. This will causes the server
+to discard all backlogged updates and all new updates during the period of
+supsension. When the client reactives subscriptions, it will immediate receive
+the most recent update and then any future updates.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">x</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">events_off</span><span class="p">()</span>
+<span class="o">...</span>
+<span class="n">x</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">events_on</span><span class="p">()</span>
+</pre></div>
+</div>
 </div>
 <div class="section" id="loggers-for-debugging">
 <h3>Loggers for Debugging<a class="headerlink" href="#loggers-for-debugging" title="Permalink to this headline">¶</a></h3>
@@ -929,6 +941,20 @@ count.</p>
 <p>This object should never be instantiated directly by user code. It is used
 internally by the Context. Its methods may be touched by user code, but
 this is rarely necessary.</p>
+<dl class="method">
+<dt id="caproto.threading.client.VirtualCircuitManager.events_off">
+<code class="descname">events_off</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#VirtualCircuitManager.events_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.VirtualCircuitManager.events_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Suspend updates to all subscriptions on this circuit.</p>
+<p>This may be useful if the server produces updates faster than the
+client can processs them.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="caproto.threading.client.VirtualCircuitManager.events_on">
+<code class="descname">events_on</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#VirtualCircuitManager.events_on"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.VirtualCircuitManager.events_on" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reactive updates to all subscriptions on this circuit.</p>
+</dd></dl>
+
 <dl class="method">
 <dt id="caproto.threading.client.VirtualCircuitManager.received">
 <code class="descname">received</code><span class="sig-paren">(</span><em>bytes_recv</em>, <em>address</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/threading/client.html#VirtualCircuitManager.received"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.threading.client.VirtualCircuitManager.received" title="Permalink to this definition">¶</a></dt>

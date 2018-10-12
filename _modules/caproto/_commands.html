@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._commands &mdash; caproto 0.1.2+110.g956e787 documentation</title>
+  <title>caproto._commands &mdash; caproto 0.1.2+133.g9f0bbb4 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+110.g956e787
+                0.1.2+133.g9f0bbb4
               </div>
             
           
@@ -634,6 +634,9 @@
     <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">==</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">hash</span><span class="p">(</span><span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
     <span class="k">def</span> <span class="nf">__ne__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 
@@ -1128,7 +1131,7 @@
 
 <span class="sd">        Echoing the :data:`subscriptionid` in the :class:`EventAddRequest`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;__weakref__&#39;</span><span class="p">,)</span>
     <span class="n">ID</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">HAS_PAYLOAD</span> <span class="o">=</span> <span class="kc">True</span>
 

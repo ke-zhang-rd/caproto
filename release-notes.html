@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release History &mdash; caproto 0.1.2+110.g956e787 documentation</title>
+  <title>Release History &mdash; caproto 0.1.2+133.g9f0bbb4 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.2+110.g956e787
+                0.1.2+133.g9f0bbb4
               </div>
             
           
@@ -110,6 +110,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#breaking-changes">Breaking Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#improved-protocol-compliance">Improved Protocol Compliance</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v0-1-2-2018-08-31">v0.1.2 (2018-08-31)</a></li>
@@ -188,6 +189,9 @@
 <div class="section" id="features">
 <h3>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
+<li>Under high load (with many subscription updates queued up to send) servers
+batch subscriptions into blocks, trading a little latency for efficiency.
+Under low load, servers prioritize low latency.</li>
 <li>In the threading client, process user callbacks using one threadpool <em>per
 circuit</em> instead of one threadpool for the entire context. Make the size of
 the threadpool configurable via a new
@@ -196,8 +200,8 @@ the threadpool configurable via a new
 <a class="reference external" href="https://github.com/klauer/catvs/tree/py3k">Python 3-compatible fork</a> of
 Michael Davidsaver’s utility for testing Channel Access servers,
 <a class="reference external" href="https://github.com/mdavidsaver/catvs">catvs</a>. This has generated several
-bug fixes, included in the list below. There are a small number of known
-failures wherein the best/correct behavior is arguable; see
+fixes improving protocol compliance, list a section below. There are a small
+number of known failures wherein the best/correct behavior is arguable; see
 <a class="reference external" href="https://github.com/NSLS-II/caproto/pull/327">caproto#327 on GitHub</a> for
 discussion. There may be more progress on these in future releases of
 caproto.</li>
@@ -230,6 +234,11 @@ address, and continue to run.</li>
 sockets when the process exited. They now close their sockets explicitly when
 the server task exits. This fixes the runaway usage of file descriptors when
 the tests are run.</li>
+</ul>
+</div>
+<div class="section" id="improved-protocol-compliance">
+<h3>Improved Protocol Compliance<a class="headerlink" href="#improved-protocol-compliance" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
 <li>The servers send <a class="reference internal" href="api.html#caproto.CreateChFailResponse" title="caproto.CreateChFailResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">CreateChFailResponse</span></code></a> when the client
 requests a channel name that does not exist on the server. They previously
 did not respond.</li>
@@ -237,6 +246,9 @@ did not respond.</li>
 (UDP is more common, but TCP is allowed.) They previously did not respond.</li>
 <li>The <a class="reference internal" href="api.html#caproto.EventCancelResponse" title="caproto.EventCancelResponse"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventCancelResponse</span></code></a> message includes a <code class="docutils literal notranslate"><span class="pre">data_count</span></code>.</li>
 <li>The servers respect the <code class="docutils literal notranslate"><span class="pre">data_count</span></code> requested by the client.</li>
+<li>Servers enforce quota per subscription to avoid one prolific subscription (or
+slow client) from drowning out others.</li>
+<li>Servers respect <code class="docutils literal notranslate"><span class="pre">EventsOn</span></code> and <code class="docutils literal notranslate"><span class="pre">EventsOff</span></code> requests.</li>
 </ul>
 </div>
 </div>
