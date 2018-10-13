@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.server.records &mdash; caproto 0.1.2+137.gcee8368 documentation</title>
+  <title>caproto.server.records &mdash; caproto 0.1.2+129.g6cc2a9c documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+137.gcee8368
+                0.1.2+129.g6cc2a9c
               </div>
             
           
@@ -172,15 +172,11 @@
 <span class="sd">Contains PVGroups representing all fields of EPICS base records (minus .VAL)</span>
 <span class="sd">&#39;&#39;&#39;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 
 <span class="kn">from</span> <span class="nn">.server</span> <span class="k">import</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">pvproperty</span>
 <span class="kn">from</span> <span class="nn">.._data</span> <span class="k">import</span> <span class="n">ChannelType</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">menus</span>
-
-
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-<span class="n">records</span> <span class="o">=</span> <span class="p">{}</span>
 
 
 <span class="k">def</span> <span class="nf">_link_parent_attribute</span><span class="p">(</span><span class="n">pvprop</span><span class="p">,</span> <span class="n">parent_attr_name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">read_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -205,14 +201,6 @@
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">write_metadata</span><span class="p">(</span><span class="o">**</span><span class="n">kw</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">pvprop</span>
-
-
-<span class="k">def</span> <span class="nf">register_record</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
-    <span class="s1">&#39;Register a record type to be used with pvproperty mock_record&#39;</span>
-    <span class="k">assert</span> <span class="nb">issubclass</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">)</span>
-    <span class="n">records</span><span class="p">[</span><span class="bp">cls</span><span class="o">.</span><span class="n">_record_type</span><span class="p">]</span> <span class="o">=</span> <span class="bp">cls</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Registered record type </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_record_type</span><span class="p">)</span>
-    <span class="k">return</span> <span class="bp">cls</span>
 
 
 <div class="viewcode-block" id="RecordFieldGroup"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.RecordFieldGroup">[docs]</a><span class="k">class</span> <span class="nc">RecordFieldGroup</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
@@ -356,8 +344,7 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AiFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AiFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="AiFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AiFields">[docs]</a><span class="k">class</span> <span class="nc">AiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;ai&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Current EGU Value&#39;)</span>
@@ -507,8 +494,7 @@
     <span class="c1">#     await self.parent.write_metadata(precision=value)</span>
 
 
-<div class="viewcode-block" id="AsubFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AsubFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AsubFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="AsubFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AsubFields">[docs]</a><span class="k">class</span> <span class="nc">AsubFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;aSub&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Subr. return value&#39;)</span>
@@ -565,8 +551,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AaiFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AaiFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AaiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="AaiFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AaiFields">[docs]</a><span class="k">class</span> <span class="nc">AaiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;aai&#39;</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;STAT&#39;</span><span class="p">,</span>
@@ -634,8 +619,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AaoFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AaoFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AaoFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="AaoFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AaoFields">[docs]</a><span class="k">class</span> <span class="nc">AaoFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;aao&#39;</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;STAT&#39;</span><span class="p">,</span>
@@ -703,8 +687,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AcalcoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AcalcoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AcalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="AcalcoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AcalcoutFields">[docs]</a><span class="k">class</span> <span class="nc">AcalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;acalcout&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -867,8 +850,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AoFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AoFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AoFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="AoFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AoFields">[docs]</a><span class="k">class</span> <span class="nc">AoFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;ao&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Desired Output&#39;)</span>
@@ -1048,8 +1030,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="AsynFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AsynFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AsynFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="AsynFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AsynFields">[docs]</a><span class="k">class</span> <span class="nc">AsynFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;asyn&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Value field (unused)&#39;)</span>
@@ -1353,8 +1334,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;UI32OUT&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;asynUInt32Digital output&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="BiFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.BiFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">BiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="BiFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.BiFields">[docs]</a><span class="k">class</span> <span class="nc">BiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;bi&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.ENUM, doc=&#39;Current Value&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1424,8 +1404,7 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="BoFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.BoFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">BoFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="BoFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.BoFields">[docs]</a><span class="k">class</span> <span class="nc">BoFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;bo&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.ENUM, doc=&#39;Current Value&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1519,8 +1498,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Seconds to Hold High&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="BusyFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.BusyFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">BusyFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="BusyFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.BusyFields">[docs]</a><span class="k">class</span> <span class="nc">BusyFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;busy&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.ENUM, doc=&#39;Current Value&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1616,8 +1594,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Seconds to Hold High&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CalcFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.CalcFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">CalcFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="CalcFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.CalcFields">[docs]</a><span class="k">class</span> <span class="nc">CalcFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;calc&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1695,8 +1672,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CalcoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.CalcoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">CalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="CalcoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.CalcoutFields">[docs]</a><span class="k">class</span> <span class="nc">CalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;calcout&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1823,8 +1799,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="CompressFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.CompressFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">CompressFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="CompressFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.CompressFields">[docs]</a><span class="k">class</span> <span class="nc">CompressFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;compress&#39;</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;STAT&#39;</span><span class="p">,</span>
@@ -1889,8 +1864,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DfanoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.DfanoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">DfanoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="DfanoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.DfanoutFields">[docs]</a><span class="k">class</span> <span class="nc">DfanoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;dfanout&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Desired Output&#39;)</span>
@@ -2000,8 +1974,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="DigitelFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.DigitelFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">DigitelFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="DigitelFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.DigitelFields">[docs]</a><span class="k">class</span> <span class="nc">DigitelFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;digitel&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Pressure&#39;, read_only=True)</span>
@@ -2501,8 +2474,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HVTR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Voltage Display Hi&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="EpidFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.EpidFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">EpidFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="EpidFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.EpidFields">[docs]</a><span class="k">class</span> <span class="nc">EpidFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;epid&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Setpoint&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -2670,8 +2642,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="EventFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.EventFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">EventFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="EventFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.EventFields">[docs]</a><span class="k">class</span> <span class="nc">EventFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;event&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Event Number To Post&#39;)</span>
@@ -2701,8 +2672,7 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="FanoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.FanoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">FanoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="FanoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.FanoutFields">[docs]</a><span class="k">class</span> <span class="nc">FanoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;fanout&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Used to trigger&#39;)</span>
@@ -2735,8 +2705,7 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Select Mechanism&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="GensubFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.GensubFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">GensubFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="GensubFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.GensubFields">[docs]</a><span class="k">class</span> <span class="nc">GensubFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;genSub&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Subr. return value&#39;)</span>
@@ -3711,8 +3680,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="HistogramFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.HistogramFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">HistogramFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="HistogramFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.HistogramFields">[docs]</a><span class="k">class</span> <span class="nc">HistogramFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;histogram&#39;</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;STAT&#39;</span><span class="p">,</span>
@@ -3784,8 +3752,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="LonginFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.LonginFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">LonginFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="LonginFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.LonginFields">[docs]</a><span class="k">class</span> <span class="nc">LonginFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;longin&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Current value&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -3877,8 +3844,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="LongoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.LongoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">LongoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="LongoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.LongoutFields">[docs]</a><span class="k">class</span> <span class="nc">LongoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;longout&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Desired Output&#39;)</span>
@@ -3987,8 +3953,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MbbiFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MbbiFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">MbbiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="MbbiFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MbbiFields">[docs]</a><span class="k">class</span> <span class="nc">MbbiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;mbbi&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.ENUM, doc=&#39;Current Value&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -4058,8 +4023,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SVAL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Simulation Value&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MbbidirectFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MbbidirectFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">MbbidirectFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="MbbidirectFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MbbidirectFields">[docs]</a><span class="k">class</span> <span class="nc">MbbidirectFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;mbbiDirect&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Current Value&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -4137,8 +4101,7 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MbboFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MbboFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">MbboFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="MbboFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MbboFields">[docs]</a><span class="k">class</span> <span class="nc">MbboFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;mbbo&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.ENUM, doc=&#39;Desired Value&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -4230,8 +4193,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SIOL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim Output Specifctn&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MbbodirectFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MbbodirectFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">MbbodirectFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="MbbodirectFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MbbodirectFields">[docs]</a><span class="k">class</span> <span class="nc">MbbodirectFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;mbboDirect&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Word&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -4326,8 +4288,7 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="MotorFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MotorFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">MotorFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="MotorFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.MotorFields">[docs]</a><span class="k">class</span> <span class="nc">MotorFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;motor&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;User Desired Value (EGU&#39;)</span>
@@ -4736,8 +4697,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="PermissiveFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.PermissiveFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">PermissiveFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="PermissiveFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.PermissiveFields">[docs]</a><span class="k">class</span> <span class="nc">PermissiveFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;permissive&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Status&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -4756,8 +4716,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LABL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Button Label&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ScalcoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.ScalcoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">ScalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="ScalcoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.ScalcoutFields">[docs]</a><span class="k">class</span> <span class="nc">ScalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;scalcout&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -4916,8 +4875,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="ScanparmFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.ScanparmFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">ScanparmFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="ScanparmFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.ScanparmFields">[docs]</a><span class="k">class</span> <span class="nc">ScanparmFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;scanparm&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -5044,8 +5002,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SelFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SelFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">SelFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="SelFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SelFields">[docs]</a><span class="k">class</span> <span class="nc">SelFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;sel&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;, read_only=True)</span>
@@ -5136,8 +5093,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SeqFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SeqFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">SeqFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="SeqFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SeqFields">[docs]</a><span class="k">class</span> <span class="nc">SeqFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;seq&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Used to trigger&#39;)</span>
@@ -5232,8 +5188,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SscanFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SscanFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">SscanFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="SscanFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SscanFields">[docs]</a><span class="k">class</span> <span class="nc">SscanFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;sscan&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Value Field&#39;)</span>
     <span class="n">a1_pv_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -5444,8 +5399,7 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Freeze Num of Points&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SseqFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SseqFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">SseqFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="SseqFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SseqFields">[docs]</a><span class="k">class</span> <span class="nc">SseqFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;sseq&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Used to trigger&#39;)</span>
@@ -5905,8 +5859,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="StateFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.StateFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">StateFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="StateFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.StateFields">[docs]</a><span class="k">class</span> <span class="nc">StateFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;state&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.CHAR, max_length=20, doc=&#39;Value&#39;)</span>
@@ -5924,8 +5877,7 @@
         <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="StringinFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.StringinFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">StringinFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="StringinFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.StringinFields">[docs]</a><span class="k">class</span> <span class="nc">StringinFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;stringin&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.CHAR, max_length=40, doc=&#39;Current Value&#39;)</span>
@@ -5974,8 +5926,7 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="StringoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.StringoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">StringoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="StringoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.StringoutFields">[docs]</a><span class="k">class</span> <span class="nc">StringoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;stringout&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.CHAR, max_length=40, doc=&#39;Current Value&#39;)</span>
@@ -6036,8 +5987,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;OUT&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Output Specification&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SubFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SubFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">SubFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="SubFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SubFields">[docs]</a><span class="k">class</span> <span class="nc">SubFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;sub&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -6225,8 +6175,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SubarrayFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SubarrayFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">SubarrayFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="SubarrayFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SubarrayFields">[docs]</a><span class="k">class</span> <span class="nc">SubarrayFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;subArray&#39;</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;STAT&#39;</span><span class="p">,</span>
@@ -6277,8 +6226,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="SwaitFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SwaitFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">SwaitFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="SwaitFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SwaitFields">[docs]</a><span class="k">class</span> <span class="nc">SwaitFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;swait&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Value Field&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -6378,8 +6326,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TableFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.TableFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">TableFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="TableFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.TableFields">[docs]</a><span class="k">class</span> <span class="nc">TableFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;table&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -7013,8 +6960,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TimestampFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.TimestampFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">TimestampFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="TimestampFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.TimestampFields">[docs]</a><span class="k">class</span> <span class="nc">TimestampFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;timestamp&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.CHAR, max_length=40, doc=&#39;Current Value&#39;)</span>
@@ -7039,8 +6985,7 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Time Stamp Type&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TransformFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.TransformFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">TransformFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="TransformFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.TransformFields">[docs]</a><span class="k">class</span> <span class="nc">TransformFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;transform&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -7073,8 +7018,7 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="VmeFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.VmeFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">VmeFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="VmeFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.VmeFields">[docs]</a><span class="k">class</span> <span class="nc">VmeFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;vme&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Current value&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -7110,8 +7054,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ADDR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;VME address (hex)&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="VsFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.VsFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">VsFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="VsFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.VsFields">[docs]</a><span class="k">class</span> <span class="nc">VsFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;vs&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;,</span>
@@ -7488,8 +7431,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LBLR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;CGB Log10 Low Display&#39;</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="WaveformFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.WaveformFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">WaveformFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<div class="viewcode-block" id="WaveformFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.WaveformFields">[docs]</a><span class="k">class</span> <span class="nc">WaveformFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;waveform&#39;</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;STAT&#39;</span><span class="p">,</span>
@@ -7564,6 +7506,12 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
 
 
+<span class="n">records</span> <span class="o">=</span> <span class="p">{</span><span class="n">record</span><span class="o">.</span><span class="n">_record_type</span><span class="p">:</span> <span class="n">record</span>
+           <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">record</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+           <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isclass</span><span class="p">(</span><span class="n">record</span><span class="p">)</span> <span class="ow">and</span>
+           <span class="nb">issubclass</span><span class="p">(</span><span class="n">record</span><span class="p">,</span> <span class="n">PVGroup</span><span class="p">)</span> <span class="ow">and</span>
+           <span class="n">record</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="n">PVGroup</span><span class="p">,</span> <span class="n">RecordFieldGroup</span><span class="p">)</span>
+           <span class="p">}</span>
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;records&#39;</span><span class="p">,</span> <span class="s1">&#39;RecordFieldGroup&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 </pre></div>
 
