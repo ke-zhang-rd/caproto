@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.server.records &mdash; caproto 0.1.2+144.g8667a66 documentation</title>
+  <title>caproto.server.records &mdash; caproto 0.1.2+163.gdf2b681 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+144.g8667a66
+                0.1.2+163.gdf2b681
               </div>
             
           
@@ -333,7 +333,9 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="o">**</span><span class="n">kw</span><span class="p">)</span>
 
         <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span>
+        <span class="c1"># set .NAME</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">record_name</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">pvname</span>
+        <span class="c1"># set .RTYP</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">record_type</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_record_type</span>
 
         <span class="c1"># automatic alarm handling</span>
@@ -649,7 +651,9 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">number_of_elements</span><span class="p">,</span> <span class="s1">&#39;max_length&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">number_elements_read</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AaoFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AaoFields">[docs]</a><span class="nd">@register_record</span>
@@ -718,7 +722,9 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">number_of_elements</span><span class="p">,</span> <span class="s1">&#39;max_length&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">number_elements_read</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AcalcoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AcalcoutFields">[docs]</a><span class="nd">@register_record</span>
@@ -882,7 +888,8 @@
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">archive_deadband</span><span class="p">,</span> <span class="s1">&#39;log_atol&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">number_of_elements</span><span class="p">,</span> <span class="s1">&#39;max_length&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AoFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AoFields">[docs]</a><span class="nd">@register_record</span>
@@ -3779,7 +3786,7 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Count Deadband&#39;</span><span class="p">)</span>
     <span class="n">monitor_seconds_dband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Seconds Dband&#39;</span><span class="p">)</span>
-    <span class="n">num_of_array_elements</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+    <span class="n">number_of_elements</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;NELM&#39;</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span>
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Num of Array Elements&#39;</span><span class="p">,</span>
@@ -3799,7 +3806,8 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">number_of_elements</span><span class="p">,</span> <span class="s1">&#39;max_length&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LonginFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.LonginFields">[docs]</a><span class="nd">@register_record</span>
@@ -6292,7 +6300,9 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;INDX&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Substring Index&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">maximum_elements</span><span class="p">,</span> <span class="s1">&#39;max_length&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">number_of_elements</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="SwaitFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.SwaitFields">[docs]</a><span class="nd">@register_record</span>
@@ -7579,7 +7589,8 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;RARM&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Rearm the waveform&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span></div>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">number_of_elements</span><span class="p">,</span> <span class="s1">&#39;max_length&#39;</span><span class="p">)</span></div>
 
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;records&#39;</span><span class="p">,</span> <span class="s1">&#39;RecordFieldGroup&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">records</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
