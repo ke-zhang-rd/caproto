@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.server.records &mdash; caproto 0.1.2+165.g619b368 documentation</title>
+  <title>caproto.server.records &mdash; caproto 0.1.2+178.g4153c00 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.1.2+165.g619b368
+                0.1.2+178.g4153c00
               </div>
             
           
@@ -356,7 +356,7 @@
 
     <span class="nd">@scan_rate</span><span class="o">.</span><span class="n">putter</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">scan_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
-        <span class="n">idx</span><span class="p">,</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">value</span>
         <span class="n">scan_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scan_rate</span><span class="o">.</span><span class="n">enum_strings</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">scan_string</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;I/O Intr&#39;</span><span class="p">,</span> <span class="s1">&#39;Passive&#39;</span><span class="p">,</span> <span class="s1">&#39;Event&#39;</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_scan_rate_sec</span> <span class="o">=</span> <span class="mi">0</span>
