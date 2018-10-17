@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release History &mdash; caproto 0.1.2+182.g207b784 documentation</title>
+  <title>Release History &mdash; caproto 0.1.2+185.gde32bdd documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.1.2+182.g207b784
+                0.1.2+185.gde32bdd
               </div>
             
           
@@ -106,7 +106,7 @@
 <li class="toctree-l1"><a class="reference internal" href="protocol-compliance.html">Details of our Protocol Compliance for CA Nerds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v0-2-0-2018-10-17">v0.2.0 (2018-10-17)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#breaking-changes">Breaking Changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
@@ -184,14 +184,18 @@
             
   <div class="section" id="release-history">
 <h1>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="unreleased">
-<h2>Unreleased<a class="headerlink" href="#unreleased" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="v0-2-0-2018-10-17">
+<h2>v0.2.0 (2018-10-17)<a class="headerlink" href="#v0-2-0-2018-10-17" title="Permalink to this headline">¶</a></h2>
+<p>This release improves compliance with the protocol and server performance under
+high load.</p>
 <div class="section" id="features">
 <h3>Features<a class="headerlink" href="#features" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li>Under high load (with many subscription updates queued up to send) servers
 batch subscriptions into blocks, trading a little latency for efficiency.
 Under low load, servers prioritize low latency.</li>
+<li>The servers’ medium-verbose setting (<code class="docutils literal notranslate"><span class="pre">-v</span></code>) displays current load and
+latency.</li>
 <li>In the threading client, process user callbacks using one threadpool <em>per
 circuit</em> instead of one threadpool for the entire context. Make the size of
 the threadpool configurable via a new
@@ -211,6 +215,7 @@ for a usage example.</li>
 <li>Add a server-side data source for <code class="docutils literal notranslate"><span class="pre">ChannelType.INT</span></code> (a.k.a SHORT) data.</li>
 <li>The default printed output of the <code class="docutils literal notranslate"><span class="pre">caproto-monitor</span></code> CLI utility now
 includes microseconds.</li>
+<li>There are several new <a class="reference external" href="https://github.com/NSLS-II/caproto/tree/master/caproto/ioc_examples">IOC examples</a>.</li>
 </ul>
 </div>
 <div class="section" id="breaking-changes">
@@ -223,6 +228,10 @@ with the <code class="docutils literal notranslate"><span class="pre">connection
 <li>If a beacon fails to send, do not kill the server; just log the failure,
 along with a suggestion on how to fix the environment to omit the failed
 address, and continue to run.</li>
+<li>In the high-level server, implemented with <code class="docutils literal notranslate"><span class="pre">pvproperty</span></code>, PV values can be
+defined as scalars. The accessor <code class="docutils literal notranslate"><span class="pre">pvproperty.value</span></code> now returns a scalar
+instead of a length-1 list (API break), while <code class="docutils literal notranslate"><span class="pre">write()</span></code> accepts either list
+or scalar.</li>
 </ul>
 </div>
 <div class="section" id="bug-fixes">
@@ -249,6 +258,11 @@ did not respond.</li>
 <li>Servers enforce quota per subscription to avoid one prolific subscription (or
 slow client) from drowning out others.</li>
 <li>Servers respect <code class="docutils literal notranslate"><span class="pre">EventsOn</span></code> and <code class="docutils literal notranslate"><span class="pre">EventsOff</span></code> requests.</li>
+<li>Servers differentiate between <em>current</em> length and <em>maximum</em> length of an
+array, and they properly declare the <em>maximum</em> length in
+<code class="xref py py-class docutils literal notranslate"><span class="pre">CreateChanResponse</span></code>. They formerly declared the <em>current</em>
+length, which was not correct.</li>
+<li>The <code class="docutils literal notranslate"><span class="pre">caproto-put</span></code> commandline utility now supports <code class="docutils literal notranslate"><span class="pre">-a</span></code> for arrays.</li>
 </ul>
 </div>
 </div>
