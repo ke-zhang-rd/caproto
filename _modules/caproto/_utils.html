@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._utils &mdash; caproto 0.2.0+7.g82edf5e documentation</title>
+  <title>caproto._utils &mdash; caproto 0.2.0+13.gc784511 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.0+7.g82edf5e
+                0.2.0+13.gc784511
               </div>
             
           
@@ -222,7 +222,9 @@
     <span class="s1">&#39;ProtocolError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;LocalProtocolError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;RemoteProtocolError&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CaprotoTimeoutError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;CaprotoKeyError&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;CaprotoAttributeError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;CaprotoNotImplementedError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;CaprotoValueError&#39;</span><span class="p">,</span>
     <span class="s1">&#39;CaprotoTypeError&#39;</span><span class="p">,</span>
@@ -320,6 +322,14 @@
 <span class="sd">    Your remote peer tried to do something that caproto thinks is illegal.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="o">...</span></div>
+
+
+<span class="k">class</span> <span class="nc">CaprotoTimeoutError</span><span class="p">(</span><span class="ne">TimeoutError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
+
+
+<span class="k">class</span> <span class="nc">CaprotoAttributeError</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
+    <span class="o">...</span>
 
 
 <span class="k">class</span> <span class="nc">CaprotoKeyError</span><span class="p">(</span><span class="ne">KeyError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">):</span>
@@ -477,7 +487,7 @@
 <span class="sd">    Yields (address, broadcast_address)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">netifaces</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s1">&#39;netifaces unavailable&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">CaprotoRuntimeError</span><span class="p">(</span><span class="s1">&#39;netifaces unavailable&#39;</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">iface</span> <span class="ow">in</span> <span class="n">netifaces</span><span class="o">.</span><span class="n">interfaces</span><span class="p">():</span>
         <span class="n">interface</span> <span class="o">=</span> <span class="n">netifaces</span><span class="o">.</span><span class="n">ifaddresses</span><span class="p">(</span><span class="n">iface</span><span class="p">)</span>
@@ -567,7 +577,7 @@
 <span class="k">def</span> <span class="nf">buffer_list_slice</span><span class="p">(</span><span class="o">*</span><span class="n">buffers</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
     <span class="s1">&#39;Helper function for slicing a list of buffers&#39;</span>
     <span class="k">if</span> <span class="n">offset</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Negative offset&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s1">&#39;Negative offset&#39;</span><span class="p">)</span>
 
     <span class="n">buffers</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">memoryview</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">)</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">buffers</span><span class="p">)</span>
 
@@ -580,8 +590,8 @@
 
         <span class="n">start</span> <span class="o">=</span> <span class="n">end</span>
 
-    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Offset beyond end of buffers (total length=</span><span class="si">{}</span><span class="s1"> offset=</span><span class="si">{}</span><span class="s1">)&#39;</span>
-                     <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">offset</span><span class="p">))</span>
+    <span class="k">raise</span> <span class="n">CaprotoValueError</span><span class="p">(</span><span class="s1">&#39;Offset beyond end of buffers &#39;</span>
+                            <span class="s1">&#39;(total length=</span><span class="si">{}</span><span class="s1"> offset=</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">end</span><span class="p">,</span> <span class="n">offset</span><span class="p">))</span>
 
 
 <span class="k">def</span> <span class="nf">incremental_buffer_list_slice</span><span class="p">(</span><span class="o">*</span><span class="n">buffers</span><span class="p">):</span>

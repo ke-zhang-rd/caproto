@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0.2.0+7.g82edf5e documentation</title>
+  <title>caproto._circuit &mdash; caproto 0.2.0+13.gc784511 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.0+7.g82edf5e
+                0.2.0+13.gc784511
               </div>
             
           
@@ -195,6 +195,7 @@
 <span class="kn">from</span> <span class="nn">._state</span> <span class="k">import</span> <span class="p">(</span><span class="n">ChannelState</span><span class="p">,</span> <span class="n">CircuitState</span><span class="p">,</span> <span class="n">get_exception</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">CLIENT</span><span class="p">,</span> <span class="n">SERVER</span><span class="p">,</span> <span class="n">NEED_DATA</span><span class="p">,</span> <span class="n">DISCONNECTED</span><span class="p">,</span> <span class="n">CaprotoKeyError</span><span class="p">,</span>
                      <span class="n">CaprotoValueError</span><span class="p">,</span> <span class="n">CaprotoRuntimeError</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">,</span>
+                     <span class="n">CaprotoTypeError</span><span class="p">,</span>
                      <span class="n">parse_channel_filter</span><span class="p">,</span> <span class="n">parse_record_field</span><span class="p">,</span>
                      <span class="n">ChannelFilter</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">._dbr</span> <span class="k">import</span> <span class="p">(</span><span class="n">ChannelType</span><span class="p">,</span> <span class="n">SubscriptionType</span><span class="p">,</span> <span class="n">field_types</span><span class="p">,</span> <span class="n">native_type</span><span class="p">)</span>
@@ -1122,8 +1123,8 @@
 <span class="sd">    Extract the (host, port) from a SearchResponse.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">search_response</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">SearchResponse</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;expected SearchResponse, not </span><span class="si">{!r}</span><span class="s2">&quot;</span>
-                        <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">search_response</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="n">CaprotoTypeError</span><span class="p">(</span><span class="s2">&quot;expected SearchResponse, not </span><span class="si">{!r}</span><span class="s2">&quot;</span>
+                               <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">search_response</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">search_response</span><span class="o">.</span><span class="n">header</span><span class="o">.</span><span class="n">parameter1</span> <span class="o">==</span> <span class="mh">0xffffffff</span><span class="p">:</span>
         <span class="c1"># The CA spec tells us that this sentinel value means we</span>
         <span class="c1"># should fall back to using the address of the sender of</span>
