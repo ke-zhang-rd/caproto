@@ -1,0 +1,317 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Loggers &mdash; caproto 0.2.1+1.gd5205e8 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Details of our Protocol Compliance for CA Nerds" href="protocol-compliance.html" />
+    <link rel="prev" title="Core API Documentation" href="api.html" /> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="index.html" class="icon icon-home"> caproto
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.2.1+1.gd5205e8
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Install Caproto</a></li>
+</ul>
+<p class="caption"><span class="caption-text">EPICS Clients and Servers</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="command-line-client.html">Command-Line Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sync-client.html">Synchronous Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threading-client.html">Threading Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pyepics-compat-client.html">Pyepics-Compatible Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="async-clients.html">Asynchronous Clients</a></li>
+<li class="toctree-l1"><a class="reference internal" href="iocs.html">Input-Output Controllers (IOCs)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="mock-records.html">Mock Records</a></li>
+<li class="toctree-l1"><a class="reference internal" href="servers.html">Servers</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Channel Access Sans I/O</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">Core API Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Loggers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#useful-snippets">Useful snippets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logger-names">Logger names</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#logging-handlers">Logging Handlers</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption"><span class="caption-text">Appendix</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://nsls-ii.github.io/caproto/bench/#/">Performance Benchmarks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol-compliance.html">Details of our Protocol Compliance for CA Nerds</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="release-notes.html">Release History</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">caproto</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Loggers</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/loggers.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="loggers">
+<span id="id1"></span><h1>Loggers<a class="headerlink" href="#loggers" title="Permalink to this headline">¶</a></h1>
+<p>Caproto uses Python’s built-in logging framework. The commandline interface,
+including both the clients (e.g. <code class="docutils literal notranslate"><span class="pre">caproto-get</span></code>) and the server modules
+(<code class="docutils literal notranslate"><span class="pre">python3</span> <span class="pre">-m</span> <span class="pre">caproto.ioc_examples.*</span></code>), accept <code class="docutils literal notranslate"><span class="pre">-v</span></code> and <code class="docutils literal notranslate"><span class="pre">-vvv</span></code> to control
+log verbosity. In Python, any logger instance can accessed via its name as
+<code class="docutils literal notranslate"><span class="pre">logging.getLogger(logger_name)</span></code>. See the complete list off logger names used
+by caproto, below. Because recalling the name is not always convenient, certain
+objects in caproto’s Python API expose a <code class="docutils literal notranslate"><span class="pre">log</span></code> attribute, such as <code class="docutils literal notranslate"><span class="pre">pv.log</span></code>,
+<code class="docutils literal notranslate"><span class="pre">pv.context.log</span></code> and <code class="docutils literal notranslate"><span class="pre">pv.circuit_manager.log</span></code>.</p>
+<div class="section" id="useful-snippets">
+<h2>Useful snippets<a class="headerlink" href="#useful-snippets" title="Permalink to this headline">¶</a></h2>
+<p>To turn on maximal logging (usually way too much information!) use</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To log (non-batch) read/write requests and read/write/event responses in the
+threading and pyepics-compat clients:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto.ch&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>See <a class="reference internal" href="threading-client.html#threading-loggers"><span class="std std-ref">Loggers for Debugging</span></a> for more handy examples.</p>
+</div>
+<div class="section" id="logger-names">
+<h2>Logger names<a class="headerlink" href="#logger-names" title="Permalink to this headline">¶</a></h2>
+<p>Here is the complete list of loggers used by caproto.</p>
+<ul class="simple">
+<li><code class="docutils literal notranslate"><span class="pre">'caproto'</span></code> — the logger to which all caproto messages propagate</li>
+<li><code class="docutils literal notranslate"><span class="pre">'caproto.ch'</span></code> — INFO-logs changes to channel connection state on all
+channels; DEBUG-logs read/write requests and read/write/event responses for
+the threading client (other async clients TODO)</li>
+<li><code class="docutils literal notranslate"><span class="pre">'caproto.ch.&lt;name&gt;'</span></code> — narrows to channel(s) with a given PV name, as in
+<code class="docutils literal notranslate"><span class="pre">'caproto.ch.random_walk:x'</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">'caproto.ch.&lt;name&gt;.&lt;priority&gt;'</span></code> — narrows one channel with a given PV
+name and priority, as in <code class="docutils literal notranslate"><span class="pre">'caproto.ch.random_walk:x.0'</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">'caproto.circ'</span></code> — DEBUG-logs commands sent and received over TCP</li>
+<li><code class="docutils literal notranslate"><span class="pre">'caproto.circ.&lt;addr&gt;'</span></code> – narrows to circuits connected to the address
+<code class="docutils literal notranslate"><span class="pre">&lt;addr&gt;</span></code>, as in <code class="docutils literal notranslate"><span class="pre">'caproto.circ.127.0.0.1:49384'</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">'caproto.circ.&lt;addr&gt;.&lt;priority&gt;'</span></code> – specifies example one circuit with a
+certain address and priority, as in <code class="docutils literal notranslate"><span class="pre">'caproto.circ.127.0.0.1:49384.0'</span></code></li>
+<li><code class="docutils literal notranslate"><span class="pre">'caproto.bcast'</span></code> — logs command sent and received over UDP</li>
+<li><code class="docutils literal notranslate"><span class="pre">'caproto.ctx'</span></code> – logs updates from Contexts, such (on the client side)
+how many search requests are still awaiting replies and (on the server side)
+the number of connected clients and performance metrics when under load</li>
+<li><code class="docutils literal notranslate"><span class="pre">'caproto.ctx.&lt;id&gt;'</span></code> – narrows to one specific Context instance <code class="docutils literal notranslate"><span class="pre">ctx</span></code>
+where <code class="docutils literal notranslate"><span class="pre">&lt;id&gt;</span></code> <code class="docutils literal notranslate"><span class="pre">str(id(ctx))</span></code></li>
+</ul>
+</div>
+<div class="section" id="logging-handlers">
+<h2>Logging Handlers<a class="headerlink" href="#logging-handlers" title="Permalink to this headline">¶</a></h2>
+<p>At import time, caproto adds a logging stream handler
+<code class="docutils literal notranslate"><span class="pre">caproto.color_log_handler</span></code> to the <code class="docutils literal notranslate"><span class="pre">'caproto'</span></code> logger, which uses ANSI
+color codes to color-code the log messages by log level.</p>
+<p>To conveniently switch to a version without the colors:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caproto</span><span class="o">.</span><span class="n">color_logs</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>  <span class="c1"># color_log_handler -&gt; plain_log_handler</span>
+</pre></div>
+</div>
+<p>You can, of course, configure the handlers manually in the standard fashion
+supported by Python, using <code class="docutils literal notranslate"><span class="pre">logging.getLogger('caproto').handlers</span></code>. For
+example, to remove caproto’s default handler and write to a file instead of the
+standard out:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">caproto</span>
+<span class="kn">from</span> <span class="nn">caproto._log</span> <span class="kn">import</span> <span class="n">LogFormatter</span><span class="p">,</span> <span class="n">color_log_format</span><span class="p">,</span> <span class="n">log_date_format</span>
+
+<span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">YOUR_FILEPATH</span><span class="p">)</span>
+<span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span>
+    <span class="n">LogFormatter</span><span class="p">(</span><span class="n">color_log_format</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="n">log_date_format</span><span class="p">))</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span>
+<span class="n">log</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+<span class="n">log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="protocol-compliance.html" class="btn btn-neutral float-right" title="Details of our Protocol Compliance for CA Nerds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="api.html" class="btn btn-neutral" title="Core API Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Daniel Allan
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+
+  
+
+  <script type="text/javascript" src="_static/js/theme.js"></script>
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

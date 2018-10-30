@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Core API Documentation &mdash; caproto 0.2.0+38.ged5f2e2 documentation</title>
+  <title>Core API Documentation &mdash; caproto 0.2.1+1.gd5205e8 documentation</title>
   
 
   
@@ -28,7 +28,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Details of our Protocol Compliance for CA Nerds" href="protocol-compliance.html" />
+    <link rel="next" title="Loggers" href="loggers.html" />
     <link rel="prev" title="Writing Your Own Channel Access Client" href="basics.html" /> 
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.0+38.ged5f2e2
+                0.2.1+1.gd5205e8
               </div>
             
           
@@ -108,9 +108,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#channel-objects">Channel objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#payload-data-types">Payload Data Types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#exceptions">Exceptions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#loggers">Loggers</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="loggers.html">Loggers</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul>
@@ -183,26 +183,25 @@
            <div itemprop="articleBody">
             
   <div class="section" id="core-api-documentation">
-<h1><a class="toc-backref" href="#id3">Core API Documentation</a><a class="headerlink" href="#core-api-documentation" title="Permalink to this headline">¶</a></h1>
+<h1><a class="toc-backref" href="#id2">Core API Documentation</a><a class="headerlink" href="#core-api-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="contents topic" id="contents">
 <p class="topic-title first">Contents</p>
 <ul class="simple">
-<li><a class="reference internal" href="#core-api-documentation" id="id3">Core API Documentation</a><ul>
-<li><a class="reference internal" href="#commands" id="id4">Commands</a></li>
-<li><a class="reference internal" href="#the-state-machine" id="id5">The State Machine</a></li>
-<li><a class="reference internal" href="#special-constants" id="id6">Special Constants</a></li>
-<li><a class="reference internal" href="#the-virtualcircuit-object" id="id7">The VirtualCircuit object</a></li>
-<li><a class="reference internal" href="#the-broadcaster-object" id="id8">The Broadcaster object</a></li>
-<li><a class="reference internal" href="#channel-objects" id="id9">Channel objects</a></li>
-<li><a class="reference internal" href="#payload-data-types" id="id10">Payload Data Types</a></li>
-<li><a class="reference internal" href="#exceptions" id="id11">Exceptions</a></li>
-<li><a class="reference internal" href="#loggers" id="id12">Loggers</a></li>
+<li><a class="reference internal" href="#core-api-documentation" id="id2">Core API Documentation</a><ul>
+<li><a class="reference internal" href="#commands" id="id3">Commands</a></li>
+<li><a class="reference internal" href="#the-state-machine" id="id4">The State Machine</a></li>
+<li><a class="reference internal" href="#special-constants" id="id5">Special Constants</a></li>
+<li><a class="reference internal" href="#the-virtualcircuit-object" id="id6">The VirtualCircuit object</a></li>
+<li><a class="reference internal" href="#the-broadcaster-object" id="id7">The Broadcaster object</a></li>
+<li><a class="reference internal" href="#channel-objects" id="id8">Channel objects</a></li>
+<li><a class="reference internal" href="#payload-data-types" id="id9">Payload Data Types</a></li>
+<li><a class="reference internal" href="#exceptions" id="id10">Exceptions</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="commands">
-<h2><a class="toc-backref" href="#id4">Commands</a><a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id3">Commands</a><a class="headerlink" href="#commands" title="Permalink to this headline">¶</a></h2>
 <p>Caproto lets you work with Channel Access communication in terms of <em>Commands</em>
 instead of thinking in terms of bytes.</p>
 <p>Take <a class="reference internal" href="#caproto.VersionRequest" title="caproto.VersionRequest"><code class="xref py py-class docutils literal notranslate"><span class="pre">VersionRequest</span></code></a> as an example.</p>
@@ -910,7 +909,7 @@ spec for details about meanings.)</p>
 
 </div>
 <div class="section" id="the-state-machine">
-<h2><a class="toc-backref" href="#id5">The State Machine</a><a class="headerlink" href="#the-state-machine" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id4">The State Machine</a><a class="headerlink" href="#the-state-machine" title="Permalink to this headline">¶</a></h2>
 <p>To validate commands being sent and received, the caproto VirtualCircuit object
 maintains several state machines. It keeps track of what the client is doing
 and what server is doing, whether it is playing the role of the client or
@@ -959,7 +958,7 @@ closing the Channel.</p>
 </table>
 </div>
 <div class="section" id="special-constants">
-<h2><a class="toc-backref" href="#id6">Special Constants</a><a class="headerlink" href="#special-constants" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id5">Special Constants</a><a class="headerlink" href="#special-constants" title="Permalink to this headline">¶</a></h2>
 <p>Caproto uses special constants to represent the states of the state machine:</p>
 <dl class="data">
 <dt id="caproto.SEND_SEARCH_REQUEST">
@@ -1051,7 +1050,7 @@ handling of disconnection events through the command queues:</p>
 
 </div>
 <div class="section" id="the-virtualcircuit-object">
-<h2><a class="toc-backref" href="#id7">The VirtualCircuit object</a><a class="headerlink" href="#the-virtualcircuit-object" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id6">The VirtualCircuit object</a><a class="headerlink" href="#the-virtualcircuit-object" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="caproto.VirtualCircuit">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">VirtualCircuit</code><span class="sig-paren">(</span><em>our_role</em>, <em>address</em>, <em>priority</em>, <em>protocol_version=13</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_circuit.html#VirtualCircuit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.VirtualCircuit" title="Permalink to this definition">¶</a></dt>
@@ -1203,7 +1202,7 @@ It does not update any important state.</p>
 
 </div>
 <div class="section" id="the-broadcaster-object">
-<h2><a class="toc-backref" href="#id8">The Broadcaster object</a><a class="headerlink" href="#the-broadcaster-object" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id7">The Broadcaster object</a><a class="headerlink" href="#the-broadcaster-object" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="caproto.Broadcaster">
 <em class="property">class </em><code class="descclassname">caproto.</code><code class="descname">Broadcaster</code><span class="sig-paren">(</span><em>our_role</em>, <em>protocol_version=13</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_broadcaster.html#Broadcaster"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.Broadcaster" title="Permalink to this definition">¶</a></dt>
@@ -1368,7 +1367,7 @@ packet.</p>
 
 </div>
 <div class="section" id="channel-objects">
-<h2><a class="toc-backref" href="#id9">Channel objects</a><a class="headerlink" href="#channel-objects" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id8">Channel objects</a><a class="headerlink" href="#channel-objects" title="Permalink to this headline">¶</a></h2>
 <p>These objects are used internally by <a class="reference internal" href="#caproto.VirtualCircuit" title="caproto.VirtualCircuit"><code class="xref py py-class docutils literal notranslate"><span class="pre">VirtualCircuit</span></code></a> to track the state
 of individual channels. The user can optionally use them as a convenience for
 generating valid commands.</p>
@@ -1966,7 +1965,7 @@ native data type, which can be checked in the Channel’s attribute
 
 </div>
 <div class="section" id="payload-data-types">
-<span id="id1"></span><h2><a class="toc-backref" href="#id10">Payload Data Types</a><a class="headerlink" href="#payload-data-types" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2><a class="toc-backref" href="#id9">Payload Data Types</a><a class="headerlink" href="#payload-data-types" title="Permalink to this headline">¶</a></h2>
 <p>Channel Access implements a system of data structures (“Database Records”) that
 encode metadata like time, alarm status, and control limits with the data
 value(s). Each Channel Access data type has an integer ID, encoded by caproto
@@ -2208,7 +2207,7 @@ struct:</p>
 </div>
 </div>
 <div class="section" id="exceptions">
-<h2><a class="toc-backref" href="#id11">Exceptions</a><a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id10">Exceptions</a><a class="headerlink" href="#exceptions" title="Permalink to this headline">¶</a></h2>
 <p>All exceptions directly raised by caproto inherit from <code class="xref py py-class docutils literal notranslate"><span class="pre">CaprotoError</span></code>.</p>
 <p>Errors like <code class="xref py py-class docutils literal notranslate"><span class="pre">CaprotoKeyError</span></code> inherit from both <code class="xref py py-class docutils literal notranslate"><span class="pre">CaprotoError</span></code>
 and the built-in Python <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">KeyError</span></code></a>.</p>
@@ -2228,47 +2227,6 @@ and <a class="reference internal" href="#caproto.RemoteProtocolError" title="cap
 </dd></dl>
 
 </div>
-<div class="section" id="loggers">
-<span id="id2"></span><h2><a class="toc-backref" href="#id12">Loggers</a><a class="headerlink" href="#loggers" title="Permalink to this headline">¶</a></h2>
-<p>Caproto uses Python’s built-in logging framework. Many objects expose a logger
-instance as a attribute, <code class="docutils literal notranslate"><span class="pre">log</span></code>, as a convenience. And any logger instance can
-always be obtained from <code class="docutils literal notranslate"><span class="pre">logging.getLogger(logger_name)</span></code> if you know the
-<code class="docutils literal notranslate"><span class="pre">logger_name</span></code>.</p>
-<p>For example, to turn on maximal logging (usually way too much information!) use</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="n">log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span>
-<span class="n">log</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="s1">&#39;DEBUG&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Each of the other loggers is more targeted. Here are their names:</p>
-<ul class="simple">
-<li><code class="docutils literal notranslate"><span class="pre">'caproto'</span></code> — the logger to which all caproto messages propagate</li>
-<li><code class="docutils literal notranslate"><span class="pre">'caproto.ch'</span></code> — logs changes to channel connection state on all channels</li>
-<li><code class="docutils literal notranslate"><span class="pre">'caproto.ch.&lt;name&gt;'</span></code> — narrows to channel(s) with a given PV name, as in
-<code class="docutils literal notranslate"><span class="pre">'caproto.ch.random_walk:x'</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">'caproto.ch.&lt;name&gt;.&lt;priority&gt;'</span></code> — narrows one channel with a given PV
-name and priority, as in <code class="docutils literal notranslate"><span class="pre">'caproto.ch.random_walk:x.0'</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">'caproto.circ'</span></code> — logs commands sent and received over TCP</li>
-<li><code class="docutils literal notranslate"><span class="pre">'caproto.circ.&lt;addr&gt;'</span></code> – narrows to circuits connected to the address
-<code class="docutils literal notranslate"><span class="pre">&lt;addr&gt;</span></code>, as in <code class="docutils literal notranslate"><span class="pre">'caproto.circ.127.0.0.1:49384'</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">'caproto.circ.&lt;addr&gt;.&lt;priority&gt;'</span></code> – specifies example one circuit with a
-certain address and priority, as in <code class="docutils literal notranslate"><span class="pre">'caproto.circ.127.0.0.1:49384.0'</span></code></li>
-<li><code class="docutils literal notranslate"><span class="pre">'caproto.bcast'</span></code> — logs command sent and received over UDP</li>
-<li><code class="docutils literal notranslate"><span class="pre">'caproto.ctx'</span></code> – logs updates from Contexts, such as how many search
-requests are still awaiting replies</li>
-<li><code class="docutils literal notranslate"><span class="pre">'caproto.ctx.&lt;id&gt;'</span></code> – narrows to one specific Context instance <code class="docutils literal notranslate"><span class="pre">ctx</span></code>
-where <code class="docutils literal notranslate"><span class="pre">&lt;id&gt;</span></code> <code class="docutils literal notranslate"><span class="pre">str(id(ctx))</span></code></li>
-</ul>
-<p>At import time, caproto adds a logging stream handler
-<code class="docutils literal notranslate"><span class="pre">caproto.color_log_handler</span></code> to the <code class="docutils literal notranslate"><span class="pre">'caproto'</span></code> logger, which uses ANSI
-color codes to color-code the log messages by log level.</p>
-<p>To conveniently switch to a version without the colors:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caproto</span><span class="o">.</span><span class="n">color_logs</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>  <span class="c1"># color_log_handler -&gt; plain_log_handler</span>
-</pre></div>
-</div>
-<p>You can, of course, configure the handlers manually in the standard fashion
-supported by Python, using <code class="docutils literal notranslate"><span class="pre">logging.getLogger('caproto').handlers</span></code>.</p>
-</div>
 </div>
 
 
@@ -2279,7 +2237,7 @@ supported by Python, using <code class="docutils literal notranslate"><span clas
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="protocol-compliance.html" class="btn btn-neutral float-right" title="Details of our Protocol Compliance for CA Nerds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="loggers.html" class="btn btn-neutral float-right" title="Loggers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="basics.html" class="btn btn-neutral" title="Writing Your Own Channel Access Client" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

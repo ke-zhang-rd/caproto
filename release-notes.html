@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release History &mdash; caproto 0.2.0+38.ged5f2e2 documentation</title>
+  <title>Release History &mdash; caproto 0.2.1+1.gd5205e8 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.2.0+38.ged5f2e2
+                0.2.1+1.gd5205e8
               </div>
             
           
@@ -99,6 +99,7 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="basics.html">Writing Your Own Channel Access Client</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">Core API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="loggers.html">Loggers</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Appendix</span></p>
 <ul class="current">
@@ -106,10 +107,15 @@
 <li class="toctree-l1"><a class="reference internal" href="protocol-compliance.html">Details of our Protocol Compliance for CA Nerds</a></li>
 <li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#v0-2-1-2018-10-29">v0.2.1 (2018-10-29)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#server-performance-tuning">Server Performance Tuning</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#v0-2-0-2018-10-17">v0.2.0 (2018-10-17)</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#breaking-changes">Breaking Changes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#bug-fixes">Bug Fixes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Bug Fixes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#improved-protocol-compliance">Improved Protocol Compliance</a></li>
 </ul>
 </li>
@@ -184,6 +190,57 @@
             
   <div class="section" id="release-history">
 <h1>Release History<a class="headerlink" href="#release-history" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="v0-2-1-2018-10-29">
+<h2>v0.2.1 (2018-10-29)<a class="headerlink" href="#v0-2-1-2018-10-29" title="Permalink to this headline">¶</a></h2>
+<p>This release tunes server performance under high load and fixes several subtle
+bugs in the server identified via
+<a class="reference external" href="https://epics.anl.gov/base/R3-16/2-docs/CAref.html#acctst">acctst</a>,
+the server acceptance test that ships with <code class="docutils literal notranslate"><span class="pre">epics-base</span></code>.</p>
+<div class="section" id="bug-fixes">
+<h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>When a new Subscription is added, send the most recent value immediately but
+only to the <em>new</em> Subscription. Previous releases sent redundant messages
+to <em>all</em> Subscriptions that had similar parameters.</li>
+<li>Reduce the maximum size of a datagram of search requests to match the typical
+Maximum Transmission Unit seen in the wild.</li>
+<li>Fix a bug in the pyepics-compatibility layer that caused the connection
+callbacks never to be called when underlying <code class="docutils literal notranslate"><span class="pre">caproto.threading.client.PV</span></code>’s were reused.</li>
+<li>Fix a typo in the PV names in the <code class="docutils literal notranslate"><span class="pre">spoof_beamline</span></code> IOC.</li>
+<li>Never send an <code class="docutils literal notranslate"><span class="pre">EventAddResponse</span></code> after a matching <code class="docutils literal notranslate"><span class="pre">EventCancelResponse</span></code>
+has been sent.</li>
+<li>Always send a response to a failed write, and include the correct error code.</li>
+<li>If a circuit has an oversized backlog of received commands to process, log a
+WARNING before disconnecting.</li>
+</ul>
+</div>
+<div class="section" id="server-performance-tuning">
+<h3>Server Performance Tuning<a class="headerlink" href="#server-performance-tuning" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Increase the max backlog of subscription updates queued up to send (both
+updates per specific Subscription and total updates per circuit) by a factor
+of 10. Likewise for the max backlog of received commands queued up to
+process.</li>
+<li>When under sustained high load of subscription updates to send, iteratively
+double the latency between packets up to at most 1 second to achieve higher
+overall throughput (more commands per packet, less overhead).</li>
+<li>When a <code class="docutils literal notranslate"><span class="pre">Read[Notify]Request</span></code> arrives on the heels of a
+<code class="docutils literal notranslate"><span class="pre">Write[Notify]Request</span></code>, wait for up to 0.001 seconds for the write to
+process before reading the current value. If the write happens to complete
+in less than 0.001 seconds, the read will reflect the new value. This
+behavior is in the spirit of, but distinct from, EPICS’ “synchronous writes.”
+EPICS allows a device to block while writing if it promises to finish quickly
+(&lt; 0.1 miliseconds). We take a different approach, making all writes
+asynchronous. This ensures that an accidentally-slow write cannot lock up the
+server. It adds latency to some reads, up to a hard maximum of 1 milisecond,
+giving the effect of synchronous write whenever the write finishes fast.</li>
+</ul>
+<p>The release also includes one small new feature: in the threading client,
+DEBUG-level logging of channels/PVs <code class="docutils literal notranslate"><span class="pre">caproto.ch</span></code> now logs (non-batch)
+read/write requests and read/write/event responses. Related — there is
+expanded documentation on <a class="reference internal" href="loggers.html"><span class="doc">Loggers</span></a>.</p>
+</div>
+</div>
 <div class="section" id="v0-2-0-2018-10-17">
 <h2>v0.2.0 (2018-10-17)<a class="headerlink" href="#v0-2-0-2018-10-17" title="Permalink to this headline">¶</a></h2>
 <p>This release improves compliance with the protocol and server performance under
@@ -234,9 +291,11 @@ instead of a length-1 list (API break), while <code class="docutils literal notr
 or scalar.</li>
 </ul>
 </div>
-<div class="section" id="bug-fixes">
-<h3>Bug Fixes<a class="headerlink" href="#bug-fixes" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id1">
+<h3>Bug Fixes<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
+<li>A critical bug CHAR-type payload serialization which made caproto clients
+unusable with CHAR-type channels has been fixed.</li>
 <li>The asyncio server now executes its cleanup code when interrupted with SIGINT
 (Ctrl+C).</li>
 <li>All three servers were relying on the operating system to clean up their
