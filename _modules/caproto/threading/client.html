@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.2.1+1.gd5205e8 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.2.1+4.g6492969 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+1.gd5205e8
+                0.2.1+4.g6492969
               </div>
             
           
@@ -206,7 +206,7 @@
 <span class="kn">from</span> <span class="nn">.._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">batch_requests</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">,</span> <span class="n">ThreadsafeCounter</span><span class="p">,</span>
                       <span class="n">socket_bytes_available</span><span class="p">,</span> <span class="n">CaprotoTimeoutError</span><span class="p">,</span>
                       <span class="n">CaprotoTypeError</span><span class="p">,</span> <span class="n">CaprotoRuntimeError</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span>
-                      <span class="n">CaprotoKeyError</span><span class="p">)</span>
+                      <span class="n">CaprotoKeyError</span><span class="p">,</span> <span class="n">CaprotoNetworkError</span><span class="p">)</span>
 
 
 <span class="nb">print</span> <span class="o">=</span> <span class="n">partial</span><span class="p">(</span><span class="nb">print</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -604,8 +604,8 @@
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">OSError</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;</span><span class="si">{ex}</span><span class="s1"> while sending {len(bytes_to_send)} &#39;</span>
-                              <span class="n">f</span><span class="s1">&#39;bytes to </span><span class="si">{host}</span><span class="s1">:</span><span class="si">{port}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span></div>
+                <span class="k">raise</span> <span class="n">CaprotoNetworkError</span><span class="p">(</span>
+                    <span class="n">f</span><span class="s1">&#39;</span><span class="si">{ex}</span><span class="s1"> while sending {len(bytes_to_send)} bytes to </span><span class="si">{host}</span><span class="s1">:</span><span class="si">{port}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span></div>
 
 <div class="viewcode-block" id="SharedBroadcaster.get_cached_search_result"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.SharedBroadcaster.get_cached_search_result">[docs]</a>    <span class="k">def</span> <span class="nf">get_cached_search_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                                  <span class="n">threshold</span><span class="o">=</span><span class="n">STALE_SEARCH_EXPIRATION</span><span class="p">):</span>
