@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0.2.1+4.g6492969 documentation</title>
+  <title>caproto._circuit &mdash; caproto 0.2.1+22.ga449901 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+4.g6492969
+                0.2.1+22.ga449901
               </div>
             
           
@@ -278,8 +278,8 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="s2">&quot;&lt;VirtualCircuit host=</span><span class="si">{self.host}</span><span class="s2"> port=</span><span class="si">{self.port}</span><span class="s2"> &quot;</span>
-                <span class="n">f</span><span class="s2">&quot;our_role=</span><span class="si">{self.our_role}</span><span class="s2">&gt; logger_name=</span><span class="si">{self.log.name}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="s2">&quot;&lt;VirtualCircuit host=</span><span class="si">{self.host!r}</span><span class="s2"> port=</span><span class="si">{self.port}</span><span class="s2"> &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;our_role=</span><span class="si">{self.our_role}</span><span class="s2">&gt; logger_name=</span><span class="si">{self.log.name!r}</span><span class="s2">&gt;&quot;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -528,6 +528,13 @@
                 <span class="n">chan</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
 
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">VersionResponse</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Per the specification:</span>
+                <span class="c1"># &quot;In CA &lt; 4.11, Message does not include minor version number</span>
+                <span class="c1"># (it is always 0) and is interpreted as an echo command that</span>
+                <span class="c1"># carries no data. Version exchange is performed immediately</span>
+                <span class="c1"># after [channel creation].&quot;</span>
+                <span class="k">return</span>
             <span class="n">protocol_version</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">protocol_version</span> <span class="o">=</span> <span class="n">protocol_version</span>
             <span class="k">for</span> <span class="n">cid</span><span class="p">,</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>

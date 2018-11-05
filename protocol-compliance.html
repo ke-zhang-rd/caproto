@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Details of our Protocol Compliance for CA Nerds &mdash; caproto 0.2.1+4.g6492969 documentation</title>
+  <title>Details of our Protocol Compliance for CA Nerds &mdash; caproto 0.2.1+22.ga449901 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.1+4.g6492969
+                0.2.1+22.ga449901
               </div>
             
           
@@ -208,11 +208,14 @@ has been deprecated since epics-base version 3.13.</li>
 interfaces and ports.</li>
 <li>Connection caching</li>
 <li>Automatic reconnection</li>
-<li>Batching of requests for efficiency</li>
+<li>Batch of requests for efficiency.</li>
+<li>Monitor server beacons to notice new CA servers on the network or servers
+that have become responsive. Respond accordingly.</li>
+<li>Adapt rate of sending <code class="docutils literal notranslate"><span class="pre">SearchRequest</span></code>, accounting for how long a request
+has gone unanswered and for the appearance of new servers on the network.</li>
 </ul>
 <p>TO DO:</p>
 <ul class="simple">
-<li>Back-off of unanswered search requests</li>
 <li>“Flow control” — automatic temporary suspension of subscriptions when
 under high load using <code class="docutils literal notranslate"><span class="pre">EventsOn</span></code> and <code class="docutils literal notranslate"><span class="pre">EventsOff</span></code></li>
 </ul>

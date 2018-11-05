@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.2.1+4.g6492969 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.2.1+22.ga449901 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+4.g6492969
+                0.2.1+22.ga449901
               </div>
             
           
@@ -202,7 +202,7 @@
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span><span class="p">,</span> <span class="n">deque</span>
 <span class="kn">import</span> <span class="nn">caproto</span> <span class="k">as</span> <span class="nn">ca</span>
 <span class="kn">from</span> <span class="nn">.._constants</span> <span class="k">import</span> <span class="p">(</span><span class="n">MAX_ID</span><span class="p">,</span> <span class="n">STALE_SEARCH_EXPIRATION</span><span class="p">,</span>
-                          <span class="n">SEARCH_MAX_DATAGRAM_BYTES</span><span class="p">)</span>
+                          <span class="n">SEARCH_MAX_DATAGRAM_BYTES</span><span class="p">,</span> <span class="n">RESPONSIVENESS_TIMEOUT</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.._utils</span> <span class="k">import</span> <span class="p">(</span><span class="n">batch_requests</span><span class="p">,</span> <span class="n">CaprotoError</span><span class="p">,</span> <span class="n">ThreadsafeCounter</span><span class="p">,</span>
                       <span class="n">socket_bytes_available</span><span class="p">,</span> <span class="n">CaprotoTimeoutError</span><span class="p">,</span>
                       <span class="n">CaprotoTypeError</span><span class="p">,</span> <span class="n">CaprotoRuntimeError</span><span class="p">,</span> <span class="n">CaprotoValueError</span><span class="p">,</span>
@@ -314,7 +314,10 @@
 <span class="n">AUTOMONITOR_MAXLENGTH</span> <span class="o">=</span> <span class="mi">65536</span>
 <span class="n">TIMEOUT</span> <span class="o">=</span> <span class="mi">2</span>
 <span class="n">EVENT_ADD_BATCH_MAX_BYTES</span> <span class="o">=</span> <span class="mi">2</span><span class="o">**</span><span class="mi">16</span>
-<span class="n">RETRY_SEARCHES_PERIOD</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">MIN_RETRY_SEARCHES_INTERVAL</span> <span class="o">=</span> <span class="mf">0.03</span>
+<span class="n">MAX_RETRY_SEARCHES_INTERVAL</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">SEARCH_RETIREMENT_AGE</span> <span class="o">=</span> <span class="mi">8</span> <span class="o">*</span> <span class="mi">60</span>
+<span class="n">RETRY_RETIRED_SEARCHES_INTERVAL</span> <span class="o">=</span> <span class="mi">60</span>
 <span class="n">RESTART_SUBS_PERIOD</span> <span class="o">=</span> <span class="mf">0.1</span>
 <span class="n">STR_ENC</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;CAPROTO_STRING_ENCODING&#39;</span><span class="p">,</span> <span class="s1">&#39;latin-1&#39;</span><span class="p">)</span>
 
@@ -485,7 +488,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">search_results</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map name to (time, address)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map search id (cid) to (name, queue)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map search id (cid) to [name, queue, retirement_deadline]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server_protocol_versions</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># map address to protocol version</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakSet</span><span class="p">()</span>
@@ -493,6 +496,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">Broadcaster</span><span class="p">(</span><span class="n">our_role</span><span class="o">=</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">log</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">command_bundle_queue</span> <span class="o">=</span> <span class="n">Queue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_beacon</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_beacon_interval</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="c1"># an event to tear down and clean up the broadcaster</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_close_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -502,6 +507,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_command_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">command_loop</span><span class="p">,</span>
                                                 <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;command&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_command_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_unresponsive_servers_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span>
+            <span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_check_for_unresponsive_servers</span><span class="p">,</span>
+            <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;check_for_unresponsive_servers&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_for_unresponsive_servers_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_registration_retry_time</span> <span class="o">=</span> <span class="n">registration_retry_time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_registration_last_sent</span> <span class="o">=</span> <span class="mi">0</span>
@@ -672,11 +682,42 @@
             <span class="c1"># Generate search_ids and stash them on Context state so they can</span>
             <span class="c1"># be used to match SearchResponses with SearchRequests.</span>
             <span class="n">search_ids</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="c1"># Search requests that are past their retirement deadline with no</span>
+            <span class="c1"># results will be searched for less frequently.</span>
+            <span class="n">retirement_deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">SEARCH_RETIREMENT_AGE</span>
             <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">needs_search</span><span class="p">:</span>
                 <span class="n">search_id</span> <span class="o">=</span> <span class="n">new_id</span><span class="p">()</span>
                 <span class="n">search_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">search_id</span><span class="p">)</span>
-                <span class="c1"># make this a list because we are going to mutate it later</span>
-                <span class="n">unanswered_searches</span><span class="p">[</span><span class="n">search_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="n">results_queue</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># The value is a list because we mutate it to update the</span>
+                <span class="c1"># retirement deadline sometimes.</span>
+                <span class="n">unanswered_searches</span><span class="p">[</span><span class="n">search_id</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="p">,</span> <span class="n">results_queue</span><span class="p">,</span> <span class="n">retirement_deadline</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_search_now</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SharedBroadcaster.cancel"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.SharedBroadcaster.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">names</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancel searches for these names.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        *names : strings</span>
+<span class="sd">            any number of PV names</span>
+
+<span class="sd">        Any PV instances that were awaiting these results will be stuck until</span>
+<span class="sd">        :meth:`get_pvs` is called again.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_lock</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">search_id</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="p">[</span><span class="n">search_id</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="SharedBroadcaster.search_now"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.SharedBroadcaster.search_now">[docs]</a>    <span class="k">def</span> <span class="nf">search_now</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Force the Broadcaster to reissue all unanswered search requests now.</span>
+
+<span class="sd">        Left to its own devices, the Broadcaster will do this at regular</span>
+<span class="sd">        intervals automatically. This method is intended primarily for</span>
+<span class="sd">        debugging and should not be needed in normal use.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_search_now</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="SharedBroadcaster.received"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.SharedBroadcaster.received">[docs]</a>    <span class="k">def</span> <span class="nf">received</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bytes_recv</span><span class="p">,</span> <span class="n">address</span><span class="p">):</span>
@@ -719,10 +760,38 @@
             <span class="n">queues</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
             <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
             <span class="k">for</span> <span class="n">command</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">VersionResponse</span><span class="p">):</span>
-                    <span class="c1"># Check that the server version is one we can talk to.</span>
-                    <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">version</span> <span class="o">&lt;=</span> <span class="mi">11</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Version response &lt;= 11: </span><span class="si">%r</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">Beacon</span><span class="p">):</span>
+                    <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+                    <span class="n">address</span> <span class="o">=</span> <span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">server_port</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_beacon</span><span class="p">:</span>
+                        <span class="c1"># We made a new friend!</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Watching Beacons from </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+                                      <span class="o">*</span><span class="n">address</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_new_server_found</span><span class="p">()</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">interval</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_beacon</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
+                        <span class="k">if</span> <span class="n">interval</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_beacon_interval</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">4</span><span class="p">:</span>
+                            <span class="c1"># Beacons are arriving *faster*? The server at this</span>
+                            <span class="c1"># address may have restarted.</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                                <span class="s2">&quot;Beacon anomaly: </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2"> may have restarted.&quot;</span><span class="p">,</span>
+                                <span class="o">*</span><span class="n">address</span><span class="p">)</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_new_server_found</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">last_beacon_interval</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">interval</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">last_beacon</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">now</span>
+                <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">VersionResponse</span><span class="p">):</span>
+                    <span class="c1"># Per the specification, in CA &lt; 4.11, VersionResponse does</span>
+                    <span class="c1"># not include minor version number (it is always 0) and is</span>
+                    <span class="c1"># interpreted as an echo command that carries no data.</span>
+                    <span class="c1"># Version exchange is performed immediately after channel</span>
+                    <span class="c1"># creation.</span>
+                    <span class="k">if</span> <span class="n">command</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="s2">&quot;Server is speaking some protocol version &quot;</span>
+                            <span class="s2">&quot;older than 4.11. It will not report a &quot;</span>
+                            <span class="s2">&quot;specific version until a channel is created. &quot;</span>
+                            <span class="s2">&quot;Quality of support is unknown.&quot;</span><span class="p">)</span>
+
                 <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">SearchResponse</span><span class="p">):</span>
                     <span class="n">cid</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">cid</span>
                     <span class="k">try</span><span class="p">:</span>
@@ -738,12 +807,13 @@
                             <span class="k">continue</span>
                         <span class="k">else</span><span class="p">:</span>
                             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_results</span><span class="p">:</span>
-                                <span class="n">accepted_address</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
+                                <span class="n">accepted_address</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span>
                                 <span class="n">new_address</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">extract_address</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;PV </span><span class="si">%s</span><span class="s2"> with cid </span><span class="si">%d</span><span class="s2"> found on multiple servers. &quot;</span>
-                                                 <span class="s2">&quot;Accepted address is </span><span class="si">%s</span><span class="s2">. &quot;</span>
-                                                 <span class="s2">&quot;Also found on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                                                 <span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="n">accepted_address</span><span class="p">,</span> <span class="n">new_address</span><span class="p">)</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                    <span class="s2">&quot;PV </span><span class="si">%s</span><span class="s2"> with cid </span><span class="si">%d</span><span class="s2"> found on multiple servers. &quot;</span>
+                                    <span class="s2">&quot;Accepted address is </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">. &quot;</span>
+                                    <span class="s2">&quot;Also found on </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">,</span>
+                                    <span class="n">name</span><span class="p">,</span> <span class="n">cid</span><span class="p">,</span> <span class="o">*</span><span class="n">accepted_address</span><span class="p">,</span> <span class="o">*</span><span class="n">new_address</span><span class="p">)</span>
                     <span class="k">else</span><span class="p">:</span>
                         <span class="n">results_by_cid</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">cid</span><span class="p">,</span> <span class="n">name</span><span class="p">))</span>
                         <span class="n">address</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">extract_address</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
@@ -762,14 +832,125 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Broadcaster command loop has exited.&#39;</span><span class="p">)</span>
 
+    <span class="k">def</span> <span class="nf">_new_server_found</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Bring all the unanswered seraches out of retirement</span>
+        <span class="c1"># to see if we have a new match.</span>
+        <span class="n">retirement_deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">SEARCH_RETIREMENT_AGE</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_lock</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="n">item</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">retirement_deadline</span>
+
+    <span class="k">def</span> <span class="nf">_check_for_unresponsive_servers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Broadcaster check for unresponsive servers loop is running.&#39;</span><span class="p">)</span>
+
+        <span class="n">MARGIN</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># extra time (seconds) allowed between Beacons</span>
+        <span class="n">checking</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># map address to deadline for check to resolve</span>
+        <span class="n">servers</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">weakref</span><span class="o">.</span><span class="n">WeakSet</span><span class="p">)</span>  <span class="c1"># map address to VirtualCircuitManagers</span>
+        <span class="n">last_heard</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># map address to time of last response</span>
+
+        <span class="c1"># Make locals to save getattr lookups in the loop.</span>
+        <span class="n">last_beacon</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_beacon</span>
+        <span class="n">listeners</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">listeners</span>
+
+        <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="n">servers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">last_heard</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="n">now</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
+
+            <span class="c1"># We are interested in identifying servers that we have not heard</span>
+            <span class="c1"># from since some time cutoff in the past.</span>
+            <span class="n">cutoff</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EPICS_CA_CONN_TMO&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">MARGIN</span><span class="p">)</span>
+
+            <span class="c1"># Map each server address to VirtualCircuitManagers connected to</span>
+            <span class="c1"># that address, across all Contexts (&quot;listeners&quot;).</span>
+            <span class="k">for</span> <span class="n">listener</span> <span class="ow">in</span> <span class="n">listeners</span><span class="p">:</span>
+                <span class="k">for</span> <span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">_</span><span class="p">),</span> <span class="n">circuit_manager</span> <span class="ow">in</span> <span class="n">listener</span><span class="o">.</span><span class="n">circuit_managers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                    <span class="n">servers</span><span class="p">[</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">circuit_manager</span><span class="p">)</span>
+
+            <span class="c1"># When is the last time we heard from each server, either via a</span>
+            <span class="c1"># Beacon or from TCP packets related to user activity or any</span>
+            <span class="c1"># circuit?</span>
+            <span class="k">for</span> <span class="n">address</span><span class="p">,</span> <span class="n">circuit_managers</span> <span class="ow">in</span> <span class="n">servers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">last_tcp_receipt</span> <span class="o">=</span> <span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">last_tcp_receipt</span> <span class="k">for</span> <span class="n">cm</span> <span class="ow">in</span> <span class="n">circuit_managers</span><span class="p">)</span>
+                <span class="n">last_heard</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">last_beacon</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                                           <span class="o">*</span><span class="n">last_tcp_receipt</span><span class="p">))</span>
+
+                <span class="c1"># If is has been too long --- and if we aren&#39;t already checking</span>
+                <span class="c1"># on this server --- try to prompt a response over TCP by</span>
+                <span class="c1"># sending an EchoRequest.</span>
+                <span class="k">if</span> <span class="n">last_heard</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">cutoff</span> <span class="ow">and</span> <span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">checking</span><span class="p">:</span>
+                    <span class="c1"># Record that we are checking on this address and set a</span>
+                    <span class="c1"># deadline for a response.</span>
+                    <span class="n">checking</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">now</span> <span class="o">+</span> <span class="n">RESPONSIVENESS_TIMEOUT</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                        <span class="s2">&quot;Missed Beacons from </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2">. Sending EchoRequest to &quot;</span>
+                        <span class="s2">&quot;check that server is responsive.&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">address</span><span class="p">)</span>
+                    <span class="c1"># Send on all circuits. One might be less backlogged</span>
+                    <span class="c1"># with queued commands than the others and thus able to</span>
+                    <span class="c1"># respond faster. In the majority of cases there will only</span>
+                    <span class="c1"># be one circuit per server anyway, so this is a minor</span>
+                    <span class="c1"># distinction.</span>
+                    <span class="k">for</span> <span class="n">circuit_manager</span> <span class="ow">in</span> <span class="n">circuit_managers</span><span class="p">:</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">circuit_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">EchoRequest</span><span class="p">())</span>
+                        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                            <span class="c1"># Send failed. Server is likely dead, but we&#39;ll</span>
+                            <span class="c1"># catch that shortly; no need to handle it</span>
+                            <span class="c1"># specially here.</span>
+                            <span class="k">pass</span>
+
+            <span class="c1"># Check to see if any of our ongoing checks have resolved or</span>
+            <span class="c1"># failed to resolve within the allowed response window.</span>
+            <span class="k">for</span> <span class="n">address</span><span class="p">,</span> <span class="n">deadline</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">checking</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">last_heard</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">cutoff</span><span class="p">:</span>
+                    <span class="c1"># It&#39;s alive!</span>
+                    <span class="n">checking</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">deadline</span> <span class="o">&lt;</span> <span class="n">now</span><span class="p">:</span>
+                    <span class="c1"># No circuit connected to the server at this address has</span>
+                    <span class="c1"># sent Beacons or responded to the EchoRequest. We assume</span>
+                    <span class="c1"># it is unresponsive. The EPICS specification says the</span>
+                    <span class="c1"># behavior is undefined at this point. We choose to</span>
+                    <span class="c1"># disconnect all circuits from that server so that PVs can</span>
+                    <span class="c1"># attempt to connect to a new server, such as a failover</span>
+                    <span class="c1"># backup.</span>
+                    <span class="k">for</span> <span class="n">circuit_manager</span> <span class="ow">in</span> <span class="n">servers</span><span class="p">[</span><span class="n">address</span><span class="p">]:</span>
+                        <span class="k">if</span> <span class="n">circuit_manager</span><span class="o">.</span><span class="n">connected</span><span class="p">:</span>
+                            <span class="n">circuit_manager</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                                <span class="s2">&quot;Server at </span><span class="si">%s</span><span class="s2">:</span><span class="si">%d</span><span class="s2"> is unresponsive. &quot;</span>
+                                <span class="s2">&quot;Disconnecting circuit manager </span><span class="si">%r</span><span class="s2">. PVs will &quot;</span>
+                                <span class="s2">&quot;automatically begin attempting to reconnect &quot;</span>
+                                <span class="s2">&quot;to a responsive server.&quot;</span><span class="p">,</span>
+                                <span class="o">*</span><span class="n">address</span><span class="p">,</span> <span class="n">circuit_manager</span><span class="p">)</span>
+                            <span class="n">circuit_manager</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+                    <span class="n">checking</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+                <span class="c1"># else:</span>
+                <span class="c1">#     # We are still waiting to give the server time to respond</span>
+                <span class="c1">#     # to the EchoRequest.</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Broadcaster check for unresponsive servers loop has exited.&#39;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_retry_unanswered_searches</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Periodically (re-)send a SearchRequest for all unanswered searches.</span>
 
-<span class="sd">        When the self._search_now Event is set, stop waiting and re-issue</span>
-<span class="sd">        SearchRequests immediately.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Each time new searches are added, the self._search_now Event is set,</span>
+        <span class="c1"># and we reissue *all* unanswered searches.</span>
+        <span class="c1">#</span>
+        <span class="c1"># We then frequently retry the unanswered searches that are younger</span>
+        <span class="c1"># than SEARCH_RETIREMENT_AGE, backing off from an interval of</span>
+        <span class="c1"># MIN_RETRY_SEARCHES_INTERVAL to MAX_RETRY_SEARCHES_INTERVAL. The</span>
+        <span class="c1"># interval is reset to MIN_RETRY_SEARCHES_INTERVAL each time new</span>
+        <span class="c1"># searches are added.</span>
+        <span class="c1">#</span>
+        <span class="c1"># For the searches older than SEARCH_RETIREMENT_AGE, we adopt a slower</span>
+        <span class="c1"># period to minimize network traffic. We only resend every</span>
+        <span class="c1"># RETRY_RETIRED_SEARCHES_INTERVAL or, again, whenever new searches</span>
+        <span class="c1"># are added.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Broadcaster search-retry thread has started.&#39;</span><span class="p">)</span>
+        <span class="n">time_to_check_on_retirees</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">RETRY_RETIRED_SEARCHES_INTERVAL</span>
+        <span class="n">interval</span> <span class="o">=</span> <span class="n">MIN_RETRY_SEARCHES_INTERVAL</span>
         <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_close_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_searching_enabled</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
@@ -784,12 +965,17 @@
                 <span class="k">for</span> <span class="n">search_id</span><span class="p">,</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
                     <span class="k">yield</span> <span class="n">ca</span><span class="o">.</span><span class="n">SearchRequest</span><span class="p">(</span><span class="n">it</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">search_id</span><span class="p">,</span>
                                            <span class="n">ca</span><span class="o">.</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">)</span>
-                    <span class="n">it</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
 
             <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_lock</span><span class="p">:</span>
-                <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">((</span><span class="n">search_id</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
-                             <span class="k">for</span> <span class="n">search_id</span><span class="p">,</span> <span class="n">it</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-                             <span class="k">if</span> <span class="p">(</span><span class="n">t</span> <span class="o">-</span> <span class="n">it</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">RETRY_SEARCHES_PERIOD</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="n">time_to_check_on_retirees</span><span class="p">:</span>
+                    <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+                    <span class="n">time_to_check_on_retirees</span> <span class="o">+=</span> <span class="n">RETRY_RETIRED_SEARCHES_INTERVAL</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Skip over searches that haven&#39;t gotten any results in</span>
+                    <span class="c1"># SEARCH_RETIREMENT_AGE.</span>
+                    <span class="n">items</span> <span class="o">=</span> <span class="nb">list</span><span class="p">((</span><span class="n">search_id</span><span class="p">,</span> <span class="n">it</span><span class="p">)</span>
+                                 <span class="k">for</span> <span class="n">search_id</span><span class="p">,</span> <span class="n">it</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">unanswered_searches</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                                 <span class="k">if</span> <span class="p">(</span><span class="n">it</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">t</span><span class="p">))</span>
             <span class="n">requests</span> <span class="o">=</span> <span class="n">_construct_search_requests</span><span class="p">(</span><span class="n">items</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_searching_enabled</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
@@ -805,8 +991,14 @@
                           <span class="n">version_req</span><span class="p">,</span>
                           <span class="o">*</span><span class="n">batch</span><span class="p">)</span>
 
-            <span class="n">wait_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">RETRY_SEARCHES_PERIOD</span> <span class="o">-</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_search_now</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">wait_time</span><span class="p">)</span>
+            <span class="n">wait_time</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">interval</span> <span class="o">-</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">t</span><span class="p">))</span>
+            <span class="c1"># Double the interval for the next loop.</span>
+            <span class="n">interval</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">interval</span><span class="p">,</span> <span class="n">MAX_RETRY_SEARCHES_INTERVAL</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_now</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">wait_time</span><span class="p">):</span>
+                <span class="c1"># New searches have been requested. Reset the interval between</span>
+                <span class="c1"># subseqent searches and force a check on the &quot;retirees&quot;.</span>
+                <span class="n">time_to_check_on_retirees</span> <span class="o">=</span> <span class="n">t</span>
+                <span class="n">interval</span> <span class="o">=</span> <span class="n">MIN_RETRY_SEARCHES_INTERVAL</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_search_now</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Broadcaster search-retry thread has exited.&#39;</span><span class="p">)</span>
@@ -858,7 +1050,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">client_name</span> <span class="o">=</span> <span class="n">client_name</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;caproto.ctx.{id(self)}&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pv_cache_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">circuit_managers</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># keyed on address</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circuit_managers</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># keyed on ((host, port), priority)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock_during_get_circuit_manager</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pvs</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># (name, priority) -&gt; pv</span>
         <span class="c1"># name -&gt; set of pvs  --- with varied priority</span>
@@ -1163,11 +1355,11 @@
 <span class="sd">    this is rarely necessary.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;context&#39;</span><span class="p">,</span> <span class="s1">&#39;circuit&#39;</span><span class="p">,</span> <span class="s1">&#39;channels&#39;</span><span class="p">,</span> <span class="s1">&#39;ioids&#39;</span><span class="p">,</span> <span class="s1">&#39;_ioid_counter&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;subscriptions&#39;</span><span class="p">,</span> <span class="s1">&#39;_user_disconnected&#39;</span><span class="p">,</span> <span class="s1">&#39;_ready&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;subscriptions&#39;</span><span class="p">,</span> <span class="s1">&#39;_ready&#39;</span><span class="p">,</span> <span class="s1">&#39;log&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;socket&#39;</span><span class="p">,</span> <span class="s1">&#39;selector&#39;</span><span class="p">,</span> <span class="s1">&#39;pvs&#39;</span><span class="p">,</span> <span class="s1">&#39;all_created_pvnames&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;dead&#39;</span><span class="p">,</span> <span class="s1">&#39;process_queue&#39;</span><span class="p">,</span> <span class="s1">&#39;processing&#39;</span><span class="p">,</span>
                  <span class="s1">&#39;_subscriptionid_counter&#39;</span><span class="p">,</span> <span class="s1">&#39;user_callback_executor&#39;</span><span class="p">,</span>
-                 <span class="s1">&#39;__weakref__&#39;</span><span class="p">)</span>
+                 <span class="s1">&#39;last_tcp_receipt&#39;</span><span class="p">,</span> <span class="s1">&#39;__weakref__&#39;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">circuit</span><span class="p">,</span> <span class="n">selector</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">TIMEOUT</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
@@ -1182,7 +1374,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">user_callback_executor</span> <span class="o">=</span> <span class="n">concurrent</span><span class="o">.</span><span class="n">futures</span><span class="o">.</span><span class="n">ThreadPoolExecutor</span><span class="p">(</span>
             <span class="n">max_workers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">max_workers</span><span class="p">,</span>
             <span class="n">thread_name_prefix</span><span class="o">=</span><span class="s1">&#39;user-callback-executor&#39;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_user_disconnected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_tcp_receipt</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="c1"># keep track of all PV names that are successfully connected to within</span>
         <span class="c1"># this circuit. This is to be cleared upon disconnection:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">all_created_pvnames</span> <span class="o">=</span> <span class="p">[]</span>
@@ -1240,6 +1432,7 @@
         <span class="sd">&quot;&quot;&quot;Receive and process and next command from the virtual circuit.</span>
 
 <span class="sd">        This will be run on the recv thread&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_tcp_receipt</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
         <span class="n">commands</span><span class="p">,</span> <span class="n">num_bytes_needed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">recv</span><span class="p">(</span><span class="n">bytes_recv</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">:</span>
@@ -1353,6 +1546,11 @@
             <span class="n">pv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvs</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">]</span>
             <span class="n">pv</span><span class="o">.</span><span class="n">connection_state_changed</span><span class="p">(</span><span class="s1">&#39;disconnected&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="c1"># NOTE: pv remains valid until server goes down</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">EchoResponse</span><span class="p">):</span>
+            <span class="c1"># The important effect here is that it will have updated</span>
+            <span class="c1"># self.last_tcp_receipt when the bytes flowed through</span>
+            <span class="c1"># self.received.</span>
+            <span class="o">...</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;other command </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
 
@@ -1395,21 +1593,18 @@
             <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
                 <span class="k">pass</span>
 
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_disconnected</span><span class="p">:</span>
-            <span class="c1"># If the user didn&#39;t request disconnection, kick off attempt to</span>
-            <span class="c1"># reconnect all PVs via fresh circuit(s).</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Kicking off reconnection attempts for </span><span class="si">%d</span><span class="s1"> PVs &#39;</span>
-                           <span class="s1">&#39;disconnected from </span><span class="si">%s</span><span class="s1">....&#39;</span><span class="p">,</span>
-                           <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">),</span>
-                           <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">reconnect</span><span class="p">(((</span><span class="n">chan</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
-                                    <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="c1"># Kick off attempt to reconnect all PVs via fresh circuit(s).</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Kicking off reconnection attempts for </span><span class="si">%d</span><span class="s1"> PVs &#39;</span>
+                       <span class="s1">&#39;disconnected from </span><span class="si">%s</span><span class="s1">....&#39;</span><span class="p">,</span>
+                       <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">),</span>
+                       <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">reconnect</span><span class="p">(((</span><span class="n">chan</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
+                                <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Shutting down ThreadPoolExecutor for user callbacks&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_user_disconnected</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_disconnected</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
@@ -1505,7 +1700,7 @@
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idle</span><span class="p">:</span>
             <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;(idle)&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;(searching....)&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">state</span> <span class="o">=</span> <span class="p">(</span><span class="n">f</span><span class="s2">&quot;address=</span><span class="si">{self.circuit_manager.circuit.address}</span><span class="s2">, &quot;</span>
