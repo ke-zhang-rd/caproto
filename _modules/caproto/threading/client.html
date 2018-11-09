@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.2.1+27.g77722b8 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.2.1+29.gc67ce46 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+27.g77722b8
+                0.2.1+29.gc67ce46
               </div>
             
           
@@ -1714,11 +1714,10 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">component_lock</span><span class="p">:</span>
-            <span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span>
-            <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="k">return</span> <span class="kc">False</span>
-            <span class="k">return</span> <span class="n">channel</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span>
+        <span class="n">channel</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span>
+        <span class="k">if</span> <span class="n">channel</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">channel</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">CLIENT</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">CONNECTED</span>
 
 <div class="viewcode-block" id="PV.wait_for_search"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.wait_for_search">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
