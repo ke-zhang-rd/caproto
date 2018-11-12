@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.2.1+31.g5c36acf documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.2.1+40.gc73deb4 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+31.g5c36acf
+                0.2.1+40.gc73deb4
               </div>
             
           
@@ -267,30 +267,28 @@
                     <span class="n">timeout</span> <span class="o">=</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
                     <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;timeout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">timeout</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_idle</span> <span class="o">=</span> <span class="kc">False</span>
-                <span class="k">with</span> <span class="n">pv</span><span class="o">.</span><span class="n">component_lock</span><span class="p">:</span>
-                    <span class="n">cm</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="n">DeadCircuitError</span><span class="p">:</span>
-                        <span class="c1"># Something in func tried operate on the circuit after</span>
-                        <span class="c1"># it died. The context will automatically build us a</span>
-                        <span class="c1"># new circuit. Try again.</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Caught DeadCircuitError. &#39;</span>
+                <span class="n">cm</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">DeadCircuitError</span><span class="p">:</span>
+                    <span class="c1"># Something in func tried operate on the circuit after</span>
+                    <span class="c1"># it died. The context will automatically build us a</span>
+                    <span class="c1"># new circuit. Try again.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Caught DeadCircuitError. &#39;</span>
+                                   <span class="s1">&#39;Retrying </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
+                    <span class="c1"># The circuit may have died after func was done calling</span>
+                    <span class="c1"># methods on it but before we received some response we</span>
+                    <span class="c1"># were expecting. The context will automatically build</span>
+                    <span class="c1"># us a new circuit. Try again.</span>
+                    <span class="k">if</span> <span class="n">cm</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Caught TimeoutError due to dead &#39;</span>
+                                       <span class="s1">&#39;circuit. &#39;</span>
                                        <span class="s1">&#39;Retrying </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
                         <span class="k">continue</span>
-                    <span class="k">except</span> <span class="ne">TimeoutError</span><span class="p">:</span>
-                        <span class="c1"># The circuit may have died after func was done calling</span>
-                        <span class="c1"># methods on it but before we received some response we</span>
-                        <span class="c1"># were expecting. The context will automatically build</span>
-                        <span class="c1"># us a new circuit. Try again.</span>
-                        <span class="k">if</span> <span class="n">cm</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Caught TimeoutError due to dead &#39;</span>
-                                           <span class="s1">&#39;circuit. &#39;</span>
-                                           <span class="s1">&#39;Retrying </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
-                            <span class="k">continue</span>
-                        <span class="c1"># The circuit is fine -- this is a real error.</span>
-                        <span class="k">raise</span>
-                <span class="k">raise</span>
+                    <span class="c1"># The circuit is fine -- this is a real error.</span>
+                    <span class="k">raise</span>
 
         <span class="k">finally</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">pv</span><span class="o">.</span><span class="n">_in_use</span><span class="p">:</span>
@@ -1386,6 +1384,8 @@
         <span class="c1"># Connect.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">ca</span><span class="o">.</span><span class="n">SERVER</span><span class="p">]</span> <span class="ow">is</span> <span class="n">ca</span><span class="o">.</span><span class="n">IDLE</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">socket</span> <span class="o">=</span> <span class="n">socket</span><span class="o">.</span><span class="n">create_connection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_KEEPALIVE</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">IPPROTO_TCP</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">TCP_NODELAY</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">add_socket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">socket</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">VersionRequest</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">,</span>
                                         <span class="n">ca</span><span class="o">.</span><span class="n">DEFAULT_PROTOCOL_VERSION</span><span class="p">),</span>
@@ -1490,14 +1490,9 @@
             <span class="k">if</span> <span class="n">deadline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">deadline</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;ignoring late response with &quot;</span>
                               <span class="n">f</span><span class="s2">&quot;ioid=</span><span class="si">{command.ioid}</span><span class="s2"> because it arrived &quot;</span>
-                              <span class="n">f</span><span class="s2">&quot;{time.monotonic() - ioid_info[&#39;deadline&#39;]} &quot;</span>
-                              <span class="n">f</span><span class="s2">&quot;seconds after the deadline specified by the &quot;</span>
-                              <span class="n">f</span><span class="s2">&quot;timeout.&quot;</span>
-                              <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">callback</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;callback&#39;</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
+                              <span class="n">f</span><span class="s2">&quot;{time.monotonic() - deadline} seconds after &quot;</span>
+                              <span class="n">f</span><span class="s2">&quot;the deadline specified by the timeout.&quot;</span><span class="p">)</span>
+                <span class="k">return</span>
 
             <span class="n">event</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;event&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1506,8 +1501,10 @@
                 <span class="c1"># provide the response to them and then set the Event that they</span>
                 <span class="c1"># are waiting on.</span>
                 <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">command</span>
-                <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+                <span class="n">event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="n">callback</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;callback&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span><span class="n">callback</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">EventAddResponse</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
@@ -1529,12 +1526,12 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">ca</span><span class="o">.</span><span class="n">CreateChanResponse</span><span class="p">):</span>
             <span class="n">pv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvs</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">]</span>
             <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">]</span>
-            <span class="n">pv</span><span class="o">.</span><span class="n">connection_state_changed</span><span class="p">(</span><span class="s1">&#39;connected&#39;</span><span class="p">,</span> <span class="n">chan</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">all_created_pvnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">pv</span><span class="o">.</span><span class="n">component_lock</span><span class="p">:</span>
                 <span class="n">pv</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">chan</span>
                 <span class="n">cm</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span>
                 <span class="n">pv</span><span class="o">.</span><span class="n">channel_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="n">pv</span><span class="o">.</span><span class="n">connection_state_changed</span><span class="p">(</span><span class="s1">&#39;connected&#39;</span><span class="p">,</span> <span class="n">chan</span><span class="p">)</span>
             <span class="c1"># If we have just revived an existing PV whose</span>
             <span class="c1"># VirtualCircuit died and reconnected, we are now ready to</span>
             <span class="c1"># reinstate its Subsciprtions. If this is a new PV, it</span>
@@ -1806,11 +1803,10 @@
 <span class="sd">            Send a ``ReadNotifyRequest`` instead of a ``ReadRequest``. True by</span>
 <span class="sd">            default.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ioid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">_ioid_counter</span><span class="p">()</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ioid</span><span class="o">=</span><span class="n">ioid</span><span class="p">,</span>
-                                    <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
-                                    <span class="n">data_count</span><span class="o">=</span><span class="n">data_count</span><span class="p">,</span>
-                                    <span class="n">notify</span><span class="o">=</span><span class="n">notify</span><span class="p">)</span>
+        <span class="n">cm</span><span class="p">,</span> <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_circuit_manager</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span>
+        <span class="n">ioid</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">_ioid_counter</span><span class="p">()</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">ioid</span><span class="o">=</span><span class="n">ioid</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
+                            <span class="n">data_count</span><span class="o">=</span><span class="n">data_count</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="n">notify</span><span class="p">)</span>
         <span class="c1"># Stash the ioid to match the response to the request.</span>
 
         <span class="n">event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
@@ -1818,11 +1814,11 @@
         <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;callback&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">ioids</span><span class="p">[</span><span class="n">ioid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ioid_info</span>
+        <span class="n">cm</span><span class="o">.</span><span class="n">ioids</span><span class="p">[</span><span class="n">ioid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ioid_info</span>
 
         <span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span> <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;deadline&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deadline</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+        <span class="n">cm</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wait</span><span class="p">:</span>
             <span class="k">return</span>
@@ -1830,7 +1826,7 @@
         <span class="c1"># The circuit_manager will put a reference to the response into</span>
         <span class="c1"># ioid_info and then set event.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">cm</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                 <span class="c1"># This circuit has died sometime during this function call.</span>
                 <span class="c1"># The exception raised here will be caught by</span>
                 <span class="c1"># @ensure_connected, which will retry the function call a</span>
@@ -1838,7 +1834,7 @@
                 <span class="c1"># been used up.</span>
                 <span class="k">raise</span> <span class="n">DeadCircuitError</span><span class="p">()</span>
             <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s2">&quot;Server at </span><span class="si">{self.circuit_manager.circuit.address}</span><span class="s2"> did &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;Server at </span><span class="si">{cm.circuit.address}</span><span class="s2"> did &quot;</span>
                 <span class="n">f</span><span class="s2">&quot;not respond to attempt to read channel named &quot;</span>
                 <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.name!r}</span><span class="s2"> within </span><span class="si">{timeout}</span><span class="s2">-second timeout.&quot;</span>
             <span class="p">)</span>
@@ -1881,26 +1877,24 @@
 <span class="sd">            Requested number of values. Default is the channel&#39;s native data</span>
 <span class="sd">            count.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cm</span><span class="p">,</span> <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_circuit_manager</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_channel</span>
         <span class="k">if</span> <span class="n">notify</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">notify</span> <span class="o">=</span> <span class="p">(</span><span class="n">wait</span> <span class="ow">or</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">ioid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">_ioid_counter</span><span class="p">()</span>
-        <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
-                                     <span class="n">ioid</span><span class="o">=</span><span class="n">ioid</span><span class="p">,</span>
-                                     <span class="n">notify</span><span class="o">=</span><span class="n">notify</span><span class="p">,</span>
-                                     <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span>
-                                     <span class="n">data_count</span><span class="o">=</span><span class="n">data_count</span><span class="p">)</span>
+        <span class="n">ioid</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">_ioid_counter</span><span class="p">()</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ioid</span><span class="o">=</span><span class="n">ioid</span><span class="p">,</span> <span class="n">notify</span><span class="o">=</span><span class="n">notify</span><span class="p">,</span>
+                             <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="n">data_count</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">notify</span><span class="p">:</span>
             <span class="n">event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
             <span class="n">ioid_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;callback&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">ioids</span><span class="p">[</span><span class="n">ioid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ioid_info</span>
+            <span class="n">cm</span><span class="o">.</span><span class="n">ioids</span><span class="p">[</span><span class="n">ioid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ioid_info</span>
 
             <span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span> <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
             <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;deadline&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deadline</span>
             <span class="c1"># do not need to lock this, locking happens in circuit command</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="n">cm</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">wait</span> <span class="ow">or</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1909,7 +1903,7 @@
                                         <span class="s2">&quot;notification of &#39;put-completion&#39; from the &quot;</span>
                                         <span class="s2">&quot;server, there is nothing to wait on or to &quot;</span>
                                         <span class="s2">&quot;trigger a callback.&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
+            <span class="n">cm</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">wait</span><span class="p">:</span>
@@ -1918,7 +1912,7 @@
         <span class="c1"># The circuit_manager will put a reference to the response into</span>
         <span class="c1"># ioid_info and then set event.</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">event</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">cm</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
                 <span class="c1"># This circuit has died sometime during this function call.</span>
                 <span class="c1"># The exception raised here will be caught by</span>
                 <span class="c1"># @ensure_connected, which will retry the function call a</span>
@@ -1926,7 +1920,7 @@
                 <span class="c1"># been used up.</span>
                 <span class="k">raise</span> <span class="n">DeadCircuitError</span><span class="p">()</span>
             <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s2">&quot;Server at </span><span class="si">{self.circuit_manager.circuit.address}</span><span class="s2"> did &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;Server at </span><span class="si">{cm.circuit.address}</span><span class="s2"> did &quot;</span>
                 <span class="n">f</span><span class="s2">&quot;not respond to attempt to write to channel named &quot;</span>
                 <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.name!r}</span><span class="s2"> within </span><span class="si">{timeout}</span><span class="s2">-second timeout. The ioid of &quot;</span>
                 <span class="n">f</span><span class="s2">&quot;the expected response is </span><span class="si">{ioid}</span><span class="s2">.&quot;</span>
@@ -2085,15 +2079,16 @@
     <span class="k">def</span> <span class="nf">_subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This is called automatically after the first callback is added.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
-            <span class="n">has_callbacks</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">has_callbacks</span><span class="p">:</span>
-            <span class="n">cm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span>
-            <span class="n">ctx</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">context</span>
-            <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_lock</span><span class="p">:</span>
-                <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_to_activate</span><span class="p">[</span><span class="n">cm</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-            <span class="n">ctx</span><span class="o">.</span><span class="n">activate_subscriptions_now</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">has_callbacks</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">component_lock</span><span class="p">:</span>
+            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+                <span class="n">has_callbacks</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">has_callbacks</span><span class="p">:</span>
+                <span class="n">cm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span>
+                <span class="n">ctx</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">context</span>
+                <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_lock</span><span class="p">:</span>
+                    <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_to_activate</span><span class="p">[</span><span class="n">cm</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+                <span class="n">ctx</span><span class="o">.</span><span class="n">activate_subscriptions_now</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">has_callbacks</span>
 
     <span class="nd">@ensure_connected</span>
     <span class="k">def</span> <span class="nf">compose_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
@@ -2101,19 +2096,18 @@
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="n">subscriptionid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">_subscriptionid_counter</span><span class="p">()</span>
-            <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">channel</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
-                                                <span class="n">data_count</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span>
-                                                <span class="n">low</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
-                                                <span class="n">high</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">,</span>
-                                                <span class="n">to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to</span><span class="p">,</span>
-                                                <span class="n">mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span>
-                                                <span class="n">subscriptionid</span><span class="o">=</span><span class="n">subscriptionid</span><span class="p">)</span>
+            <span class="n">cm</span><span class="p">,</span> <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">_circuit_manager</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">_channel</span>
+            <span class="n">subscriptionid</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">_subscriptionid_counter</span><span class="p">()</span>
+            <span class="n">command</span> <span class="o">=</span> <span class="n">chan</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">data_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_type</span><span class="p">,</span>
+                                     <span class="n">data_count</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">data_count</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">low</span><span class="p">,</span>
+                                     <span class="n">high</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">high</span><span class="p">,</span> <span class="n">to</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">to</span><span class="p">,</span>
+                                     <span class="n">mask</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mask</span><span class="p">,</span>
+                                     <span class="n">subscriptionid</span><span class="o">=</span><span class="n">subscriptionid</span><span class="p">)</span>
             <span class="n">subscriptionid</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">subscriptionid</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">subscriptionid</span> <span class="o">=</span> <span class="n">subscriptionid</span>
         <span class="c1"># The circuit_manager needs to know the subscriptionid so that it can</span>
         <span class="c1"># route responses to this request.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">[</span><span class="n">subscriptionid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
+        <span class="n">cm</span><span class="o">.</span><span class="n">subscriptions</span><span class="p">[</span><span class="n">subscriptionid</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span>
         <span class="k">return</span> <span class="n">command</span>
 
 <div class="viewcode-block" id="Subscription.clear"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.Subscription.clear">[docs]</a>    <span class="k">def</span> <span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

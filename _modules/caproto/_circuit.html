@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto._circuit &mdash; caproto 0.2.1+31.g5c36acf documentation</title>
+  <title>caproto._circuit &mdash; caproto 0.2.1+40.gc73deb4 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+31.g5c36acf
+                0.2.1+40.gc73deb4
               </div>
             
           
@@ -352,13 +352,12 @@
              <span class="n">command</span><span class="p">,</span>
              <span class="n">num_bytes_needed</span><span class="p">)</span> <span class="o">=</span> <span class="n">read_from_bytestream</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">,</span>
                                                       <span class="bp">self</span><span class="o">.</span><span class="n">their_role</span><span class="p">)</span>
-            <span class="n">len_data</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>  <span class="c1"># just for logging</span>
             <span class="k">if</span> <span class="n">command</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">NEED_DATA</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> bytes -&gt; </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">command</span><span class="p">),</span> <span class="n">command</span><span class="p">)</span>
                 <span class="n">commands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%d</span><span class="s2"> bytes are cached. Need more bytes to parse &quot;</span>
-                               <span class="s2">&quot;next command.&quot;</span><span class="p">,</span> <span class="n">len_data</span><span class="p">)</span>
+                <span class="c1"># Less than a full command&#39;s worth of bytes are cached. Wait</span>
+                <span class="c1"># for more bytes to come in before continuing parsing.</span>
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">commands</span><span class="p">,</span> <span class="n">num_bytes_needed</span></div>
 
