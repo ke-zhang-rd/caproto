@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.2.1+40.gc73deb4 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.2.1+48.g7b6e2f5 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+40.gc73deb4
+                0.2.1+48.g7b6e2f5
               </div>
             
           
@@ -244,8 +244,9 @@
                 <span class="c1"># Channel.</span>
                 <span class="n">ready</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">circuit_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">ready</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{pv}</span><span class="s2"> could not connect within &quot;</span>
-                                              <span class="n">f</span><span class="s2">&quot;</span><span class="si">{raw_timeout}</span><span class="s2">-second timeout.&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span>
+                        <span class="n">f</span><span class="s2">&quot;</span><span class="si">{pv}</span><span class="s2"> could not connect within &quot;</span>
+                        <span class="n">f</span><span class="s2">&quot;{float(raw_timeout):.3}-second timeout.&quot;</span><span class="p">)</span>
                 <span class="k">with</span> <span class="n">pv</span><span class="o">.</span><span class="n">component_lock</span><span class="p">:</span>
                     <span class="n">cm</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span>
                     <span class="n">cid</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">new_channel_id</span><span class="p">()</span>
@@ -261,8 +262,9 @@
                     <span class="n">timeout</span> <span class="o">=</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
                 <span class="n">ready</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">channel_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">ready</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;</span><span class="si">{pv}</span><span class="s2"> could not connect within &quot;</span>
-                                              <span class="n">f</span><span class="s2">&quot;</span><span class="si">{raw_timeout}</span><span class="s2">-second timeout.&quot;</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span>
+                        <span class="n">f</span><span class="s2">&quot;</span><span class="si">{pv}</span><span class="s2"> could not connect within &quot;</span>
+                        <span class="n">f</span><span class="s2">&quot;{float(raw_timeout):.3}-second timeout.&quot;</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">timeout</span> <span class="o">=</span> <span class="n">deadline</span> <span class="o">-</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
                     <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;timeout&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">timeout</span>
@@ -603,17 +605,20 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">bytes_to_send</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">*</span><span class="n">commands</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">host</span> <span class="ow">in</span> <span class="n">ca</span><span class="o">.</span><span class="n">get_address_list</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;sending bytes to </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">host</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">host</span><span class="p">:</span>
+                <span class="n">host</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">port_as_str</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
+                <span class="n">specified_port</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">port_as_str</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">specified_port</span> <span class="o">=</span> <span class="n">port</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">host</span><span class="p">:</span>
-                    <span class="n">host</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">specified_port</span> <span class="o">=</span> <span class="n">host</span><span class="o">.</span><span class="n">partition</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">)</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span>
-                                                         <span class="nb">int</span><span class="p">(</span><span class="n">specified_port</span><span class="p">)))</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                    <span class="s1">&#39;Sending </span><span class="si">%d</span><span class="s1"> bytes to </span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span>
+                    <span class="nb">len</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">),</span> <span class="n">host</span><span class="p">,</span> <span class="n">specified_port</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span><span class="o">.</span><span class="n">sendto</span><span class="p">(</span><span class="n">bytes_to_send</span><span class="p">,</span> <span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">specified_port</span><span class="p">))</span>
             <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">CaprotoNetworkError</span><span class="p">(</span>
-                    <span class="n">f</span><span class="s1">&#39;</span><span class="si">{ex}</span><span class="s1"> while sending {len(bytes_to_send)} bytes to </span><span class="si">{host}</span><span class="s1">:</span><span class="si">{port}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span></div>
+                    <span class="n">f</span><span class="s1">&#39;</span><span class="si">{ex}</span><span class="s1"> while sending {len(bytes_to_send)} bytes to &#39;</span>
+                    <span class="n">f</span><span class="s1">&#39;</span><span class="si">{host}</span><span class="s1">:</span><span class="si">{specified_port}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">ex</span></div>
 
 <div class="viewcode-block" id="SharedBroadcaster.get_cached_search_result"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.SharedBroadcaster.get_cached_search_result">[docs]</a>    <span class="k">def</span> <span class="nf">get_cached_search_result</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span>
                                  <span class="n">threshold</span><span class="o">=</span><span class="n">STALE_SEARCH_EXPIRATION</span><span class="p">):</span>
@@ -818,7 +823,7 @@
                         <span class="n">queues</span><span class="p">[</span><span class="n">queue</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
                         <span class="c1"># Cache this to save time on future searches.</span>
                         <span class="c1"># (Entries expire after STALE_SEARCH_EXPIRATION.)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Found </span><span class="si">%s</span><span class="s1"> at </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Found </span><span class="si">%s</span><span class="s1"> at </span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="o">*</span><span class="n">address</span><span class="p">)</span>
                         <span class="n">search_results</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">now</span><span class="p">)</span>
                         <span class="n">server_protocol_versions</span><span class="p">[</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">command</span><span class="o">.</span><span class="n">version</span>
             <span class="c1"># Send the search results to the Contexts that asked for</span>
@@ -1401,9 +1406,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="n">ready</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">ready</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span><span class="s2">&quot;Circuit with server at </span><span class="si">{}</span><span class="s2"> did not &quot;</span>
-                                      <span class="s2">&quot;connected within </span><span class="si">{}</span><span class="s2">-second timeout.&quot;</span>
-                                      <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">timeout</span><span class="p">))</span>
+            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span>
+            <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;Circuit with server at </span><span class="si">{host}</span><span class="s2">:</span><span class="si">{port}</span><span class="s2"> &quot;</span>
+                                      <span class="n">f</span><span class="s2">&quot;did not connect within &quot;</span>
+                                      <span class="n">f</span><span class="s2">&quot;{float(timeout):.3}-second timeout.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">f</span><span class="s2">&quot;&lt;VirtualCircuitManager circuit=</span><span class="si">{self.circuit}</span><span class="s2"> &quot;</span>
@@ -1488,10 +1494,10 @@
             <span class="n">ioid_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ioids</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">)</span>
             <span class="n">deadline</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;deadline&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">deadline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">deadline</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;ignoring late response with &quot;</span>
-                              <span class="n">f</span><span class="s2">&quot;ioid=</span><span class="si">{command.ioid}</span><span class="s2"> because it arrived &quot;</span>
-                              <span class="n">f</span><span class="s2">&quot;{time.monotonic() - deadline} seconds after &quot;</span>
-                              <span class="n">f</span><span class="s2">&quot;the deadline specified by the timeout.&quot;</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Ignoring late response with ioid=</span><span class="si">%d</span><span class="s2"> because &quot;</span>
+                              <span class="s2">&quot;it arrived </span><span class="si">%.3f</span><span class="s2"> seconds after the deadline &quot;</span>
+                              <span class="s2">&quot;specified by the timeout.&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">,</span>
+                              <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">deadline</span><span class="p">)</span>
                 <span class="k">return</span>
 
             <span class="n">event</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;event&#39;</span><span class="p">)</span>
@@ -1555,8 +1561,8 @@
         <span class="c1"># Ensure that this method is idempotent.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dead</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
             <span class="k">return</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Virtual circuit with </span><span class="si">%s</span><span class="s1"> has disconnected.&#39;</span><span class="p">,</span>
-                       <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Virtual circuit with address </span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1"> has disconnected.&#39;</span><span class="p">,</span>
+                       <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="c1"># Update circuit state. This will be reflected on all PVs, which</span>
         <span class="c1"># continue to hold a reference to this disconnected circuit.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
@@ -1592,9 +1598,8 @@
 
         <span class="c1"># Kick off attempt to reconnect all PVs via fresh circuit(s).</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Kicking off reconnection attempts for </span><span class="si">%d</span><span class="s1"> PVs &#39;</span>
-                       <span class="s1">&#39;disconnected from </span><span class="si">%s</span><span class="s1">....&#39;</span><span class="p">,</span>
-                       <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">),</span>
-                       <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+                       <span class="s1">&#39;disconnected from </span><span class="si">%s</span><span class="s1">:</span><span class="si">%d</span><span class="s1">....&#39;</span><span class="p">,</span>
+                       <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="p">),</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">reconnect</span><span class="p">(((</span><span class="n">chan</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">chan</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">priority</span><span class="p">)</span>
                                 <span class="k">for</span> <span class="n">chan</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">channels</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
 
@@ -1730,9 +1735,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_ready</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span><span class="s2">&quot;No servers responded to a search for a &quot;</span>
-                                      <span class="s2">&quot;channel named </span><span class="si">{!r}</span><span class="s2"> within </span><span class="si">{}</span><span class="s2">-second &quot;</span>
+                                      <span class="s2">&quot;channel named </span><span class="si">{!r}</span><span class="s2"> within </span><span class="si">{:.3}</span><span class="s2">-second &quot;</span>
                                       <span class="s2">&quot;timeout.&quot;</span>
-                                      <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">timeout</span><span class="p">))</span></div>
+                                      <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">timeout</span><span class="p">)))</span></div>
 
     <span class="nd">@ensure_connected</span>
     <span class="k">def</span> <span class="nf">wait_for_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
@@ -1833,10 +1838,12 @@
                 <span class="c1"># in hopes of getting a working circuit until our `timeout` has</span>
                 <span class="c1"># been used up.</span>
                 <span class="k">raise</span> <span class="n">DeadCircuitError</span><span class="p">()</span>
+            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span>
             <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s2">&quot;Server at </span><span class="si">{cm.circuit.address}</span><span class="s2"> did &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;Server at </span><span class="si">{host}</span><span class="s2">:</span><span class="si">{port}</span><span class="s2"> did &quot;</span>
                 <span class="n">f</span><span class="s2">&quot;not respond to attempt to read channel named &quot;</span>
-                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.name!r}</span><span class="s2"> within </span><span class="si">{timeout}</span><span class="s2">-second timeout.&quot;</span>
+                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.name!r}</span><span class="s2"> within {float(timeout):.3}-second timeout. &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;The ioid of the expected response is </span><span class="si">{ioid}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">])</span>
@@ -1919,11 +1926,12 @@
                 <span class="c1"># in hopes of getting a working circuit until our `timeout` has</span>
                 <span class="c1"># been used up.</span>
                 <span class="k">raise</span> <span class="n">DeadCircuitError</span><span class="p">()</span>
+            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">circuit</span><span class="o">.</span><span class="n">address</span>
             <span class="k">raise</span> <span class="n">CaprotoTimeoutError</span><span class="p">(</span>
-                <span class="n">f</span><span class="s2">&quot;Server at </span><span class="si">{cm.circuit.address}</span><span class="s2"> did &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;Server at </span><span class="si">{host}</span><span class="s2">:</span><span class="si">{port}</span><span class="s2"> did &quot;</span>
                 <span class="n">f</span><span class="s2">&quot;not respond to attempt to write to channel named &quot;</span>
-                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.name!r}</span><span class="s2"> within </span><span class="si">{timeout}</span><span class="s2">-second timeout. The ioid of &quot;</span>
-                <span class="n">f</span><span class="s2">&quot;the expected response is </span><span class="si">{ioid}</span><span class="s2">.&quot;</span>
+                <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.name!r}</span><span class="s2"> within {float(timeout):.3}-second timeout. &quot;</span>
+                <span class="n">f</span><span class="s2">&quot;The ioid of the expected response is </span><span class="si">{ioid}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span></div>
