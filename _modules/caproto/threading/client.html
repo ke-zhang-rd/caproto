@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.2.1+48.g7b6e2f5 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.2.1+65.g4a5c997 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+48.g7b6e2f5
+                0.2.1+65.g4a5c997
               </div>
             
           
@@ -473,9 +473,10 @@
 <span class="sd">            The time, in seconds, between attempts made to register with the</span>
 <span class="sd">            repeater. Default is 10.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">environ</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">get_environment_variables</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ca_server_port</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;EPICS_CA_SERVER_PORT&#39;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">bcast_socket</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_search_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_retry_unanswered_searches_thread</span> <span class="o">=</span> <span class="kc">None</span>
@@ -501,9 +502,11 @@
 
         <span class="c1"># an event to tear down and clean up the broadcaster</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_close_event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">selector</span> <span class="o">=</span> <span class="n">SelectorThread</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector</span> <span class="o">=</span> <span class="n">SelectorThread</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">add_socket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_command_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Thread</span><span class="p">(</span><span class="n">target</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">command_loop</span><span class="p">,</span>
                                                 <span class="n">daemon</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;command&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_command_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
@@ -539,9 +542,6 @@
 
     <span class="k">def</span> <span class="nf">_register</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="s1">&#39;Send a registration request to the repeater&#39;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_create_sock</span><span class="p">()</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">_registration_last_sent</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span>
         <span class="n">command</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">register</span><span class="p">()</span>
 
@@ -555,15 +555,6 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_id_counter</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
                 <span class="k">continue</span>
             <span class="k">return</span> <span class="n">i</span>
-
-    <span class="k">def</span> <span class="nf">_create_sock</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># UDP socket broadcasting to CA servers</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">udp_sock</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span><span class="p">,</span> <span class="kc">None</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">remove_socket</span><span class="p">(</span><span class="n">udp_sock</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span> <span class="o">=</span> <span class="n">ca</span><span class="o">.</span><span class="n">bcast_socket</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">add_socket</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">add_listener</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">listener</span><span class="p">):</span>
         <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_search_lock</span><span class="p">:</span>
@@ -591,7 +582,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">search_results</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_registration_last_sent</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_searching_enabled</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">udp_sock</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">broadcaster</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">wait</span><span class="p">:</span>
@@ -1535,15 +1525,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">all_created_pvnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
             <span class="k">with</span> <span class="n">pv</span><span class="o">.</span><span class="n">component_lock</span><span class="p">:</span>
                 <span class="n">pv</span><span class="o">.</span><span class="n">channel</span> <span class="o">=</span> <span class="n">chan</span>
-                <span class="n">cm</span> <span class="o">=</span> <span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span>
                 <span class="n">pv</span><span class="o">.</span><span class="n">channel_ready</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
             <span class="n">pv</span><span class="o">.</span><span class="n">connection_state_changed</span><span class="p">(</span><span class="s1">&#39;connected&#39;</span><span class="p">,</span> <span class="n">chan</span><span class="p">)</span>
-            <span class="c1"># If we have just revived an existing PV whose</span>
-            <span class="c1"># VirtualCircuit died and reconnected, we are now ready to</span>
-            <span class="c1"># reinstate its Subsciprtions. If this is a new PV, it</span>
-            <span class="c1"># won&#39;t have any Subscriptions.</span>
-            <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">pv</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">subscriptions_to_activate</span><span class="p">[</span><span class="n">cm</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="p">(</span><span class="n">ca</span><span class="o">.</span><span class="n">ServerDisconnResponse</span><span class="p">,</span>
                                   <span class="n">ca</span><span class="o">.</span><span class="n">ClearChannelResponse</span><span class="p">)):</span>
             <span class="n">pv</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pvs</span><span class="p">[</span><span class="n">command</span><span class="o">.</span><span class="n">cid</span><span class="p">]</span>
@@ -1698,6 +1681,20 @@
     <span class="k">def</span> <span class="nf">connection_state_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">channel</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> connection state changed to </span><span class="si">%s</span><span class="s1">.&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">connection_state_callback</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s1">&#39;disconnected&#39;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">with</span> <span class="n">sub</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">sub</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
+                        <span class="n">sub</span><span class="o">.</span><span class="n">needs_reactivation</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="s1">&#39;connected&#39;</span><span class="p">:</span>
+            <span class="n">cm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circuit_manager</span>
+            <span class="n">ctx</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">context</span>
+            <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_lock</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptions</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                    <span class="k">with</span> <span class="n">sub</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">sub</span><span class="o">.</span><span class="n">needs_reactivation</span><span class="p">:</span>
+                            <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_to_activate</span><span class="p">[</span><span class="n">cm</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
+                            <span class="n">sub</span><span class="o">.</span><span class="n">needs_reactivation</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_idle</span><span class="p">:</span>
@@ -2007,7 +2004,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pv</span> <span class="o">=</span> <span class="n">pv</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_callback_id</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">RLock</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">add_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">func</span><span class="p">):</span>
 
@@ -2020,14 +2017,14 @@
             <span class="c1"># TODO: strong reference to non-instance methods?</span>
             <span class="n">ref</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">removed</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
             <span class="n">cb_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_id</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_callback_id</span> <span class="o">+=</span> <span class="mi">1</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">[</span><span class="n">cb_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">ref</span>
         <span class="k">return</span> <span class="n">cb_id</span>
 
     <span class="k">def</span> <span class="nf">remove_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">process</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -2036,7 +2033,7 @@
 <span class="sd">        ThreadPoolExecutor and then returns.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">to_remove</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
             <span class="n">callbacks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
 
         <span class="k">for</span> <span class="n">cb_id</span><span class="p">,</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">callbacks</span><span class="p">:</span>
@@ -2048,7 +2045,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">user_callback_executor</span><span class="o">.</span><span class="n">submit</span><span class="p">(</span>
                 <span class="n">callback</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">remove_id</span> <span class="ow">in</span> <span class="n">to_remove</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">remove_id</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
 
@@ -2075,6 +2072,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subscriptionid</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">most_recent_response</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">needs_reactivation</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -2087,21 +2085,16 @@
     <span class="k">def</span> <span class="nf">_subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;This is called automatically after the first callback is added.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">component_lock</span><span class="p">:</span>
-            <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
-                <span class="n">has_callbacks</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">has_callbacks</span><span class="p">:</span>
-                <span class="n">cm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span>
-                <span class="n">ctx</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">context</span>
-                <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_lock</span><span class="p">:</span>
-                    <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_to_activate</span><span class="p">[</span><span class="n">cm</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-                <span class="n">ctx</span><span class="o">.</span><span class="n">activate_subscriptions_now</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
-            <span class="k">return</span> <span class="n">has_callbacks</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span>
+        <span class="n">ctx</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">context</span>
+        <span class="k">with</span> <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_lock</span><span class="p">:</span>
+            <span class="n">ctx</span><span class="o">.</span><span class="n">subscriptions_to_activate</span><span class="p">[</span><span class="n">cm</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="o">.</span><span class="n">activate_subscriptions_now</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
 
     <span class="nd">@ensure_connected</span>
     <span class="k">def</span> <span class="nf">compose_command</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
         <span class="s2">&quot;This is used by the Context to re-subscribe in bulk after dropping.&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="n">cm</span><span class="p">,</span> <span class="n">chan</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">_circuit_manager</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pv</span><span class="o">.</span><span class="n">_channel</span>
@@ -2122,7 +2115,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Remove all callbacks.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">cb_id</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">):</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">cb_id</span><span class="p">)</span></div>
         <span class="c1"># Once self.callbacks is empty, self.remove_callback calls</span>
@@ -2132,7 +2125,7 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This is automatically called if the number of callbacks goes to 0.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptionid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># Already unsubscribed.</span>
                 <span class="k">return</span>
@@ -2173,23 +2166,28 @@
 <span class="sd">        token : int</span>
 <span class="sd">            Integer token that can be passed to :meth:`remove_callback`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">cb_id</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriptionid</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="c1"># This is the first callback. Set up a subscription, which</span>
-                <span class="c1"># should elicit a response from the server soon giving the</span>
-                <span class="c1"># current value to this func (and any other funcs added in the</span>
-                <span class="c1"># mean time).</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_subscribe</span><span class="p">()</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># This callback is piggy-backing onto an existing subscription.</span>
-                <span class="c1"># Send it the most recent response, unless we are still waiting</span>
-                <span class="c1"># for that first response from the server.</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">most_recent_response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="k">try</span><span class="p">:</span>
-                        <span class="n">func</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">most_recent_response</span><span class="p">)</span>
-                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">ex</span><span class="p">:</span>
-                        <span class="nb">print</span><span class="p">(</span><span class="n">ex</span><span class="p">)</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
+            <span class="n">was_empty</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span>
+            <span class="n">cb_id</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">add_callback</span><span class="p">(</span><span class="n">func</span><span class="p">)</span>
+            <span class="n">most_recent_response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">most_recent_response</span>
+        <span class="k">if</span> <span class="n">was_empty</span><span class="p">:</span>
+            <span class="c1"># This is the first callback. Set up a subscription, which</span>
+            <span class="c1"># should elicit a response from the server soon giving the</span>
+            <span class="c1"># current value to this func (and any other funcs added in the</span>
+            <span class="c1"># mean time).</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_subscribe</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># This callback is piggy-backing onto an existing subscription.</span>
+            <span class="c1"># Send it the most recent response, unless we are still waiting</span>
+            <span class="c1"># for that first response from the server.</span>
+            <span class="k">if</span> <span class="n">most_recent_response</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">func</span><span class="p">(</span><span class="n">most_recent_response</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span>
+                        <span class="s2">&quot;Exception raised during processing most recent &quot;</span>
+                        <span class="s2">&quot;response </span><span class="si">%r</span><span class="s2"> with new callback </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">most_recent_response</span><span class="p">,</span> <span class="n">func</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">cb_id</span></div>
 
@@ -2203,11 +2201,13 @@
 <span class="sd">        token : integer</span>
 <span class="sd">            Token returned by :meth:`add_callback`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_callback_lock</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">callback_lock</span><span class="p">:</span>
             <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">remove_callback</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">callbacks</span><span class="p">:</span>
                 <span class="c1"># Go dormant.</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_unsubscribe</span><span class="p">()</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_unsubscribe</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">most_recent_response</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">needs_reactivation</span> <span class="o">=</span> <span class="kc">False</span></div>
 
     <span class="k">def</span> <span class="nf">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
