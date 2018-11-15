@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.server.records &mdash; caproto 0.2.1+71.g77eafe7 documentation</title>
+  <title>caproto.server.records &mdash; caproto 0.2.1+97.g3744d17 documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.1+71.g77eafe7
+                0.2.1+97.g3744d17
               </div>
             
           
@@ -177,6 +177,7 @@
 
 <span class="kn">from</span> <span class="nn">.server</span> <span class="k">import</span> <span class="n">PVGroup</span><span class="p">,</span> <span class="n">pvproperty</span>
 <span class="kn">from</span> <span class="nn">.._data</span> <span class="k">import</span> <span class="n">ChannelType</span>
+<span class="kn">from</span> <span class="nn">.._dbr</span> <span class="k">import</span> <span class="n">AlarmSeverity</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">menus</span>
 
 
@@ -377,8 +378,112 @@
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">value</span><span class="p">)</span></div>
 
 
+<span class="k">class</span> <span class="nc">_Limits</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
+    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">()[</span>
+            <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MINOR_ALARM</span><span class="p">])</span>
+    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
+    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">()[</span>
+            <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MAJOR_ALARM</span><span class="p">])</span>
+    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
+    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">()[</span>
+            <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MAJOR_ALARM</span><span class="p">])</span>
+    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
+    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">()[</span>
+            <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MINOR_ALARM</span><span class="p">])</span>
+    <span class="n">high_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Range&#39;</span><span class="p">)</span>
+    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
+
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
+
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
+
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">_LimitsLong</span><span class="p">(</span><span class="n">PVGroup</span><span class="p">):</span>
+    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
+    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">()[</span>
+            <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MINOR_ALARM</span><span class="p">])</span>
+    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
+    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">()[</span>
+            <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MAJOR_ALARM</span><span class="p">])</span>
+    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
+    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">()[</span>
+            <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MAJOR_ALARM</span><span class="p">])</span>
+    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
+    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
+        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
+        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">,</span>
+        <span class="n">value</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">()[</span>
+            <span class="n">AlarmSeverity</span><span class="o">.</span><span class="n">MINOR_ALARM</span><span class="p">])</span>
+    <span class="n">high_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Range&#39;</span><span class="p">)</span>
+    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
+
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
+
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
+
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
+    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="AiFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AiFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">AiFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">,</span> <span class="n">_Limits</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;ai&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Current EGU Value&#39;)</span>
@@ -431,34 +536,6 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SVAL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Simulation Value&#39;</span><span class="p">)</span>
     <span class="n">alarm_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HYST&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Alarm Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">)</span>
-    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">)</span>
-    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">)</span>
-    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">)</span>
     <span class="n">adjustment_offset</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;AOFF&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Adjustment Offset&#39;</span><span class="p">)</span>
     <span class="n">adjustment_slope</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -487,10 +564,6 @@
         <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Engineering Units&#39;</span><span class="p">)</span>
-    <span class="n">high_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Range&#39;</span><span class="p">)</span>
-    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
     <span class="n">monitor_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Deadband&#39;</span><span class="p">)</span>
     <span class="n">input_specification</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -505,12 +578,6 @@
         <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span>
 
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">archive_deadband</span><span class="p">,</span> <span class="s1">&#39;log_atol&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span>
 
@@ -729,7 +796,7 @@
 
 
 <div class="viewcode-block" id="AcalcoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AcalcoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AcalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">AcalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">,</span> <span class="n">_Limits</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;acalcout&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -805,34 +872,6 @@
         <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">alarm_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HYST&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Alarm Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">)</span>
-    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">)</span>
-    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">)</span>
-    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">)</span>
     <span class="n">output_execute_delay</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ODLY&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Output Execute Delay&#39;</span><span class="p">)</span>
     <span class="n">calculation</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -858,10 +897,6 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ADEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Archive Deadband&#39;</span><span class="p">)</span>
     <span class="n">display_precision</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PREC&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Display Precision&#39;</span><span class="p">)</span>
-    <span class="n">high_operating_rng</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Rng&#39;</span><span class="p">)</span>
-    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
     <span class="n">monitor_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Deadband&#39;</span><span class="p">)</span>
     <span class="n">units_name</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -883,18 +918,13 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Number of Elements&#39;</span><span class="p">,</span>
         <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">archive_deadband</span><span class="p">,</span> <span class="s1">&#39;log_atol&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">number_of_elements</span><span class="p">,</span> <span class="s1">&#39;max_length&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="AoFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.AoFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">AoFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">AoFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">,</span> <span class="n">_Limits</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;ao&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Desired Output&#39;)</span>
@@ -967,34 +997,6 @@
         <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">alarm_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HYST&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Alarm Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">)</span>
-    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">)</span>
-    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">)</span>
-    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">)</span>
     <span class="n">adjustment_offset</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;AOFF&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Adjustment Offset&#39;</span><span class="p">)</span>
     <span class="n">adjustment_slope</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1021,10 +1023,6 @@
         <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span>
         <span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Engineering Units&#39;</span><span class="p">)</span>
-    <span class="n">high_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Range&#39;</span><span class="p">)</span>
-    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
     <span class="n">monitor_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Deadband&#39;</span><span class="p">)</span>
     <span class="n">sim_mode_location</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1064,12 +1062,6 @@
     <span class="n">output_specification</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;OUT&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Output Specification&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">archive_deadband</span><span class="p">,</span> <span class="s1">&#39;log_atol&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
@@ -1643,7 +1635,7 @@
 
 
 <div class="viewcode-block" id="CalcFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.CalcFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">CalcFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">CalcFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">,</span> <span class="n">_Limits</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;calc&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1669,60 +1661,23 @@
         <span class="n">read_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">alarm_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HYST&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Alarm Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">)</span>
-    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">)</span>
-    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">)</span>
-    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">)</span>
     <span class="n">calculation</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;CALC&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Calculation&#39;</span><span class="p">)</span>
     <span class="n">archive_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ADEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Archive Deadband&#39;</span><span class="p">)</span>
     <span class="n">display_precision</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PREC&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Display Precision&#39;</span><span class="p">)</span>
-    <span class="n">high_operating_rng</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Rng&#39;</span><span class="p">)</span>
-    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
     <span class="n">monitor_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Deadband&#39;</span><span class="p">)</span>
     <span class="n">units_name</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;EGU&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">CHAR</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Units Name&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">archive_deadband</span><span class="p">,</span> <span class="s1">&#39;log_atol&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CalcoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.CalcoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">CalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">CalcoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">,</span> <span class="n">_Limits</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;calcout&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Result&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1769,34 +1724,6 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PVAL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Previous Value&#39;</span><span class="p">)</span>
     <span class="n">alarm_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HYST&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Alarm Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">)</span>
-    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">)</span>
-    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">)</span>
-    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">)</span>
     <span class="n">output_execute_delay</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ODLY&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Output Execute Delay&#39;</span><span class="p">)</span>
     <span class="n">calculation</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1822,10 +1749,6 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ADEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Archive Deadband&#39;</span><span class="p">)</span>
     <span class="n">display_precision</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PREC&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Display Precision&#39;</span><span class="p">)</span>
-    <span class="n">high_operating_rng</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Rng&#39;</span><span class="p">)</span>
-    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
     <span class="n">monitor_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Deadband&#39;</span><span class="p">)</span>
     <span class="n">units_name</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -1840,11 +1763,6 @@
     <span class="n">output_specification</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;OUT&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Output Specification&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">archive_deadband</span><span class="p">,</span> <span class="s1">&#39;log_atol&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
@@ -1916,7 +1834,7 @@
 
 
 <div class="viewcode-block" id="DfanoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.DfanoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">DfanoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">DfanoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">,</span> <span class="n">_Limits</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;dfanout&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.DOUBLE, doc=&#39;Desired Output&#39;)</span>
@@ -1945,42 +1863,10 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SELN&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Link Selection&#39;</span><span class="p">)</span>
     <span class="n">alarm_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HYST&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Alarm Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">)</span>
-    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">)</span>
-    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">)</span>
-    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">)</span>
     <span class="n">archive_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ADEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Archive Deadband&#39;</span><span class="p">)</span>
     <span class="n">display_precision</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;PREC&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Display Precision&#39;</span><span class="p">)</span>
-    <span class="n">high_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Range&#39;</span><span class="p">)</span>
-    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
     <span class="n">monitor_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Deadband&#39;</span><span class="p">)</span>
     <span class="n">units_name</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -2016,12 +1902,6 @@
     <span class="n">output_spec_h</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;OUTH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Output Spec H&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">display_precision</span><span class="p">,</span> <span class="s1">&#39;precision&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">archive_deadband</span><span class="p">,</span> <span class="s1">&#39;log_atol&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
@@ -3812,7 +3692,7 @@
 
 
 <div class="viewcode-block" id="LonginFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.LonginFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">LonginFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">LonginFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">,</span> <span class="n">_LimitsLong</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;longin&#39;</span>
     <span class="c1"># value = pvproperty(name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Current value&#39;)</span>
     <span class="n">alarm_status</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -3845,40 +3725,8 @@
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;SVAL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Simulation Value&#39;</span><span class="p">)</span>
     <span class="n">alarm_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HYST&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Alarm Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">)</span>
-    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">)</span>
-    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">)</span>
-    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">)</span>
     <span class="n">archive_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ADEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Archive Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Range&#39;</span><span class="p">)</span>
-    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
     <span class="n">monitor_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Deadband&#39;</span><span class="p">)</span>
     <span class="n">units_name</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -3894,18 +3742,12 @@
         <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
         <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Sim mode Alarm Svrty&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">archive_deadband</span><span class="p">,</span> <span class="s1">&#39;log_atol&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="LongoutFields"><a class="viewcode-back" href="../../../mock-records.html#caproto.server.records.LongoutFields">[docs]</a><span class="nd">@register_record</span>
-<span class="k">class</span> <span class="nc">LongoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">LongoutFields</span><span class="p">(</span><span class="n">RecordFieldGroup</span><span class="p">,</span> <span class="n">_LimitsLong</span><span class="p">):</span>
     <span class="n">_record_type</span> <span class="o">=</span> <span class="s1">&#39;longout&#39;</span>
     <span class="c1"># value = pvproperty(</span>
     <span class="c1">#     name=&#39;VAL&#39;, dtype=ChannelType.LONG, doc=&#39;Desired Output&#39;)</span>
@@ -3937,40 +3779,8 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Simulation Mode&#39;</span><span class="p">)</span>
     <span class="n">alarm_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HYST&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Alarm Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIGH&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">high_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Severity&#39;</span><span class="p">)</span>
-    <span class="n">hihi_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HIHI&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">hihi_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HHSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Hihi Severity&#39;</span><span class="p">)</span>
-    <span class="n">lolo_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOLO&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">lolo_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LLSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Lolo Severity&#39;</span><span class="p">)</span>
-    <span class="n">low_alarm_limit</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOW&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Alarm Limit&#39;</span><span class="p">)</span>
-    <span class="n">low_severity</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LSV&#39;</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">ENUM</span><span class="p">,</span>
-        <span class="n">enum_strings</span><span class="o">=</span><span class="n">menus</span><span class="o">.</span><span class="n">menuAlarmSevr</span><span class="o">.</span><span class="n">get_string_tuple</span><span class="p">(),</span>
-        <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Severity&#39;</span><span class="p">)</span>
     <span class="n">archive_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;ADEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Archive Deadband&#39;</span><span class="p">)</span>
-    <span class="n">high_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;HOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;High Operating Range&#39;</span><span class="p">)</span>
-    <span class="n">low_operating_range</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
-        <span class="n">name</span><span class="o">=</span><span class="s1">&#39;LOPR&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Low Operating Range&#39;</span><span class="p">)</span>
     <span class="n">monitor_deadband</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;MDEL&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">LONG</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Monitor Deadband&#39;</span><span class="p">)</span>
     <span class="n">units_name</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
@@ -4004,12 +3814,6 @@
         <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Output Mode Select&#39;</span><span class="p">)</span>
     <span class="n">output_specification</span> <span class="o">=</span> <span class="n">pvproperty</span><span class="p">(</span>
         <span class="n">name</span><span class="o">=</span><span class="s1">&#39;OUT&#39;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ChannelType</span><span class="o">.</span><span class="n">STRING</span><span class="p">,</span> <span class="n">doc</span><span class="o">=</span><span class="s1">&#39;Output Specification&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">hihi_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;upper_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_warning_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">lolo_alarm_limit</span><span class="p">,</span> <span class="s1">&#39;lower_alarm_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">high_operating_range</span><span class="p">,</span> <span class="s1">&#39;upper_ctrl_limit&#39;</span><span class="p">)</span>
-    <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">low_operating_range</span><span class="p">,</span> <span class="s1">&#39;lower_ctrl_limit&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">archive_deadband</span><span class="p">,</span> <span class="s1">&#39;log_atol&#39;</span><span class="p">)</span>
     <span class="n">_link_parent_attribute</span><span class="p">(</span><span class="n">monitor_deadband</span><span class="p">,</span> <span class="s1">&#39;value_atol&#39;</span><span class="p">)</span></div>
 
