@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Release History &mdash; caproto 0.2.1+97.g3744d17 documentation</title>
+  <title>Release History &mdash; caproto 0.2.1+102.g3bf5ee9 documentation</title>
   
 
   
@@ -57,7 +57,7 @@
             
             
               <div class="version">
-                0.2.1+97.g3744d17
+                0.2.1+102.g3bf5ee9
               </div>
             
           
@@ -109,6 +109,11 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Release History</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#unreleased">Unreleased</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#features">Features</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#v0-2-2-2018-11-15">v0.2.2 (2018-11-15)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#improved-alarm-support">Improved Alarm Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#bug-fixes-and-performance-improvements">Bug Fixes and Performance Improvements</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#v0-2-1-2018-10-29">v0.2.1 (2018-10-29)</a><ul>
@@ -221,6 +226,36 @@ related to user activity during that interval, the client silently initiates
 an Echo. If the server still does not respond, it is deemed unresponsive. The
 client logs a warning and disconnects all circuits from that server so that
 their PVs can begin attempting to reconnect to a responsive server.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="v0-2-2-2018-11-15">
+<h2>v0.2.2 (2018-11-15)<a class="headerlink" href="#v0-2-2-2018-11-15" title="Permalink to this headline">¶</a></h2>
+<p>The release improves the performance of the threading client and adds support
+for value-based alarms.</p>
+<div class="section" id="improved-alarm-support">
+<h3>Improved Alarm Support<a class="headerlink" href="#improved-alarm-support" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>Value-based alarms are supported by all servers.</li>
+<li>LOLO, LO, HI, and HIHI alarm status fields of mocked records are respected.</li>
+<li>Channel limit metadata (upper_alarm_limit, upper_warning_limit, etc.) is now
+integrated with alarms.</li>
+</ul>
+</div>
+<div class="section" id="bug-fixes-and-performance-improvements">
+<h3>Bug Fixes and Performance Improvements<a class="headerlink" href="#bug-fixes-and-performance-improvements" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>The socket settings <code class="docutils literal notranslate"><span class="pre">SO_KEEPALIVE</span></code> and <code class="docutils literal notranslate"><span class="pre">TCP_NODELAY</span></code> are used in the
+threading client TCP sockets, making it consistent with epics-base and removing a 40ms
+overhead that can occur when sending small packets.</li>
+<li>Some unnecessary locking was removed from the threading client, resolving
+a deadlock observed in ophyd and improving performance.</li>
+<li>The <code class="docutils literal notranslate"><span class="pre">spoof_beamline</span></code> IOC is aware of more components of Area Detector and
+defaults to float-type channels instead of integer-type.</li>
+<li>A rare but possible race condition that caused a subscription to be activated
+twice (thus getting two responses for each update) has been resolved.</li>
+<li>The <code class="docutils literal notranslate"><span class="pre">ChannelData</span></code> objects are serializable with pickle.</li>
+<li>A bug in length-checking that affected zero-length data has been fixed.</li>
 </ul>
 <p>The detail and consistency of the exceptions raised by the clients has also
 been improved.</p>
