@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Loggers &mdash; caproto 0.2.2+22.g3633183 documentation</title>
+  <title>Loggers &mdash; caproto 0.2.2+24.g5af15f8 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.2+22.g3633183
+                0.2.2+24.g5af15f8
               </div>
             
           
@@ -229,29 +229,73 @@ where <code class="docutils literal notranslate"><span class="pre">&lt;id&gt;</s
 </div>
 <div class="section" id="logging-handlers">
 <h2>Logging Handlers<a class="headerlink" href="#logging-handlers" title="Permalink to this headline">¶</a></h2>
-<p>At import time, caproto adds a logging stream handler
-<code class="docutils literal notranslate"><span class="pre">caproto.color_log_handler</span></code> to the <code class="docutils literal notranslate"><span class="pre">'caproto'</span></code> logger, which uses ANSI
-color codes to color-code the log messages by log level.</p>
-<p>To conveniently switch to a version without the colors:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caproto</span><span class="o">.</span><span class="n">color_logs</span><span class="p">(</span><span class="bp">False</span><span class="p">)</span>  <span class="c1"># color_log_handler -&gt; plain_log_handler</span>
-</pre></div>
-</div>
-<p>You can, of course, configure the handlers manually in the standard fashion
-supported by Python, using <code class="docutils literal notranslate"><span class="pre">logging.getLogger('caproto').handlers</span></code>. For
-example, to remove caproto’s default handler and write to a file instead of the
-standard out:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">caproto</span>
-<span class="kn">from</span> <span class="nn">caproto._log</span> <span class="kn">import</span> <span class="n">LogFormatter</span><span class="p">,</span> <span class="n">color_log_format</span><span class="p">,</span> <span class="n">log_date_format</span>
+<p>By default, caproto prints log messages to the standard out by adding a
+<a class="reference external" href="https://docs.python.org/3/library/logging.handlers.html#logging.StreamHandler" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">logging.StreamHandler</span></code></a> to the <code class="docutils literal notranslate"><span class="pre">'caproto'</span></code> logger at import time. You
+can, of course, configure the handlers manually in the standard fashion
+supported by Python. But a convenience function <a class="reference internal" href="#caproto.set_handler" title="caproto.set_handler"><code class="xref py py-func docutils literal notranslate"><span class="pre">caproto.set_handler()</span></code></a>,
+makes it easy to address to common cases.</p>
+<p>To direct the messages to a file instead of the standard out:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">caproto</span>
 
-<span class="n">handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">YOUR_FILEPATH</span><span class="p">)</span>
-<span class="n">handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span>
-    <span class="n">LogFormatter</span><span class="p">(</span><span class="n">color_log_format</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="n">log_date_format</span><span class="p">))</span>
-<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;caproto&#39;</span><span class="p">)</span>
-<span class="n">log</span><span class="o">.</span><span class="n">handlers</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
-<span class="n">log</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+<span class="n">caproto</span><span class="o">.</span><span class="n">set_handler</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s1">&#39;caproto.log&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
+<p>A file object (anything that implements a <code class="docutils literal notranslate"><span class="pre">write</span></code> method) is also accepted,
+as in <code class="docutils literal notranslate"><span class="pre">caproto.set_handler(file=open('caproto.log'))</span></code>.</p>
+<p>The default handler uses ANSI color codes to color-code the log messages by log
+level. To disable the color codes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caproto</span><span class="o">.</span><span class="n">set_handler</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="function">
+<dt id="caproto.set_handler">
+<code class="descclassname">caproto.</code><code class="descname">set_handler</code><span class="sig-paren">(</span><em>file=&lt;_io.TextIOWrapper name='&lt;stdout&gt;' mode='w' encoding='UTF-8'&gt;</em>, <em>datefmt='%H:%M:%S'</em>, <em>color=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/caproto/_log.html#set_handler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#caproto.set_handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a new handler on the <code class="docutils literal notranslate"><span class="pre">logging.getLogger('caproto')</span></code> logger.</p>
+<p>This function is run at import time with default paramters. If it is run
+again by the user, the handler from the previous invocation is removed (if
+still present) and replaced.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><dl class="first docutils">
+<dt><strong>file</strong> <span class="classifier-delimiter">:</span> <span class="classifier">object with <code class="docutils literal notranslate"><span class="pre">write</span></code> method or filename string</span></dt>
+<dd><p class="first last">Default is <code class="docutils literal notranslate"><span class="pre">sys.stdout</span></code>.</p>
+</dd>
+<dt><strong>datefmt</strong> <span class="classifier-delimiter">:</span> <span class="classifier">string</span></dt>
+<dd><p class="first last">Date format. Default is <code class="docutils literal notranslate"><span class="pre">'%H:%M:%S'</span></code>.</p>
+</dd>
+<dt><strong>color</strong> <span class="classifier-delimiter">:</span> <span class="classifier">boolean</span></dt>
+<dd><p class="first last">Use ANSI color codes. True by default.</p>
+</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="first last docutils">
+<dt><strong>handler</strong> <span class="classifier-delimiter">:</span> <span class="classifier">logging.Handler</span></dt>
+<dd><p class="first last">The handler, which has already been added to the ‘caproto’ logger.</p>
+</dd>
+</dl>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Log to a file.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">set_handler</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="s1">&#39;/tmp/what_is_happening.txt&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Include the date along with the time. (The log messages will always include
+microseconds, which are configured separately, not as part of ‘datefmt’.)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">set_handler</span><span class="p">(</span><span class="n">datefmt</span><span class="o">=</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Turn off ANSI color codes.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">set_handler</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
 </div>
 </div>
 

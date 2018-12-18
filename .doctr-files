@@ -6,6 +6,7 @@
 ./_modules/caproto/_circuit.html
 ./_modules/caproto/_commands.html
 ./_modules/caproto/_dbr.html
+./_modules/caproto/_log.html
 ./_modules/caproto/_utils.html
 ./_modules/caproto/server/records.html
 ./_modules/caproto/sync/client.html
