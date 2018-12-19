@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>caproto.threading.client &mdash; caproto 0.2.2+24.g5af15f8 documentation</title>
+  <title>caproto.threading.client &mdash; caproto 0.2.2+28.g804693e documentation</title>
   
 
   
@@ -56,7 +56,7 @@
             
             
               <div class="version">
-                0.2.2+24.g5af15f8
+                0.2.2+28.g804693e
               </div>
             
           
@@ -1483,13 +1483,16 @@
                                   <span class="n">ca</span><span class="o">.</span><span class="n">WriteNotifyResponse</span><span class="p">)):</span>
             <span class="n">ioid_info</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ioids</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">)</span>
             <span class="n">deadline</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;deadline&#39;</span><span class="p">]</span>
+            <span class="n">pv</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;pv&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">deadline</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">deadline</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Ignoring late response with ioid=</span><span class="si">%d</span><span class="s2"> because &quot;</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;Ignoring late response with ioid=</span><span class="si">%d</span><span class="s2"> regarding &quot;</span>
+                              <span class="s2">&quot;PV named </span><span class="si">%s</span><span class="s2"> because &quot;</span>
                               <span class="s2">&quot;it arrived </span><span class="si">%.3f</span><span class="s2"> seconds after the deadline &quot;</span>
                               <span class="s2">&quot;specified by the timeout.&quot;</span><span class="p">,</span> <span class="n">command</span><span class="o">.</span><span class="n">ioid</span><span class="p">,</span>
-                              <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">deadline</span><span class="p">)</span>
+                              <span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">-</span> <span class="n">deadline</span><span class="p">)</span>
                 <span class="k">return</span>
 
+            <span class="n">pv</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">command</span><span class="p">)</span>
             <span class="n">event</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;event&#39;</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">event</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="c1"># If PV.read() or PV.write() are waiting on this response,</span>
@@ -1814,7 +1817,7 @@
         <span class="c1"># Stash the ioid to match the response to the request.</span>
 
         <span class="n">event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-        <span class="n">ioid_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
+        <span class="n">ioid_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">,</span> <span class="n">pv</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">command</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;callback&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span>
 
@@ -1845,7 +1848,6 @@
                 <span class="n">f</span><span class="s2">&quot;The ioid of the expected response is </span><span class="si">{ioid}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="PV.write"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.write">[docs]</a>    <span class="nd">@ensure_connected</span>
@@ -1891,7 +1893,7 @@
                              <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="n">data_count</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">notify</span><span class="p">:</span>
             <span class="n">event</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
-            <span class="n">ioid_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">)</span>
+            <span class="n">ioid_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">event</span><span class="o">=</span><span class="n">event</span><span class="p">,</span> <span class="n">pv</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">command</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">callback</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;callback&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">callback</span>
 
@@ -1932,7 +1934,6 @@
                 <span class="n">f</span><span class="s2">&quot;</span><span class="si">{self.name!r}</span><span class="s2"> within {float(timeout):.3}-second timeout. &quot;</span>
                 <span class="n">f</span><span class="s2">&quot;The ioid of the expected response is </span><span class="si">{ioid}</span><span class="s2">.&quot;</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;response&#39;</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="PV.subscribe"><a class="viewcode-back" href="../../../threading-client.html#caproto.threading.client.PV.subscribe">[docs]</a>    <span class="k">def</span> <span class="nf">subscribe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">data_count</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2278,7 +2279,9 @@
                                   <span class="n">notify</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_commands</span><span class="p">[</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
         <span class="c1"># Stash the ioid to match the response to the request.</span>
-        <span class="n">ioid_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span>
+        <span class="c1"># The request is used in the logging in __exit__. It is not needed</span>
+        <span class="c1"># by the circuit.</span>
+        <span class="n">ioid_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span> <span class="n">pv</span><span class="o">=</span><span class="n">pv</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">command</span><span class="p">)</span>
         <span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">ioids</span><span class="p">[</span><span class="n">ioid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ioid_info</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ioid_infos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ioid_info</span><span class="p">)</span></div>
 
@@ -2308,7 +2311,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_commands</span><span class="p">[</span><span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">command</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">callback</span><span class="p">:</span>
             <span class="c1"># Stash the ioid to match the response to the request.</span>
-            <span class="n">ioid_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">)</span>
+            <span class="c1"># The request is used in the logging in __exit__. It is not needed</span>
+            <span class="c1"># by the circuit.</span>
+            <span class="n">ioid_info</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span> <span class="n">pv</span><span class="o">=</span><span class="n">pv</span><span class="p">,</span> <span class="n">request</span><span class="o">=</span><span class="n">command</span><span class="p">)</span>
             <span class="n">pv</span><span class="o">.</span><span class="n">circuit_manager</span><span class="o">.</span><span class="n">ioids</span><span class="p">[</span><span class="n">ioid</span><span class="p">]</span> <span class="o">=</span> <span class="n">ioid_info</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ioid_infos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ioid_info</span><span class="p">)</span></div>
 
@@ -2317,6 +2322,8 @@
         <span class="n">deadline</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">monotonic</span><span class="p">()</span> <span class="o">+</span> <span class="n">timeout</span> <span class="k">if</span> <span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="k">for</span> <span class="n">ioid_info</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ioid_infos</span><span class="p">:</span>
             <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;deadline&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">deadline</span>
+            <span class="n">pv</span> <span class="o">=</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;pv&#39;</span><span class="p">]</span>
+            <span class="n">pv</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%r</span><span class="s2">: </span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pv</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">ioid_info</span><span class="p">[</span><span class="s1">&#39;request&#39;</span><span class="p">])</span>
         <span class="k">for</span> <span class="n">circuit_manager</span><span class="p">,</span> <span class="n">commands</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_commands</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">circuit_manager</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="o">*</span><span class="n">commands</span><span class="p">)</span></div>
 

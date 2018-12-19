@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Loggers &mdash; caproto 0.2.2+24.g5af15f8 documentation</title>
+  <title>Loggers &mdash; caproto 0.2.2+28.g804693e documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.2+24.g5af15f8
+                0.2.2+28.g804693e
               </div>
             
           
@@ -234,16 +234,7 @@ where <code class="docutils literal notranslate"><span class="pre">&lt;id&gt;</s
 can, of course, configure the handlers manually in the standard fashion
 supported by Python. But a convenience function <a class="reference internal" href="#caproto.set_handler" title="caproto.set_handler"><code class="xref py py-func docutils literal notranslate"><span class="pre">caproto.set_handler()</span></code></a>,
 makes it easy to address to common cases.</p>
-<p>To direct the messages to a file instead of the standard out:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">caproto</span>
-
-<span class="n">caproto</span><span class="o">.</span><span class="n">set_handler</span><span class="p">(</span><span class="nb">file</span><span class="o">=</span><span class="s1">&#39;caproto.log&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>A file object (anything that implements a <code class="docutils literal notranslate"><span class="pre">write</span></code> method) is also accepted,
-as in <code class="docutils literal notranslate"><span class="pre">caproto.set_handler(file=open('caproto.log'))</span></code>.</p>
-<p>The default handler uses ANSI color codes to color-code the log messages by log
-level. To disable the color codes:</p>
+<p>See the Examples section below.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">caproto</span><span class="o">.</span><span class="n">set_handler</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 </pre></div>
 </div>
