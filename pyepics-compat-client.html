@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Pyepics-Compatible Client &mdash; caproto 0.2.3+15.g8bb75ec documentation</title>
+  <title>Pyepics-Compatible Client &mdash; caproto 0.2.3+17.g88a9642 documentation</title>
   
 
   
@@ -58,7 +58,7 @@
             
             
               <div class="version">
-                0.2.3+15.g8bb75ec
+                0.2.3+17.g88a9642
               </div>
             
           
@@ -252,10 +252,10 @@ Get and put to <code class="docutils literal notranslate"><span class="pre">rand
 <span class="gh">Out[11]: </span><span class="go">0</span>
 
 <span class="gp">In [12]: </span><span class="kn">import</span> <span class="nn">time</span><span class="p">;</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># give some time for responses to come in</span>
-<span class="go">           received value -0.7092223195715137</span>
-<span class="go">received value -1.3888379778641518</span>
-<span class="go">received value -1.7024266282837153</span>
-<span class="go">received value -1.1687937299164464</span>
+<span class="go">           received value 0.3210830131414866</span>
+<span class="go">received value 0.18415891138050022</span>
+<span class="go">received value -0.4848927559401808</span>
+<span class="go">received value -0.15827883453016334</span>
 
 <span class="gp">In [13]: </span><span class="n">x_pv</span><span class="o">.</span><span class="n">clear_callbacks</span><span class="p">()</span>
 </pre></div>
@@ -263,7 +263,7 @@ Get and put to <code class="docutils literal notranslate"><span class="pre">rand
 <p>The underlying caproto PV and Context objects from caproto’s main
 <a class="reference internal" href="threading-client.html"><span class="doc">Threading Client</span></a>. are accessible:</p>
 <div class="highlight-ipython notranslate"><div class="highlight"><pre><span></span><span class="gp">In [14]: </span><span class="n">pv</span><span class="o">.</span><span class="n">_caproto_pv</span>
-<span class="gh">Out[14]: </span><span class="go">&lt;PV name=&#39;random_walk:dt&#39; priority=0 address=(&#39;127.0.0.1&#39;, 63316), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
+<span class="gh">Out[14]: </span><span class="go">&lt;PV name=&#39;random_walk:dt&#39; priority=0 address=(&#39;127.0.0.1&#39;, 64660), circuit_state=States.CONNECTED, channel_state=States.CONNECTED&gt;</span>
 
 <span class="gp">In [15]: </span><span class="n">pv</span><span class="o">.</span><span class="n">_caproto_pv</span><span class="o">.</span><span class="n">context</span>
 <span class="go">                                                                                                                                            Out[15]: &lt;Context searches_pending=0 circuits=1 pvs=2 idle=0&gt;</span>
